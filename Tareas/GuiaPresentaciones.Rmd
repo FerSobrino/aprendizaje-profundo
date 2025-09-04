@@ -1,0 +1,73 @@
+---
+title: "Guía para presentaciones de papers Aprendizaje Profundo"
+author: 
+date:
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+**Duración recomendada**
+- Presentación: **8–10 min**  
+- Preguntas / defensa: **5–7 min**  
+Total ≤ 15 min.
+
+
+## 1) Estructura obligatoria (qué deben cubrir)
+Organiza la presentación para que todas estas partes queden claras:
+
+1. **Contexto / problema**
+   - ¿Qué problema aborda el paper? ¿Por qué importa (que modelos tenemos gracias a el ahora)?  
+2. **Contribución técnica**  
+   - Idea central (modelo/arquitectura/algoritmo). ¿Qué es novedoso? ¿Qué asume?  
+3. **Datos y evaluación** 
+   - Datasets, métricas, principales resultados numéricos.  
+4. **Limitaciones y supuestos**
+   - ¿Qué hipótesis son críticas? Posibles sesgos o fallas de validez externa.  
+5. **Implicaciones para políticas públicas / sociedad**
+   - ¿Cómo podría esto afectar políticas, regulaciones o decisiones públicas? 
+6. **Preguntas críticas para la clase** 
+   - Entrega 2–3 preguntas que provoquen discusión.  
+7. **Idea de réplica rápida** (30 s)  
+   - “Si tuviera 1 hora con una laptop, ¿qué prueba rápida correría?” (breve plan).
+
+> **Nota:** no es obligatorio presentar código en vivo. Si traes código, que sea breve y controlado.
+
+
+## 2) Entregables — que deben entregar **48 horas antes** de la presentación
+- **Slides** (6–8 diapositivas máximo). Referencias bibliográficas completas.  
+- **Resumen de 1 página (máx. 500 palabras)** que contenga: resumen técnico, implicaciones políticas y 3 puntos críticos.  
+- **3 preguntas para discusión** (formuladas en el archivo).  
+- **declaration.txt**: nombres de integrantes del equipo y firmar: "Yo [nombre] declaro que prepare este trabajo" (firma electrónica o foto opcional).  
+- **Ojo** no se permite que un LLM haga la presentación, el punto es que entiendan lo que hace un LLM... 
+
+## 3) Rúbrica (100 pts total)
+- **Comprensión técnica — 30 pts**  
+  (explicación del método, derivaciones esenciales, por qué funciona)  
+- **Contexto & relevancia política — 20 pts**  
+  (conexión con políticas, riesgos, recomendaciones)  
+- **Discusión crítica — 15 pts**  
+  (limitaciones, reproducibilidad, sesgos, mejoras propuestas)  
+- **Claridad de la presentación — 15 pts**  
+  (slides concisas, visuales útiles, tiempo respetado)  
+- **Preparación y defensa en vivo — 10 pts**  
+  (respuestas en Q&A, manejo de preguntas sorpresa)  
+- **Entrega a tiempo + referencias completas — 10 pts**  
+  (slides + 1-page entregados 48 h antes, citas completas)
+
+
+## 6) Lista de posibles papers: 
+
+1. **AlexNet** — Krizhevsky, Sutskever & Hinton (2012) — salto práctico de CNN+GPUs.  
+2. **ResNet: Deep Residual Learning** — He et al. (2015) — skip connections para redes profundas.  
+3. **Batch Normalization** — Ioffe & Szegedy (2015) — estabilidad y velocidad de entrenamiento.  
+4. **Attention is All You Need (Transformers)** — Vaswani et al. (2017) — revolución en NLP.  
+5. **BERT** — Devlin et al. (2018) — pre-training bidireccional y fine-tuning.
+6. **Variational Autoencoders (VAE)** — Kingma & Welling (2013) — marco probabilístico generativo.  
+7. **GANs** — Goodfellow et al. (2014) — aprendizaje generativo adversarial.  
+8. **Double Descent** — Belkin et al. / Nakkiran et al. — capacidad vs error no monotónica.  
+
+

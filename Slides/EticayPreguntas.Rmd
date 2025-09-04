@@ -1,0 +1,355 @@
+---
+title: "Preguntas Abiertas y Ética"
+author: "Fernanda Sobrino"
+date: "2025"
+output: ioslides_presentation
+---
+
+# ¿Por qué funciona el aprendizaje profundo?
+
+## El gran misterio
+- Sabemos que los modelos funcionan increíblemente bien en práctica.
+- Pero nuestro entendimiento teórico sigue siendo limitado.
+- Preguntas abiertas:
+    - ¿Por qué entrenar redes tan grandes es posible?
+    - ¿Por qué generalizan en datos nuevos y no solo memorizan?
+
+
+
+## Suposiciones al usar deep learning
+1. Capacidad universal:
+    - Con suficientes neuronas, una red puede aproximar casi cualquier función.
+2. Generalización:
+    - Lo aprendido en los datos de entrenamiento se traslada a datos nuevos.
+- El problema:
+    - Entrenamiento no debería ser tan fácil (es NP-hard).
+    - Generalización no debería ocurrir tan bien (maldición de la dimensionalidad).
+
+## Entrenamiento: lo sorprendente
+- Encontrar mínimos en funciones de pérdida no convexas es teóricamente muy difícil.
+- Aun así:
+    - No quedamos atrapados en mínimos locales malos ni en puntos silla.
+    - Con sobreparametrización (más parámetros que datos), ¡el entrenamiento es incluso más estable!
+- En práctica: ajustamos redes enormes de manera eficiente con SGD + trucos.
+- *Paradoja:* lo que debería ser casi imposible en teoría, funciona rutinariamente bien en la práctica.
+
+## Generalización: otra paradoja
+- Entrenar en pocos datos vs. espacio de entrada enorme:
+    - cualquier dataset es muy chiquito frente a todas las combinaciones posibles
+- Redes profundas = funciones muy complicadas con millones de parámetros.
+- Solo unas pocas regiones del espacio se ven en entrenamiento… pero aún así generalizan bien.
+- Más parámetros no empeoran la generalización → a veces la mejoran (double descent).
+
+
+
+## Factores que influyen en que el entrenamiento funcione 
+| Factor | ¿Qué aporta? | Limitaciones / Hallazgos |
+|--------|--------------|--------------------------|
+| **Datos** | La función objetivo del mundo real suele ser relativamente simple; incluso con ruido o etiquetas permutadas, las redes pueden memorizar (Zhang et al., 2017). | Entrenan bien incluso con datos sin estructura → los datos no explican totalmente el éxito. |
+| **Regularización** | Métodos como dropout, weight decay o batch norm suavizan la superficie de pérdida y pueden mejorar generalización. | No es estrictamente necesaria para entrenar; redes también aprenden datos aleatorios. |
+
+
+
+## Factores que influyen en que el entrenamiento funcione 
+| Factor | ¿Qué aporta? | Limitaciones / Hallazgos |
+|--------|--------------|--------------------------|
+| **Optimización estocástica (SGD, Adam)** | El ruido del muestreo ayuda a escapar de mínimos pobres y favorece soluciones planas que generalizan mejor. | Incluso métodos deterministas entrenan; los valles en la pérdida suelen ser amplios y buenos. |
+| **Sobreparametrización** | Facilita el ajuste: más parámetros → más caminos hacia una buena solución. Explica el fenómeno de *double descent*. | Debería causar overfitting, pero en la práctica no siempre; la teoría aún es incompleta. |
+
+## Factores que influyen en que el entrenamiento funcione 
+| Factor | ¿Qué aporta? | Limitaciones / Hallazgos |
+|--------|--------------|--------------------------|
+| **Funciones de activación** | ReLU y variantes resolvieron problemas de gradientes con sigmoides/tanh; introducen no linealidad esencial. | Sin activaciones, la red sería lineal → incapaz de modelar funciones complejas. |
+| **Inicialización de pesos** | Métodos como Xavier/He mantienen estable la varianza de activaciones y gradientes. | Inicialización deficiente puede colapsar el entrenamiento (explosión o desaparición de gradientes). |
+
+## Factores que influyen en que el entrenamiento funcione 
+| Factor | ¿Qué aporta? | Limitaciones / Hallazgos |
+|--------|--------------|--------------------------|
+| **Profundidad** | Capas profundas capturan jerarquías de representaciones: de patrones locales a abstracciones complejas. | Redes muy profundas eran inentrenables hasta la llegada de residuals y normalización. |
+
+
+
+
+## Funciones de pérdida en deep learning
+- Son **no convexas** y de muy alta dimensión.
+- Aun así, los optimizadores encuentran soluciones buenas en la práctica.
+- Pregunta central:  
+  ¿Por qué entrenar es posible si el problema es *teóricamente* difícil?
+  
+  
+## Propiedades de las funciones de pérdida
+
+| Propiedad                          | Qué significa                                                                 | Implicaciones para DL                                                                 |
+|-----------------------------------|-------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
+| **No convexidad**                 | La pérdida es altamente no convexa, con muchos mínimos y puntos silla.         | Teóricamente difícil de optimizar, pero en práctica hay muchos buenos caminos de descenso. |
+| **Abundancia de puntos silla**    | Los puntos silla son más comunes que los mínimos locales.                      | Los optimizadores estocásticos pueden escapar de ellos y seguir descendiendo.          |
+| **Valles planos vs. afilados**    | Algunas soluciones están en regiones planas (robustas) y otras en picos estrechos. | Valles planos tienden a generalizar mejor; valles afilados sobreajustan.               |
+
+
+## Propiedades de las funciones de pérdida
+
+| Propiedad                          | Qué significa                                                                 | Implicaciones para DL                                                                 |
+|-----------------------------------|-------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
+| **Degeneración de soluciones**    | Muchas configuraciones distintas de parámetros logran la misma pérdida.        | Explica la estabilidad del entrenamiento y la alta redundancia en redes grandes.       |
+| **Conectividad entre mínimos**    | Los mínimos no están aislados, pueden estar conectados por caminos con pérdidas pequen. | La función* de la pérdida es “suave” → se pueden interpolar modelos sin empeorar mucho. |
+| **Sobreparametrización**          | El número de parámetros excede lo necesario para ajustar los datos.             | Aumenta la probabilidad de encontrar soluciones buenas y conectadas en la pérdida.     |
+
+
+
+## Intuición general de las funciones de perdida
+- Aunque la función de pérdida es altamente no convexa:  
+  - Hay muchos **caminos descendentes** hacia buenas soluciones.  
+  - Los mínimos relevantes están en **valles anchos y conectados**.  
+  - Esto hace que la optimización en deep learning sea sorprendentemente estable.  
+
+
+## Factores de generalización en deep learning
+- Una de las grandes preguntas:
+    - ¿Por qué redes con millones de parámetros no colapsan en overfitting?
+- Algunas claves:
+    - Datos y distribución: qué tan bien reflejan el mundo real.
+    - Capacidad del modelo: profundidad, número de neuronas, sobreparametrización.
+    - Algoritmo de entrenamiento: ruido estocástico, tasa de aprendizaje, regularización implícita.
+    - Geometría de la pérdida: soluciones planas vs. afiladas.
+
+
+
+## Factores de generalización en deep learning
+
+| Factor                   | Rol en la generalización                                                        | Limitaciones / Hallazgos                                                      |
+|---------------------------|---------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| **Cantidad y calidad de datos** | Más datos reducen el sobreajuste y capturan mejor la distribución real.        | Dataset siempre limitado; distribución de test puede diferir (*dataset shift*). |
+| **Arquitectura y capacidad**    | Redes profundas capturan jerarquías útiles; sobreparametrización sorprendentemente ayuda (*double descent*). | Capacidad excesiva debería sobreajustar, pero en la práctica no siempre.      |
+| **Algoritmo de optimización**  | SGD introduce un “sesgo implícito”: prefiere soluciones planas que generalizan mejor. | No está garantizado teóricamente; depende de tasas de aprendizaje y batch size. |
+
+
+
+## Factores de generalización en deep learning
+
+| Factor                   | Rol en la generalización                                                        | Limitaciones / Hallazgos                                                      |
+|---------------------------|---------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| **Regularización explícita**   | Técnicas como dropout, weight decay, data augmentation mejoran robustez.         | No explican todo el fenómeno: modelos sin regularización también generalizan. |
+| **Paisaje de la pérdida**      | Soluciones en valles anchos son más estables y tienden a generalizar.            | Difícil de medir directamente en grandes modelos.                             |
+
+
+## Intuición de la generalización
+- No hay un único “truco mágico”:
+   - la generalización resulta de la interacción entre datos, modelo y optimización.
+- SGD + sobreparametrización actúan como una forma de regularización implícita.
+- En la práctica:
+    - Los modelos encuentran soluciones planas y conectadas, no ajustes arbitrarios.
+    - Esto explica por qué “más parámetros” a menudo significa mejor generalización.
+    
+
+## ¿Necesitamos tantos parámetros?
+- Los LLMs y redes modernas tienen miles de millones de parámetros.
+- Sorprendentemente: más parámetros → mejor generalización (double descent).
+- Aun si el número de parámetros excede al de ejemplos de entrenamiento.
+- Pregunta abierta:
+    - ¿Es todo redundante o los parámetros extra juegan un rol esencial?
+    
+## Ideas detrás de la sobreparametrización
+
+| Idea / hipótesis         | Qué sugiere                                                   | Limitaciones / preguntas abiertas                                      |
+|---------------------------|---------------------------------------------------------------|------------------------------------------------------------------------|
+| **Redundancia**           | Muchas neuronas o capas hacen lo mismo → parámetros innecesarios. | Entonces, ¿por qué al podar solo moderadamente baja el rendimiento?    |
+| **Paisaje de pérdida más “amigable”** | Más parámetros → más caminos hacia soluciones buenas → optimización más estable. | Explica el entrenamiento fácil, pero no toda la generalización.        |
+| **Representaciones más ricas** | Redes grandes aprenden múltiples subfunciones o especializaciones internas. | Difícil de interpretar; ¿qué tanto es aprovechado?                     |
+| **Pruning & Compresión**  | Modelos entrenados pueden reducirse (podado, distillation) sin perder mucho. | Pero necesitan entrenarse primero con exceso de parámetros.            |
+
+
+
+
+
+
+
+
+## Intuición sobreparametrización 
+- La sobreparametrización no es un bug, es una feature.
+- Hace que el espacio de soluciones sea más suave y conectable.
+- Muchos parámetros extras → mayor probabilidad de encontrar un valle ancho y robusto.
+- Aun así, el misterio persiste:
+    - ¿Cuántos parámetros son realmente necesarios para representar vs. para aprender?
+
+
+
+
+## Necesitamos redes tan profundas
+- En teoría, una red con una sola capa oculta suficientemente grande puede aproximar cualquier función continua (teorema de aproximación universal).
+- Entonces, ¿por qué usar redes profundas en lugar de redes anchas?
+
+
+## Profundidad vs agregar muchas neuronas
+
+| Aspecto               | Redes poco profundas (muy anchas)                    | Redes profundas                                      |
+|------------------------|------------------------------------------------------|------------------------------------------------------|
+| **Capacidad teórica**  | Universal approximators si son lo bastante grandes.  | También lo son, pero con menos neuronas totales.     |
+| **Eficiencia de representación** | Necesitan un número *exponencial* de neuronas para ciertas funciones. | Con profundidad logran la misma función con *mucho menos*. |
+| **Composición de funciones** | Difícil de representar jerarquías o estructuras modulares. | Cada capa construye abstracciones progresivas (jerárquicas). |
+| **Práctica de entrenamiento** | Redes anchas son costosas en memoria y parámetros. | Más fáciles de entrenar con técnicas modernas (residuals, normalización). |
+| **Generalización**    | Tienden a sobreajustar o memorizar más fácilmente.   | Profundidad favorece reutilización y composicionalidad. |
+
+
+
+## Intuición de la profundidad
+- Composición de funciones simples → funciones complejas.
+- Compactación de la representación: lo que en redes anchas requiere millones de neuronas, en redes profundas se logra con menos.
+- Evidencia empírica: en práctica, aumentar profundidad (con cuidado) ha sido clave para grandes avances (ResNets, Transformers).
+
+
+## Entonces, ¿por qué funciona el aprendizaje profundo?
+- El éxito del deep learning es sorprendente dado lo difícil que debería ser en teoría.
+- Entrenamiento: funciona a pesar de funciones de pérdida no convexas y paisajes complicados.
+- Generalización: las redes generalizan mejor de lo esperado, incluso con muchos más parámetros que datos.
+- Factores clave: datos, sobreparametrización, SGD, activaciones, inicialización, regularización, profundidad.
+
+
+## Entonces, ¿por qué funciona el aprendizaje profundo?
+- Pérdida: no convexa pero con valles anchos, conectados y buenos.
+- Parámetros: muchos parecen redundantes, pero ayudan a entrenar y a encontrar mejores soluciones.
+- Profundidad: esencial para eficiencia, composicionalidad y avances prácticos.
+- <span style="color: red;">RECUERDA:</span> Aún no tenemos una teoría completa de por qué funciona el aprendizaje profundo
+- Solo tenemos hints de cuales podrían ser las explicaciones detrás.
+
+
+# Etica en Aprendizaje profundo     
+
+
+## Historia de la Etica en DL
+- Desde AlexNet(2012) varios académicos intentaron enviar paneles de 'justicia' algorítmica y ética sin mucho éxito
+- Fue hasta 2016 que ProPublica expuso el sesgo de COMPAS (modelo de predicción de reincidencia delictiva) que comenzó el interés en la ética/justicia detrás de estos modelos 
+- Desde 2019 se han creado al menos 84 documentos de distintas organizaciones con recomendaciones de política para el entrenamiento/arquitectura y uso de modelos de DL
+- El problema dependen de la cooperación voluntaria y no vinculante de empresas privadas!! 
+- Por lo general las medidas éticas o de justicia son reactivas y no pro activas y se llevan a cabo cuando ya es muy evidente que el sistema/modelo esta sesgado o es dañino 
+
+
+## Alineación de Problemas
+- Idealmenete quisiéramos que los valores de los sistemas de AI se alineen con los de la humanidad 
+- Pero esto es dificil porque:
+    1. Es dificil definir nuestros valores de manera completa y correcta
+    2. Es difícil codificar estos valores como objetivos de un modelo de IA
+    3. Es difícil garantizar que el modelo aprenda a llevar a cabo estos objetivos.
+
+
+
+## Tipos de problemas de alineación en ML 
+- *outer alignment*: 
+    - si no existe alineación entre nuestro objetivo y la función de pérdida
+    - la función de pérdida es un proxy para nuestros objetivos
+    - existen atajos que el sistema puede tomar para minimizar la función de pérdida sin lograr el objetivo
+    - por ejemplo un agente de RL que aprende a jugar ajedrez si lo premiamos 
+
+## Tipos de problemas de alineación en ML 
+- *inner aligment*:
+    - garantizar que el comportamiento de un sistema de IA no se desvíe de los objetivos previstos, incluso si la función de pérdida está bien especificada
+    - esto puede pasar si por ejemplo los datos de entrenamiento no son representativos 
+    - o si el entrenamiento es 'malo' y nunca encontramos el mínimo global 
+    - tendremos una solución pero que no esta alineada con los objetivos 
+    
+    
+    
+## Tipos de problemas de alineación en ML 
+- Gabriel (2020) divide el problema de alineación en dos: 
+    1. *tecnico*: como programamos valores en los modelos, de manera que hagan lo que tiene que hacer
+    2. *normativo*: cuales son los valores correctos.. no hay respuesta para esta parte 
+
+
+## Sesgo y Equidad
+- Recordemos en estadística el sesgo es la desviación de la norma 
+- Pero en AI esta desviación puede venir de factores *ilegítimos* por ejemplo: 
+    - la especificación del problema: los objetivos del modelo 
+    - datos: incompletos, no representativos, etc. Ojo incluso datos representativos podrían estar sesgados por prejuicios históricos 
+    - Modelado y validación: la métrica que usemos para medir fairness requiere un juicio de valor
+    - Deployment: una vez afuera los modelos van a interactuar con otros algoritmos, sistemas, instituciones y pueded generar feedback loops
+
+    
+## Artificial moral agency
+- Muchas de las acciones de AI no tiene consecuencias morales (un RL que juegue Go, un clasificador de perros/gatos, etc)
+- Pero muchas otras van a tener muchas decisiones morales por ejemplo: autos autónomos, drones que deciden por ellos mismos, robots al servicio de ancianos o enfermos 
+
+## Transparencia y opacidad
+- Un sistema computacional complejo es transparente si conocemos todos los detalles de su operación
+- Un sistema es explicable si los humanos podemos entender como toma decisiones 
+- Si no tenemos al menos alguna de estas dos hay asimetría de la información entre el sistema de AI y los usuarios 
+
+## Transparencia 
+- Hay tres niveles de transparencia: 
+1. Transparencia funcional: conocer el funcionamiento algorítmico del sistema 2. Transparencia estructural: sabemos como un programa ejecuta el algoritmo 
+3. Run transparency: sabemos como se ejecuto un programa en una instancia en particular, esto incluye el hardware, los datos de entrenamiento, los hyperparametros, etc
+- La mayoria de los LLMs (hasta GPT3) y otros sistemas de DL que usamos solo tienen transparencia funcional, conocemos la estructura de la red detras pero no tenemos ni el código, ni los parámetros, etc.
+
+
+## Explicabilidad e interpretabilidad
+- Los sistemas pueden ser transparentes pero aun asi puede que no sepamos ni entendamos porque deciden como deciden 
+- Casi ningún modelo que use DL es explicable o interpretable
+- Esto nos llevo a un nuevo field de DL que es justo explainable AI
+- Por ejemplo:LIME (Local interpretable model-agnostic explanations)
+- A la fecha no tenemos modelos complejos de AI que generalizan bien y que además sean explicables 
+
+## Mal uso Intencional de la AI
+- Face recognition: por ejemplo usar fotos obtenidas sin consentimiento para para hacer frenología
+- Militarización: cyber ataques, campañas de desinformación, drones autónomos
+- Fraude: mails de pishing mas convincentes, deep fakes, chatbots que parecen humanos y solo quieren tu información 
+- Privacidad de datos: con el volumen de datos que se usan para entrenar DL aunque quitemos identificadores únicos puede ser fácil inferir estos identificadores 
+
+
+## Otros problemas eticos y sociales de la AI
+- Propiedad intelectual: 
+    - muchos modelos de DL se entrenaron con contenido que tenia copyright sin pagar derechos 
+    - ¿Podemos registrar la propiedad intelectual de un LLM? 
+    - ¿Es moralmente aceptable (o incluso legal) hacer imágenes de Studio Ghibli sin pagarle a Miyazaki?
+- Impacto ambiental:
+    - Entrenar un transformer con 213 millones de parámetros emite aproximadamente 284 toneladas de $CO_2$ al ambiente
+    - Esto es aprox el uso de 100 autos en una ciudad como LA por todo un año 
+    
+    
+## Otros problemas eticos y sociales de la AI    
+- Concentración de poder (market power):
+    - pocas empresas tienen los recursos para entrenar modelos gigantes.
+- Mercado laboral: 
+    - automatización puede desplazar trabajos rutinarios de personas menos educadas o en partes del mundo mas pobres 
+    - mientras que los beneficios económicos de la AI se concentran en dueños de capital
+    
+
+## El ideal de la ciencia libre de valores 
+- Ni los científicos ni los programadores existen en un vació, sus valores se filtran a sus algoritmos/modelos/apps
+- ML/DL no es objetiva solo porque los algoritmos son matemáticas 
+- Los valores del investigador/programador/desarrollador van a afectar su trabajo a través de: 
+1. La elección del problema de investigación
+2. La recopilación de la evidencia 
+3. Aceptar una hipótesis científica como respuesta a un problema.
+4. Aplicar los resultados de la investigación científica.
+
+
+## 'Responsible AI' como problema de acción colectiva
+- La investigación en IA responsable no puede resolverse solo a nivel individual:
+    - Los beneficios de comportarse de manera ética (auditar, documentar, usar menos energía) son globales
+    - Pero los costos son locales (tiempo, dinero, menor competitividad)
+- Resultado: tragedia de los comunes
+    - Cada actor (empresa/universidad/investigador) tiene incentivos a ignorar las buenas prácticas mientras los demás las cumplen
+    
+
+## Necesidad de coordinación
+- Para resolver problemas de acción colectiva, se requiere cooperación entre actores:
+    - Normas compartidas.
+    - Estándares de auditoría, seguridad y documentación.
+    - Incentivos para respetarlos (ej. financiamiento, regulaciones, reputación).
+- Analogía: como el cambio climático → no basta con que un país reduzca emisiones si los demás no lo hacen
+
+
+## Soluciones posibles
+1. Instituciones internacionales:
+    - Crear organismos que coordinen investigación responsable y establezcan estándares.
+    - Ejemplo: similar a la IAEA en energía nuclear, pero para IA.
+2. Regulación nacional
+    - Estados que imponen reglas mínimas sobre auditoría, privacidad, transparencia.
+3. Auto-regulación colectiva:
+    - Consorcios de empresas y universidades que acuerdan “cartas éticas” vinculantes.
+4. Presión pública y académica:
+    - Movimientos sociales, ONGs y científicos que exigen prácticas responsables.
+  
+
+    
+    
+    
+    
