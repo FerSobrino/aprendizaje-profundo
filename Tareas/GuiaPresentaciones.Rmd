@@ -42,7 +42,7 @@ Organiza la presentación para que todas estas partes queden claras:
 - **Resumen de 1 página (máx. 500 palabras)** que contenga: resumen técnico, implicaciones políticas y 3 puntos críticos.  
 - **3 preguntas para discusión** (formuladas en el archivo).  
 - **declaration.txt**: nombres de integrantes del equipo y firmar: "Yo [nombre] declaro que prepare este trabajo" (firma electrónica o foto opcional).  
-- **Ojo** no se permite que un LLM haga la presentación, el punto es que entiendan lo que hace un LLM... 
+- **Ojo** si usas un LLM para que te explique algo, por favor entrega toda la conversación con el LLM. 
 
 ## 3) Rúbrica (100 pts total)
 - **Comprensión técnica — 30 pts**  

@@ -128,6 +128,9 @@ $$H_{i,j} = U_{i,j} + \sum_a\sum_b V_{i,j,a,b}X_{i+a,j+b}$$
 - ¿Cómo hicimos esto? reindexando de la siguiente manera
 -  $k = i + a$ y $l = j + b$
 - a y b van a tener valores positivos y negativos de manera que vamos a recorrer toda la imagen 
+
+
+## Representación de la red 
 - Para cada ubicación $(i,j)$ en la capa itermedia $H$ su valor va a ser una suma ponderada (usando V) de todos los pixeles de X centrados en $(i,j)$
 - Si tenemos imágenes de milxmil (1 megapixel) entonces H es de las mismas dimensiones y vamos a necesitar $10^12$ parametros!!
 

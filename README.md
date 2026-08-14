@@ -24,18 +24,26 @@
   - Redes neuronales superficiales y profundas  
   - Entrenamiento (optimización, inicialización, performance)  
   - Regularización
-- **Semanas 5–7 — CNNs y RNNs**  
+- **Semanas 5–7 — CNNs y RNNs** — *Examen 1 (~semana 6)*  
 - **Semanas 8–10 — Transformers**  
-- **Semana 11 — Por qué funciona DL / Fairness / Ética / preguntas abiertas**  
-- **Semana 12 — Presentaciones**
+- **Semana 11 — Por qué funciona DL / Fairness / Ética / preguntas abiertas** — *Examen 2*  
+- **Semana 12 — Presentaciones y entrega del proyecto de colaboración con IA**
 
 ---
 
 ## Evaluación
-- **8 tareas** (preguntas teóricas + ejercicios en Python) — **60%**.  
-  - **Nota:** NO está permitido usar LLMs para resolver las tareas. Sí se permite consultar documentación oficial, libros, StackOverflow y trabajar con compañeros.
-- **Presentación de paper (en parejas)** — **40%**.  
-  - Papers asignados aleatoriamente. Formato y rúbrica en guía aparte (MD).
+- **2 exámenes en clase (teoría, sin código)** — **50%** (25% cada uno).  
+  - **Examen 1 (~semana 6):** fundamentos — repaso de ML, redes neuronales, funciones de pérdida, optimización, backpropagation, inicialización y regularización.  
+  - **Examen 2 (~semana 11):** arquitecturas — CNNs, RNNs, atención y Transformers, con preguntas de aplicación a políticas públicas.  
+  - Temarios detallados en `Examenes/`. Las preguntas siguen el estilo de las tareas de práctica: derivaciones a mano, diagnóstico de fallas, diseño de pérdidas y juicios de trade-off — **no se escribe código en los exámenes**.
+- **Presentación de paper (en parejas)** — **35%**.  
+  - Papers asignados aleatoriamente. Formato y rúbrica en guía aparte (`Tareas/GuiaPresentaciones`).
+- **Proyecto de colaboración con IA** — **15%**.  
+  - Diriges a un agente de IA (Claude, ChatGPT, etc.) para ejecutar un experimento de deep learning. Se califica la calidad de tu especificación, tu verificación del trabajo del agente y tu interpretación de resultados — no el código. Guía en `Tareas/ProyectoColaboracionIA.md`.
+
+### Política de uso de IA
+- **Tareas de práctica (no calificadas):** las 8 tareas del curso están disponibles en `Tareas/` como material de práctica y preparación para los exámenes, con soluciones de la parte práctica en `Soluciones/`. Puedes usar LLMs libremente en ellas — pero recuerda que los exámenes son en clase, con lápiz y papel, y evalúan que *tú* entiendas.
+- **Presentaciones y proyecto:** el uso de LLMs está permitido y (en el proyecto) es el objeto mismo de la evaluación, **pero es obligatorio entregar la conversación/registro completo (chat)** junto con los entregables.
   - **Para las presentaciones** se permite usar LLMs **para entender** o preparar ideas, **pero** es **obligatorio** entregar la conversación/registro (chat) junto con los entregables.
 
 ---

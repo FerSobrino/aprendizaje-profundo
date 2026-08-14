@@ -1,0 +1,13 @@
+# OS / editor
+.DS_Store
+.Rhistory
+*.Rproj.user
+
+# logs de sesión
+handoff-trace.log
+
+# material privado del instructor: respuestas completas y banco de preguntas de examen
+RespuestasTareas/
+
+# datos descargados (MNIST etc.)
+Notebooks/data/

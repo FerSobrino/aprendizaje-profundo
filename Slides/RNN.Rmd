@@ -72,16 +72,27 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 - ¿Cómo calcularíamos el precio el siguiente día?
 
 ```{r,echo=FALSE}
-packages <- c("quantmod", "dplyr", "ggplot2", "scales")
-invisible(lapply(setdiff(packages, rownames(installed.packages())), install.packages))
+packages <- c("dplyr", "ggplot2", "scales")
 invisible(lapply(packages, library, character.only = TRUE))
 from <- as.Date("1984-01-01")
-to   <- as.Date("2015-01-01") 
-ftse_xts <- quantmod::getSymbols("^FTSE", src = "yahoo", from = from, to = to, auto.assign = FALSE)
-ftse <- data.frame(
-  Date  = as.Date(index(ftse_xts)),
-  Close = as.numeric(Cl(ftse_xts))
-) %>%
+to   <- as.Date("2015-01-01")
+# Los datos del FTSE se leen de un cache local; solo se descargan de Yahoo
+# (requiere red y el paquete quantmod) si el CSV no existe todavia.
+ftse_csv <- "data/ftse.csv"
+if (file.exists(ftse_csv)) {
+  ftse <- read.csv(ftse_csv)
+  ftse$Date <- as.Date(ftse$Date)
+} else {
+  library(quantmod)
+  ftse_xts <- quantmod::getSymbols("^FTSE", src = "yahoo", from = from, to = to, auto.assign = FALSE)
+  ftse <- data.frame(
+    Date  = as.Date(index(ftse_xts)),
+    Close = as.numeric(Cl(ftse_xts))
+  )
+  dir.create("data", showWarnings = FALSE)
+  write.csv(ftse, ftse_csv, row.names = FALSE)
+}
+ftse <- ftse %>%
   dplyr::filter(Date >= from, Date <= to)
 ggplot(ftse, aes(Date, Close)) +
   geom_line(linewidth = 0.6, color = "#3C6EB4") +

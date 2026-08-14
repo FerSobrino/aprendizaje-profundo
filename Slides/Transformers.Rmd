@@ -293,7 +293,9 @@ $$[h_1,....,h_h]W_o$$
 
 
 
-##Comparación de codificaciones posicionales
+
+
+## Comparación de codificaciones posicionales
 
 | Aspecto                  | Sinusoidal (fija)                                                                 | Aprendida                                                   |
 |---------------------------|-----------------------------------------------------------------------------------|-------------------------------------------------------------|
@@ -303,10 +305,7 @@ $$[h_1,....,h_h]W_o$$
 | **Parámetros adicionales**| No añade parámetros → eficiente                                                   | Añade parámetros proporcionales a la longitud máxima de secuencia |
 | **Uso práctico**          | Se usa en el Transformer original (Vaswani et al., 2017)                          | Ampliamente usada en modelos modernos (BERT, GPT, etc.)     |
 
-¿Quieres que además te prepare un diagrama ilustrativo con las ondas sinusoidales para las primeras 
-
-
-# Transformers 
+# Transformers
 
 
 ## Idea general

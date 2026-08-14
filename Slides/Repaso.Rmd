@@ -35,8 +35,9 @@ Recordemos:
 ## ¿Cómo entrenamos esto?
 
 Necesitamos: 
-    - set de entrenamiento $\{x_i, y_i\}_{i=1}^I$
-    - función de costos o de pérdida: $L(\phi)$
+
+- set de entrenamiento $\{x_i, y_i\}_{i=1}^I$
+- función de costos o de pérdida: $L(\phi)$
     
 $$L\big[\phi,f(x,\phi), \{x_i,y_i\}_{i=1}^I\big]$$
 
@@ -244,7 +245,7 @@ $$P(y|x) = \prod_{i=1}^n p(y_i|x_i)$$
 - Simplificamos la maximización aplicando logaritmos: 
 $$- log P(y|x) = \sum_{i=1}^n \frac{1}{2} log(2\pi \sigma^2) + \frac{1}{2\sigma^2}(y-w^Tx-b)^2$$
 - El segundo término de está ecuación es igual a la pérdida cuadrática
-- Minimizar el error cuadrático medio medio es equivalente a la estimación de máxima verosimilitud de un modelo lineal bajo el supuesto de ruido gaussiano aditivo
+- Minimizar el error cuadrático medio es equivalente a la estimación de máxima verosimilitud de un modelo lineal bajo el supuesto de ruido gaussiano aditivo
 
 
 ## Generalización
@@ -266,8 +267,8 @@ $$R[p,f] = E[l(x,y,f(x))] = \int \int l(x,y,f(x))p(x,y)dx dy$$
 
 
 ## Generalización
-- Recordemos que el modelo con el que terminamos depende explicitamente de la selección de los conjuntos de entrenamiento 
-- Por lo que por lo general nuestro error de entrenamiento va a estar sesgado y no representa el $R$
+- Recordemos que el modelo con el que terminamos depende explícitamente de la selección de los conjuntos de entrenamiento 
+- Por lo que en general nuestro error de entrenamiento va a estar sesgado y no representa el $R$
 - La pregunta central de la generalización es cuando el error de entrenamiento es lo suficientemente cercano al error $R$ (de la población)
 
 ## Overfitting vs Underfitting: 
@@ -277,13 +278,14 @@ $$R[p,f] = E[l(x,y,f(x))] = \int \int l(x,y,f(x))p(x,y)dx dy$$
 - Menos datos normalmente nos llevan a overfitting 
 - Cuando aumentamos los datos de entrenamiento normalmente el error del test se hace más pequeño 
 - Para muchas tareas el aprendizaje profundo lo va a hacer mejor que modelos sencillos de ML 
-- Esto es cierto en parte porque tenemos muchos datos paa entrenar estos modelos
+- Esto es cierto en parte porque tenemos muchos datos para entrenar estos modelos
 
 ## Selección de modelos 
 
 - No podemos usar el conjunto de prueba para seleccionar
 - Pero tampoco podemos solo usar el conjunto de entrenamiento porque no va a generalizar bien 
-- La solución dividir nuestros datos en 3: prueba, validación y entrenamiento - El de validación para poder entrenar los hiperparámetros 
+- La solución dividir nuestros datos en 3: prueba, validación y entrenamiento
+- El de validación para poder entrenar los hiperparámetros 
 
 
 ## Regularización: 

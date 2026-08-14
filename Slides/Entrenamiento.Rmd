@@ -302,6 +302,8 @@ $$ \frac{\partial L}{\partial \phi} = \begin{pmatrix} \frac{\partial L}{\partial
 2. Actualizamos los parámetros usando la regla, donde $\alpha$ es la tasa de aprendizaje  
 
 $$\phi \leftarrow \phi -\alpha \frac{\partial L}{\partial \phi}$$
+
+
 ## Gradient descent
 - Recordemos que si tenemos una función de pérdida convexa, el proceso de ir hacia el mínimo con GD no falla, siempre alcanzamos el mínimo
 - Si tenemos una función convexa no importa donde inicializamos los parámetros siempre vamos a encontrar el mínimo global

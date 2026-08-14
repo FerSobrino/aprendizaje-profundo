@@ -32,17 +32,25 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
     - Redes neuronales superficiales y profundas 
     - Entrenamiento de redes neuronales 
     - Regularización 
-- Semana 5-7: CNNs y RNNs
-- Semana 8-10: Transformers 
-- Semana 11: ¿Por qué funciona el aprendizaje profundo?/ Fairness/Etica y preguntas abiertas 
+- Semana 5-7: CNNs y RNNs — *Examen 1 (~semana 6)*
+- Semana 8-10: Transformers
+- Semana 11: ¿Por qué funciona el aprendizaje profundo?/ Fairness/Etica y preguntas abiertas — *Examen 2*
+- Semana 12: Presentaciones y entrega del proyecto de colaboración con IA
 
 
 ## Evaluación
-- 8 tareas, las tareas incluyen preguntas teoricas y de python (60%)
-- OJO: No esta permitido el uso de LLMs, pueden buscar en google (sin Gemini), en stackoverflow, en libros, blogposts, la documentación de python, trabajar con sus compañeros etc 
-- 1 presentación de un paper de DL en parejas (40%)
-- Los papers se van a asignar de manera aleatoria 
-- Las características de las presentaciones estan en un markdown que pueden consultar 
+- 2 exámenes en clase de teoría, sin código (25% + 25%)
+    - Examen 1 (~semana 6): fundamentos; Examen 2 (~semana 11): arquitecturas
+    - Temarios detallados en la carpeta `Examenes/` del repo
+- 1 presentación de un paper de DL en parejas (35%)
+- Los papers se van a asignar de manera aleatoria; formato y rúbrica en la guía del repo
+- Proyecto de colaboración con IA (15%): diriges a un agente de IA para ejecutar un experimento de DL; se califica tu especificación, tu verificación y tu interpretación — no el código (guía en el repo)
+
+
+## Política de IA y tareas de práctica
+- Las 8 tareas del curso ahora son práctica **no calificada**: son la preparación directa para los exámenes
+- El uso de LLMs está permitido en todo — pero los exámenes son en clase y a mano: úsenlos para entender, no para evitar entender
+- En las presentaciones y en el proyecto es **obligatorio** entregar la transcripción completa de sus conversaciones con el LLM/agente
 
 
 ## Papers a presentar: 
@@ -189,7 +197,7 @@ ggplot(data, aes(x = x1, y = x2, color = class)) +
 - Y queremos una f() tal que $y = f(x)$
 - El modelo encuentra parametros tales que $y = f(x,\phi)$
 - Aprendemos estos parametros utilizando el conjunto de entrenamiento $\{x_i,y_i\}$
-- Recordemos la diferencia entre la predicción y el valore real lo cauntificamos utilizando una función de perdida, escalar que nos dice que tan bien esta ajustando el modelo a los datos de entrenamiento
+- Recordemos la diferencia entre la predicción y el valor real lo cuantificamos utilizando una función de perdida, escalar que nos dice que tan bien esta ajustando el modelo a los datos de entrenamiento
 - ¿Cómo entrenamos el modelo?
 
 $$\hat{\phi} = arg\min_{\phi}  \quad \quad L(\phi)$$
@@ -211,12 +219,12 @@ $$\hat{\phi} = arg\min_{\phi}  \quad \quad L(\phi)$$
 
 
 ## Problemas mas complejos que pueden resolver las RNP pero no algorítmos mas sencillos 
-1. Segmentación de Imagenes
+1. Segmentación de imágenes
 2. Estimación de profundidad
-3. Estimación de pose 
+3. Voz a texto 
 4. Traducción
-5. Ponerle Caption a las imagenes
-6. Generar imagenes del texto 
+5. Ponerle captions a una imagen
+6. Generación de imágenes del texto 
 
 ## ¿Qué tienen en común los últimos 3 ejemplos?
 - Relaciones muy complejas entre el input y el output 
@@ -224,11 +232,11 @@ $$\hat{\phi} = arg\min_{\phi}  \quad \quad L(\phi)$$
 - Pero tanto los outputs como los inputs siguen ciertas reglas 
 - Ejemplo: 
     - El lenguaje obedece reglas gramaticales
-    - Las imagenes tienen que tener cierto sentido, hay combinaciones de pixeles que no significan nada 
+    - Las imágenes tienen que tener cierto sentido, hay combinaciones de pixeles que no significan nada 
     
 ## Aprendizaje No-Supervisado
 - Para resolver estos problemas necesitamos alejarnos del aprendizaje supervisado 
-- La idea es aprender por ejemplo la estructura gramatical de los datos de entrenamiento sin darsela explicitamente al modelo 
+- La idea es aprender por ejemplo la estructura gramatical de los datos de entrenamiento sin dársela explicitamente al modelo 
 - Podemos usar muchos (millones) de datos sin labels para hacer esto 
 - Recordemos el aprendizaje no supervisado puede aprender de los datos sin labels cosas como: 
     - clustering
@@ -256,7 +264,7 @@ $$\hat{\phi} = arg\min_{\phi}  \quad \quad L(\phi)$$
 ## ¿Por qué DL supera a métodos "shallow"?
 
 -  **Aprendizaje jerárquico de características:** las redes profundas extraen representaciones de muy bajo nivel (bordes, texturas) hasta alto nivel (formas, conceptos) de manera automática.  
-- **Menos ingeniería manual:** evitan el costoso y el sesgo de diseñar features a mano (SIFT, TF–IDF, etc.).  
+- **Menos ingeniería manual:** evitan el costo y el sesgo de diseñar features a mano (SIFT, TF–IDF, etc.).  
 - **Escalabilidad:** funcionan mejor cuanto más datos y capacidad de cómputo se disponen (¡grandes datasets + GPUs!).  
 
 ##  Ventajas y retos del “feature learning”
