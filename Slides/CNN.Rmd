@@ -494,10 +494,35 @@ $$IoU = \frac{|A \cap B|}{|A \cup B|}$$
 4. Al final nos quedamos con las cajas con más probabilidad (acá usamos la heurística que quita cajas con poca probabilidad)
 
 
-## ¿Cómo se entreno esto? 
-- Usando transfer learning 
-- La red original era para clasificar imágenes 
-- Se hizo fine tunning para que pudiera detectar objetos 
+## ¿Cómo se entreno esto?
+- Usando transfer learning
+- La red original era para clasificar imágenes
+- Se hizo fine tunning para que pudiera detectar objetos
+
+
+# CNNs y políticas públicas
+
+
+## Medir pobreza desde el cielo
+- Problema: medir pobreza requiere encuestas de hogares — caras, lentas, y en muchos países hay *décadas* sin datos
+- Idea: las imágenes satelitales son baratas, globales y frecuentes; ¿puede una CNN "leer" el bienestar económico en ellas?
+- Jean et al. (2016, *Science*): predicen consumo y riqueza en 5 países africanos con imágenes satelitales diurnas
+- El truco no es la arquitectura — es **cómo entrenaron con casi ninguna etiqueta**
+
+
+## Jean et al. (2016): transfer learning en dos saltos
+1. CNN preentrenada en ImageNet (gatos, coches... nada de pobreza)
+2. Fine-tuning para predecir **luminosidad nocturna** desde imágenes diurnas — las luces de noche son un proxy de actividad económica y hay millones de "etiquetas" gratis
+3. Las features aprendidas (techos, caminos, vialidades) se usan para predecir las encuestas de hogares disponibles
+- Exactamente los conceptos de este deck: features jerárquicas, transfer learning, pocas etiquetas
+- Explica hasta ~75% de la variación en consumo a nivel de aldea
+
+
+## Después de Jean et al.
+- Yeh et al. (2020, *Nature Communications*): escala el enfoque a ~20,000 aldeas en África; precisión comparable a encuestas para asignar programas sociales
+- Huang, Hsiang & Gonzalez-Navarro (2021, NBER): usan CNNs + satélite para **evaluar el impacto** de un programa anti-pobreza (los outcomes se miden desde el cielo)
+- Rolf et al. (2021, *Nature Communications*, MOSAIKS): features satelitales genéricas y baratas que cualquier equipo de política pública puede usar sin entrenar una CNN
+- Pregunta de examen natural: ¿qué puede salir mal? (sesgo de las luces nocturnas como proxy, validez externa entre países, drift temporal) 
 
 
 

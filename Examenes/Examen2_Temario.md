@@ -53,7 +53,17 @@ Igual que en el Examen 1: nada de escribir código. Se evalúa que entiendas **c
 - LLMs y prompting: zero-shot, few-shot, chain-of-thought; qué es cada uno y cuándo ayuda.
 - Métricas de NLP: exactitud/F1, BLEU, ROUGE, perplejidad — y sus límites para evaluar LLMs modernos.
 
-## 4. Aplicación a políticas públicas (transversal)
+## 4. De LLM base a asistente (parte final del deck de Transformers)
+
+- Por qué un LM base no es un asistente; qué agrega el instruction tuning (SFT).
+- **RLHF** a nivel conceptual: comparaciones humanas → modelo de recompensa → optimización; qué simplifica DPO.
+- **LoRA**: la idea de la corrección de rango bajo y por qué hace barato el fine-tuning.
+- **RAG**: qué problema resuelve (conocimiento congelado, trazabilidad de fuentes), cómo funciona a grandes rasgos, y por qué es el patrón dominante en gobierno.
+- **Agentes**: el ciclo razonar→actuar→observar; qué cambia en las habilidades que importan.
+- El árbol de decisión prompting vs. RAG vs. fine-tuning vs. agente: dado un caso, elegir y justificar.
+- Evaluación de LLMs: por qué BLEU/ROUGE/perplejidad no bastan; contaminación de benchmarks; LLM-as-judge y sus sesgos; alucinación y calibración; los 5 mínimos de una evaluación de despliegue público.
+
+## 5. Aplicación a políticas públicas (transversal)
 
 Al menos una pregunta larga planteará un problema real de política pública y pedirá diseñar la solución **en papel**: elección de arquitectura, estrategia de preentrenamiento/transfer learning, protocolo de validación, métricas (incluyendo por subgrupo), y modos de falla previsibles. Contextos tipo:
 - Mapeo de pobreza con imágenes satelitales y pocas etiquetas (cf. Jean et al. 2016).

@@ -58,6 +58,13 @@
 7. GANs — Goodfellow et al. (2014)  
 8. Double Descent — Belkin et al. (2019) / Nakkiran et al. (2019)
 
+**Adicionales (era LLM, para grupos grandes o como alternativa):**
+
+9. Scaling Laws / Chinchilla — Hoffmann et al. (2022)  
+10. InstructGPT (RLHF) — Ouyang et al. (2022)  
+11. LoRA — Hu et al. (2021)  
+12. RAG (Retrieval-Augmented Generation) — Lewis et al. (2020)
+
 ---
 
 ## Libros y lecturas recomendadas
@@ -71,13 +78,22 @@
 ## Papers de DL en políticas públicas (opcional / lectura recomendada)
 **Medición de pobreza con imágenes satelitales**
 - Jean et al. (2016) — *Combining satellite imagery and machine learning to predict poverty* (Science)  
+- Yeh et al. (2020) — *Using publicly available satellite imagery and deep learning to understand economic well-being in Africa* (Nature Communications)  
 - Huang, Hsiang & Gonzalez-Navarro (2021) — *Using Satellite Imagery and Deep Learning to Evaluate the Impact of Anti-Poverty Programs* (NBER)  
+- Rolf et al. (2021) — *A generalizable and accessible approach to machine learning with global satellite imagery* (MOSAIKS, Nature Communications)  
 - Babenko et al. (2017) — *Poverty Mapping Using Convolutional Neural Networks* (arXiv)
 
 **Análisis de textos legislativos**
 - Korn & Newman (2020) — *A Deep Learning Model to Predict Congressional Roll Call Votes From Legislative Texts*  
 - Chalkidis et al. (2019) — *Large-Scale Multi-Label Text Classification on EU Legislation*  
 - Wei et al. (2019) — *Empirical Study of Deep Learning for Text Classification in Legal Document Review*
+
+**LLMs como herramienta de investigación y medición (era LLM)**
+- Gilardi, Alizadeh & Kubli (2023) — *ChatGPT outperforms crowd workers for text-annotation tasks* (PNAS)  
+- Ziems et al. (2024) — *Can Large Language Models Transform Computational Social Science?* (Computational Linguistics)  
+- Dell (2025) — *Deep Learning for Economists* (Journal of Economic Literature)  
+- Ouyang et al. (2022) — *Training language models to follow instructions with human feedback* (InstructGPT/RLHF)  
+- Lewis et al. (2020) — *Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks*
 
 ---
 

@@ -524,4 +524,137 @@ $$[h_1,....,h_h]W_o$$
     - Zero-shot: sin ejemplos, solo la instrucción
     - Few-shot: damos algunos ejemplos de entrada-salida
     - Chain-of-thought prompting: pedimos razonamiento intermedio
-    
+
+
+# De LLM base a asistente
+
+
+## El problema del modelo base
+- Un LM base solo hace una cosa: predecir el siguiente token
+- Completar texto $\neq$ ser útil: puede continuar tu pregunta con más preguntas
+- Tampoco tiene noción de "no sé" o "eso no lo debería contestar"
+- Los asistentes que usamos (ChatGPT, Claude, Gemini) son LLMs base + **etapas adicionales de entrenamiento**
+
+
+## Instruction tuning (SFT)
+- *Supervised fine-tuning*: seguir entrenando el modelo base con pares (instrucción, respuesta deseada) escritos/curados por humanos
+- Mismo objetivo de siempre (predecir el siguiente token), datos distintos
+- El modelo aprende el **formato** de ser asistente: responder, no continuar
+- Pocos datos comparado con el preentrenamiento (miles vs. billones de tokens)
+
+
+## RLHF: aprendizaje por refuerzo con retroalimentación humana
+- Problema: es fácil juzgar cuál de dos respuestas es mejor; es difícil escribir la respuesta perfecta
+- Receta (InstructGPT, Ouyang et al. 2022):
+    1. Humanos **comparan** pares de respuestas del modelo
+    2. Con esas comparaciones se entrena un **modelo de recompensa** que predice la preferencia humana
+    3. El LLM se optimiza (RL) para maximizar esa recompensa
+- Variante más simple y muy usada hoy: **DPO** (Rafailov et al. 2023) — optimiza directamente sobre las comparaciones, sin modelo de recompensa
+- Conexión con la semana 11: esto es *alineación como técnica*; los problemas normativos (¿preferencias de quién?) siguen abiertos
+
+
+## Modelos de razonamiento (2024–)
+- Idea: gastar más cómputo **en inferencia** — el modelo genera cadenas largas de razonamiento antes de responder
+- Entrenados con RL sobre problemas verificables (matemáticas, código)
+- Mejoras grandes en tareas de razonamiento; costo y latencia mayores
+- Moraleja del escalamiento: ya no solo "más parámetros y más datos", también "más pensamiento por pregunta"
+
+
+# ¿Prompt, RAG o fine-tuning?
+
+
+## Fine-tuning eficiente: LoRA
+- Fine-tuning completo de un modelo de miles de millones de parámetros: caro y delicado
+- **LoRA** (Hu et al. 2021): congela los pesos $W$ y aprende una corrección de rango bajo $\Delta W = AB$ con $A, B$ diminutas
+- Entrena <1% de los parámetros; rendimiento cercano al fine-tuning completo
+- Combinado con cuantización (QLoRA): fine-tuning de modelos grandes en una sola GPU
+
+
+## RAG: generación aumentada con recuperación
+- Problema: el conocimiento del LLM está congelado en sus pesos (fecha de corte, sin documentos internos, alucina fuentes)
+- **RAG** (Lewis et al. 2020): antes de generar, se **buscan** los documentos relevantes (embeddings + búsqueda semántica) y se pegan al prompt
+- El modelo responde *citando* el corpus: verificable y actualizable sin reentrenar
+- Para gobierno es el patrón dominante: leyes, expedientes, normas — corpus que cambian y donde la trazabilidad de la fuente es obligatoria
+
+
+## Agentes y uso de herramientas
+- Un LLM que además puede **actuar**: llamar funciones, buscar, ejecutar código, leer archivos — en un ciclo de razonar → actuar → observar (ReAct, Yao et al. 2022)
+- El modelo decide *qué* herramienta usar y *cuándo*; el sistema alrededor decide *qué le está permitido*
+- Cambia la habilidad que importa: de escribir el código a **especificar y verificar** el trabajo del agente
+- (Exactamente lo que practican en el proyecto final de este curso)
+
+
+## ¿Qué opción elegir?
+| Necesitas... | Opción |
+|---|---|
+| Cambiar el formato o el tono, tarea estándar | Prompting (zero/few-shot) |
+| Responder sobre documentos propios/cambiantes, con fuentes | RAG |
+| Comportamiento especializado consistente, mucho volumen, datos etiquetados | Fine-tuning (LoRA) |
+| Tareas de varios pasos con acciones | Agente + herramientas |
+- En la práctica se combinan; empezar siempre por lo más barato (prompting) y escalar solo si la evaluación lo justifica
+
+
+# Evaluación de LLMs
+
+
+## ¿Por qué no bastan las métricas clásicas?
+- BLEU/ROUGE comparan contra *una* referencia; en generación abierta hay infinitas respuestas correctas
+- Perplejidad mide ajuste al corpus, no utilidad ni veracidad
+- Un modelo puede tener excelente perplejidad y aún así inventar cifras con total seguridad
+
+
+## Benchmarks y sus trampas
+- Baterías estándar (conocimiento, razonamiento, código) permiten comparar modelos...
+- ...pero: **contaminación** (el test estaba en los datos de entrenamiento), saturación, y *teaching to the test*
+- Regla práctica: un benchmark público mide lo que el benchmark mide, no tu caso de uso
+- Para decisiones de despliegue: construir un conjunto de evaluación **propio**, con datos reales del problema y que el proveedor nunca haya visto
+
+
+## LLM-as-judge y evaluación humana
+- Evaluación humana: el estándar de oro, cara y lenta
+- **LLM-as-judge**: usar otro LLM para calificar respuestas contra una rúbrica
+    - Escalable y barato; útil como primer filtro
+    - Sesgos conocidos: prefiere respuestas largas, prefiere su propio estilo, sensible al orden
+- Buena práctica: validar al juez contra una muestra calificada por humanos antes de confiar en él
+
+
+## Alucinaciones, calibración y red-teaming
+- **Alucinación**: afirmación fluida y falsa; se mide con conjuntos de verificación factual y tasa de citas correctas (crítico en RAG)
+- **Calibración**: ¿la confianza expresada corresponde a la tasa de acierto? (el ECE que calcularon en la tarea de regularización, ahora sobre texto)
+- **Red-teaming**: buscar activamente cómo hacer fallar al modelo (jailbreaks, sesgos, fugas de datos) *antes* que los usuarios lo hagan
+
+
+## Evaluación para despliegue público
+- Si una agencia va a desplegar un LLM, el mínimo exigible:
+    1. Conjunto de evaluación propio y fuera del alcance del proveedor
+    2. Métricas **por subgrupo** (¿funciona igual para todos los ciudadanos?)
+    3. Tasa de alucinación / citas verificables si informa decisiones
+    4. Monitoreo continuo post-despliegue (los modelos y los datos cambian)
+    5. Ruta de escalamiento a un humano y responsabilidad clara
+- "Salió bien en el benchmark" no es una evaluación de despliegue
+
+
+# Transformers y políticas públicas
+
+
+## Texto legislativo y legal
+- Clasificación multi-etiqueta de legislación de la UE con BERT y variantes (Chalkidis et al. 2019)
+- Predicción de votos nominales desde el texto de las iniciativas (Korn & Newman 2020)
+- Revisión de documentos legales a escala (Wei et al. 2019)
+- Todo lo que vimos hoy (tokenización → embeddings → atención → fine-tuning) es exactamente el pipeline de estos papers
+
+
+## LLMs como herramienta de investigación social
+- Gilardi, Alizadeh & Kubli (2023, *PNAS*): ChatGPT supera a anotadores de crowdsourcing en tareas de clasificación de texto político — cambia la economía de etiquetar datos
+- Ziems et al. (2024, *Computational Linguistics*): ¿pueden los LLMs transformar la ciencia social computacional? — panorama de usos y límites
+- Dell (2025, *Journal of Economic Literature*): *Deep Learning for Economists* — guía de estas herramientas para investigación económica aplicada
+- Patrón común: el LLM como **instrumento de medición** — y entonces su sesgo es sesgo de medición: hay que validarlo como cualquier instrumento
+
+
+## Cierre del curso técnico
+- De regresión lineal a LLMs, el esqueleto no cambió: modelo flexible + pérdida derivada de un supuesto probabilístico + SGD sobre minibatches
+- Lo que sí cambió: la escala, y con ella *emergen* capacidades que nadie programó
+- Ustedes no van a implementar un Transformer en el trabajo; van a **decidir** si se usa, **especificar** qué debe hacer y **verificar** que lo haga
+- Ese criterio — saber qué pedir y saber qué puede salir mal — es lo que este curso intentó construir
+- Semana 11: por qué funciona (nadie sabe del todo) y qué implica para la sociedad
+

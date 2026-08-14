@@ -588,3 +588,20 @@ $$h_t = o_t \odot tanh(c_t)$$
  
 ## ¿Cómo se ven estas redes? 
 ![](../Imagenes/bidereccional.png){fig-align="center" width="75%"} 
+
+# Secuencias y políticas públicas
+
+
+## Texto legislativo como datos
+- Todo lo de hoy (tokenización, vocabulario, perplejidad, modelos de secuencia) es la maquinaria detrás del análisis de texto político y legal a escala:
+    - Chalkidis et al. (2019): clasificación multi-etiqueta de ~57,000 leyes de la UE en ~4,300 categorías — imposible de mantener a mano
+    - Korn & Newman (2020): predecir votos nominales en el Congreso desde el texto de las iniciativas
+    - Wei et al. (2019): revisión de documentos legales con deep learning
+- Otras secuencias de política pública: demanda de servicios (series de tiempo), trayectorias de pacientes, expedientes administrativos
+
+
+## De RNNs a Transformers
+- Estos papers usan la generación anterior de herramientas (RNNs/LSTMs y primeros BERT)
+- Hoy las mismas tareas se resuelven con Transformers — el tema de las próximas semanas
+- Pero los conceptos de hoy no caducan: tokenización, OOV, perplejidad, y el diagnóstico de sobreajuste en pocos datos aplican igual
+- Y las RNNs siguen vivas donde importa la eficiencia: secuencias largas con recursos limitados
