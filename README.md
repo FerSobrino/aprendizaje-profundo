@@ -25,7 +25,7 @@
   - Entrenamiento (optimización, inicialización, performance)  
   - Regularización
 - **Semanas 5–7 — CNNs y RNNs** — *Examen 1 (~semana 6)*  
-- **Semanas 8–10 — Transformers**  
+- **Semanas 8–10 — Transformers, LLMs y agentes** (incluye la sesión *Agentes: dirigir, supervisar y auditar*)  
 - **Semana 11 — Por qué funciona DL / Fairness / Ética / preguntas abiertas** — *Examen 2*  
 - **Semana 12 — Presentaciones y entrega del proyecto de colaboración con IA**
 
@@ -63,12 +63,14 @@
 9. Scaling Laws / Chinchilla — Hoffmann et al. (2022)  
 10. InstructGPT (RLHF) — Ouyang et al. (2022)  
 11. LoRA — Hu et al. (2021)  
-12. RAG (Retrieval-Augmented Generation) — Lewis et al. (2020)
+12. RAG (Retrieval-Augmented Generation) — Lewis et al. (2020)  
+13. DeepSeek-R1 (RL con recompensas verificables) — DeepSeek-AI (2025)
 
 ---
 
 ## Libros y lecturas recomendadas
-- Prince — *Unifying Deep Learning* (texto base del curso)  
+- Prince — *Understanding Deep Learning* (texto base del curso; gratis en udlbook.github.io)  
+- Xiao & Zhu — *Foundations of Large Language Models* (arXiv 2501.09223; complemento LLM gratuito del texto base)  
 - Goodfellow, Bengio & Courville — *Deep Learning*  
 - Zhang et al. — *Dive into Deep Learning (d2l)*  
 - Chollet — *Deep Learning with Python*
@@ -87,6 +89,11 @@
 - Korn & Newman (2020) — *A Deep Learning Model to Predict Congressional Roll Call Votes From Legislative Texts*  
 - Chalkidis et al. (2019) — *Large-Scale Multi-Label Text Classification on EU Legislation*  
 - Wei et al. (2019) — *Empirical Study of Deep Learning for Text Classification in Legal Document Review*
+
+**Agentes: dirigir, supervisar y auditar (lecturas de la sesión de agentes)**
+- Microsoft (2026) — *Taxonomy of Failure Modes in Agentic AI Systems v2.0* (la lectura central del deck de agentes)  
+- Abdurahman et al. (2025) — *A Primer for Evaluating Large Language Models in Social-Science Research* (AMPPS)  
+- Amnesty International (2021) — *Xenophobic Machines* (el caso holandés de las guarderías)
 
 **LLMs como herramienta de investigación y medición (era LLM)**
 - Gilardi, Alizadeh & Kubli (2023) — *ChatGPT outperforms crowd workers for text-annotation tasks* (PNAS)  

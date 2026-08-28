@@ -270,6 +270,24 @@ lang: es
 - Por lo general las medidas éticas o de justicia son reactivas y no pro activas y se llevan a cabo cuando ya es muy evidente que el sistema/modelo esta sesgado o es dañino 
 
 
+## De las recomendaciones a la regulación (2020-2026)
+
+- La era de los "84 documentos voluntarios" terminó: ya hay regulación vinculante
+- **EU AI Act** (2024): el primer marco integral, basado en riesgo — prohibido / alto riesgo / riesgo limitado / mínimo
+    - reglas para modelos de propósito general vigentes desde agosto 2025
+    - las obligaciones de alto riesgo se **pospusieron a diciembre 2027**: la regulación se está adaptando en vivo al crecimiento de capacidades
+- **NIST AI Risk Management Framework** (EE.UU.): voluntario, pero se volvió el lenguaje común de gestión de riesgo (Govern / Map / Measure / Manage); **ISO 42001** lo vuelve certificable
+- En 2026 NIST lanzó una iniciativa de estándares específicos para **agentes** — los marcos existentes no cubren del todo ese riesgo
+
+
+## México: la ley en camino
+
+- México aún no tiene ley de IA en vigor
+- Febrero 2026: iniciativa en el Senado para una Ley Nacional de IA con enfoque de riesgo (estilo EU AI Act) y una Comisión Nacional de IA (**CONAIA**)
+- Contexto regional: Chile y Brasil avanzan marcos propios alineados con OCDE/UE
+- Para ustedes es un proceso legislativo *vivo* que pueden seguir durante el semestre — y el tipo de proceso en el que gente con la formación de este curso debería estar en la mesa
+
+
 ## Alineación de Problemas
 - Idealmente quisiéramos que los valores de los sistemas de AI se alineen con los de la humanidad 
 - Pero esto es dificil porque:
@@ -309,6 +327,26 @@ lang: es
     - Modelado y validación: la métrica que usemos para medir fairness requiere un juicio de valor
     - Deployment: una vez afuera los modelos van a interactuar con otros algoritmos, sistemas, instituciones y pueded generar feedback loops
 
+
+## Definiciones formales de equidad
+
+- "El modelo es justo" no es una afirmación única — hay definiciones formales *distintas*:
+    - **Paridad demográfica**: la tasa de predicción positiva es igual entre grupos
+    - **Igualdad de oportunidades / equalized odds**: las tasas de error (FPR, FNR) son iguales entre grupos
+    - **Calibración por grupo**: un score de 0.7 significa 70% de probabilidad real, en *todos* los grupos
+- **Teorema de imposibilidad** (Kleinberg et al. 2016; Chouldechova 2017): si las tasas base difieren entre grupos, es *matemáticamente imposible* satisfacer las tres a la vez
+- COMPAS es el ejemplo canónico: estaba calibrado por grupo, *y por eso mismo* tenía tasas de falsos positivos desiguales
+- Elegir la definición es un juicio de valor — el teorema garantiza que no hay salida técnica que evite esa decisión
+
+
+## Mitigación de sesgo (panorama)
+
+- **Pre-procesamiento**: re-pesar o re-muestrear los datos antes de entrenar
+- **In-procesamiento**: agregar la restricción de equidad a la función de pérdida
+- **Post-procesamiento**: ajustar umbrales de decisión por grupo sobre el modelo ya entrenado
+- Ninguna elimina el problema de fondo (elegir *qué* igualar); todas cambian el trade-off equidad-exactitud
+- Lo auditable: exigir las métricas por subgrupo *antes* del despliegue y monitorearlas después — como en los 5 mínimos
+
     
 ## Artificial moral agency
 - Muchas de las acciones de AI no tiene consecuencias morales (un RL que juegue Go, un clasificador de perros/gatos, etc)
@@ -324,15 +362,35 @@ lang: es
 1. Transparencia funcional: conocer el funcionamiento algorítmico del sistema
 2. Transparencia estructural: sabemos como un programa ejecuta el algoritmo 
 3. Run transparency: sabemos como se ejecuto un programa en una instancia en particular, esto incluye el hardware, los datos de entrenamiento, los hyperparametros, etc
-- La mayoria de los LLMs (hasta GPT3) y otros sistemas de DL que usamos solo tienen transparencia funcional, conocemos la estructura de la red detras pero no tenemos ni el código, ni los parámetros, etc.
+
+
+## Transparencia: modelos cerrados vs de pesos abiertos
+
+- El panorama se partió en dos desde 2023:
+    - **Modelos cerrados** (API): solo transparencia funcional — no hay pesos, ni datos, ni código
+    - **Modelos de pesos abiertos** (Llama, Mistral, Qwen, DeepSeek): pesos descargables — permiten auditoría, despliegue local y soberanía de datos, aunque los datos de entrenamiento suelen seguir opacos
+- Para el sector público esta es una decisión de *procurement* de primer orden: qué nivel de transparencia exige el caso de uso
 
 
 ## Explicabilidad e interpretabilidad
+
 - Los sistemas pueden ser transparentes pero aun asi puede que no sepamos ni entendamos porque deciden como deciden 
-- Casi ningún modelo que use DL es explicable o interpretable
-- Esto nos llevo a un nuevo field de DL que es justo explainable AI
-- Por ejemplo:LIME (Local interpretable model-agnostic explanations)
-- A la fecha no tenemos modelos complejos de AI que generalizan bien y que además sean explicables 
+- Herramientas **post-hoc** (explican una predicción sin abrir el modelo):
+    - LIME: ajusta un modelo simple alrededor de la predicción
+    - SHAP: atribuye la predicción a cada variable con una base de teoría de juegos
+    - Saliencia / Grad-CAM: qué pixeles movieron la decisión de una CNN
+- Advertencia: son *aproximaciones* — dos métodos pueden "explicar" la misma predicción de formas contradictorias
+
+
+## Interpretabilidad mecanicista (2023-2026)
+
+- La agenda nueva: en vez de aproximar por fuera, **abrir el modelo** y buscar los cómputos internos
+    - *probing*: ¿qué información está codificada en cada capa?
+    - *sparse autoencoders*: descomponer las activaciones en "features" interpretables (conceptos)
+    - *circuits*: rastrear qué componentes ejecutan qué sub-tarea
+- Los laboratorios de frontera ya publican reportes de interpretabilidad/seguridad basados en estas técnicas — dejó de ser tema puramente académico
+- Estado honesto a 2026: progreso real pero parcial — entendemos fragmentos, no el modelo completo
+- Y un corolario importante para agentes: la cadena de razonamiento que el modelo *escribe* no siempre refleja el cómputo real (CoT no siempre es fiel)
 
 ## Mal uso Intencional de la AI
 - Face recognition: por ejemplo usar fotos obtenidas sin consentimiento para hacer frenología

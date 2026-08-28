@@ -542,11 +542,48 @@ $$[h_1,....,h_h]W_o$$
 - 300B tokens de entrenamiento
 - Secuencias de hasta 2048 tokens
 - Entrenado con cómputo distribuido masivo
+- **Ojo (2026):** estos números ya son históricos — los modelos actuales manejan contextos de cientos de miles o millones de tokens y corpora de decenas de billones; la escala de GPT-3 hoy es la de un modelo "pequeño"
 
 
-## Tamaño de los LLMs
+## Tamaño de los LLMs (la era 2018-2022)
 
-![](../Imagenes/sizeLLMs.png){fig-align="center" width="75%"}  
+![](../Imagenes/sizeLLMs.png){fig-align="center" width="75%"}
+
+- Esta gráfica cuenta la historia *hasta* Chinchilla: crecer parámetros era la receta
+
+
+## ¿Dónde se gasta el cómputo? (2026)
+
+- La pregunta ya no es "¿qué tan grande el modelo?" sino **cómo repartir el presupuesto de cómputo en tres lugares**:
+    1. **Preentrenamiento**: los retornos de solo escalar datos+parámetros se aplanaron
+    2. **Post-entrenamiento con RL**: SFT, RLHF/DPO y RL con recompensas verificables
+    3. **Cómputo en inferencia**: dejar al modelo "pensar" más tokens en los problemas difíciles
+- Chinchilla (Hoffmann et al., 2022) resolvió el punto 1; los puntos 2 y 3 son la frontera actual y aún no tienen una ley limpia
+- Implicación práctica: el mismo modelo puede ser rápido-y-barato o lento-y-caro según cuánto "piensa" — por eso los proveedores venden *modos* y no solo modelos
+
+
+## Mixture-of-Experts (MoE): la arquitectura dominante
+
+- En 2026 casi todos los modelos de frontera son **MoE**: la capa MLP del bloque se reemplaza por muchos "expertos" y un *router*
+- Por cada token se activan solo los top-$k$ expertos (por ejemplo 2 de 64)
+- Consecuencia clave: el **número total de parámetros se desacopla del costo por token**
+    - un modelo de cientos de miles de millones de parámetros puede costar como uno de decenas
+- Por eso las comparaciones de proveedores por "tamaño del modelo" ya no significan lo que significaban: pregunten por parámetros *activos* y costo por token, no por parámetros totales
+
+
+## ¿Alternativas a la atención?
+
+- El costo cuadrático de la atención en la longitud de secuencia motivó alternativas: los **modelos de espacio de estados** (Mamba y sucesores), con costo lineal
+- Veredicto a 2026: **no desplazaron a los Transformers** — la atención sigue ganando en tareas de recuerdo preciso; los SSMs sobreviven en arquitecturas híbridas para contextos muy largos
+- Lección de criterio: no toda alternativa prometedora reemplaza al estándar; la carga de la prueba está en el reto
+
+
+## Más allá del texto: modelos multimodales
+
+- **ViT** (Vision Transformer): la imagen se corta en parches y se trata como una secuencia de tokens — el mismo Transformer de este deck, aplicado a visión
+- **CLIP**: alinea imágenes y texto en un espacio común entrenando con pares (imagen, descripción) — la base de "buscar imágenes con palabras"
+- Los modelos de frontera de 2026 son **nativamente multimodales**: un solo modelo lee texto, imágenes y documentos
+- Para política pública esto une los dos mundos del curso: imagen satelital + texto (encuestas, registros) ya no son dos pipelines separados, son una sola entrada  
 
 
 
@@ -591,6 +628,16 @@ $$[h_1,....,h_h]W_o$$
 - Conexión con la semana 11: esto es *alineación como técnica*; los problemas normativos (¿preferencias de quién?) siguen abiertos
 
 
+## RLVR: RL con recompensas verificables
+
+- El paso siguiente a RLHF/DPO: en dominios donde el éxito **se puede verificar mecánicamente**, no necesitas modelo de recompensa ni preferencias humanas
+    - matemáticas: ¿la respuesta final es correcta?
+    - código: ¿pasan los tests?
+- Se entrena con RL directamente contra esa señal verificable (la receta de DeepSeek-R1, 2025)
+- El modelo aprende solo a *pensar más* — cadenas largas de razonamiento — porque pensar más gana más recompensa
+- Por eso el progreso 2024-2026 fue más rápido en matemáticas y código que en juicio abierto: **avanza más rápido donde hay verificador**
+
+
 ## Modelos de razonamiento (2024–)
 - Idea: gastar más cómputo **en inferencia** — el modelo genera cadenas largas de razonamiento antes de responder
 - Entrenados con RL sobre problemas verificables (matemáticas, código)
@@ -617,7 +664,9 @@ $$[h_1,....,h_h]W_o$$
 
 ## Agentes y uso de herramientas
 - Un LLM que además puede **actuar**: llamar funciones, buscar, ejecutar código, leer archivos — en un ciclo de razonar → actuar → observar (ReAct, Yao et al. 2022)
+- Ojo: ReAct es el patrón *de prompting* original (2022) — la línea base conceptual; los agentes de frontera de 2026 además **entrenan la política de uso de herramientas con RL** sobre tareas completas
 - El modelo decide *qué* herramienta usar y *cuándo*; el sistema alrededor decide *qué le está permitido*
+- Dirigir, supervisar y auditar agentes tiene su propio deck en este curso
 - Cambia la habilidad que importa: de escribir el código a **especificar y verificar** el trabajo del agente
 - (Exactamente lo que practican en el proyecto final de este curso)
 
@@ -650,6 +699,7 @@ $$[h_1,....,h_h]W_o$$
 - Baterías estándar (conocimiento, razonamiento, código) permiten comparar modelos...
 - ...pero: **contaminación** (el test estaba en los datos de entrenamiento), saturación, y *teaching to the test*
 - Regla práctica: un benchmark público mide lo que el benchmark mide, no tu caso de uso
+- Respuesta del campo (2026): benchmarks que solo puntúan problemas **fechados después del corte de entrenamiento** del modelo, y evals privados donde solo se publica el agregado
 - Para decisiones de despliegue: construir un conjunto de evaluación **propio**, con datos reales del problema y que el proveedor nunca haya visto
 
 

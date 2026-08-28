@@ -41,7 +41,7 @@ knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.
     - Entrenamiento de redes neuronales 
     - Regularización 
 - Semana 5-7: CNNs y RNNs — *Examen 1 (~semana 6)*
-- Semana 8-10: Transformers
+- Semana 8-10: Transformers, LLMs y agentes
 - Semana 11: ¿Por qué funciona el aprendizaje profundo?/ Fairness/Etica y preguntas abiertas — *Examen 2*
 - Semana 12: Presentaciones y entrega del proyecto de colaboración con IA
 
@@ -77,11 +77,13 @@ knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.
 10. InstructGPT (RLHF) — Ouyang et al. (2022)
 11. LoRA — Hu et al. (2021)
 12. RAG — Lewis et al. (2020)
+13. DeepSeek-R1 — DeepSeek-AI (2025)
 
 
 ## Libros
 
-- Prince, Unifying Deep Learning
+- Prince, Understanding Deep Learning
+- Xiao & Zhu, Foundations of Large Language Models (gratis, arXiv)
 - Goodfellow et al., Deep Learning 
 - Zhang et al., Dive into Deep Learning 
 - Chollet, Deep Learning with Python

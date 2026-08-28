@@ -1,9 +1,9 @@
-# Examen 2 — Arquitecturas: CNNs, RNNs y Transformers (~semana 11)
+# Examen 2 — Arquitecturas y agentes: CNNs, RNNs, Transformers, LLMs (~semana 11)
 
 **Formato:** en clase, individual, lápiz y papel. Sin computadora, sin código.
 **Peso:** 25% de la calificación final.
 **Material permitido:** una hoja de fórmulas (carta, por ambos lados) escrita a mano por ti.
-**Cobertura:** slides *CNN*, *RNN* y *Transformers*; Tareas de práctica 6–8. Los fundamentos del Examen 1 se asumen conocidos (pueden aparecer como parte de una pregunta, no como pregunta principal).
+**Cobertura:** slides *CNN*, *RNN*, *Transformers* y *Agentes*; Tareas de práctica 6–8. Los fundamentos del Examen 1 se asumen conocidos (pueden aparecer como parte de una pregunta, no como pregunta principal).
 
 Igual que en el Examen 1: nada de escribir código. Se evalúa que entiendas **cómo y por qué funcionan** las arquitecturas, y que puedas razonar sobre cuál usar, qué puede fallar y cómo verificar lo que un agente de IA construya por ti.
 
@@ -61,9 +61,21 @@ Igual que en el Examen 1: nada de escribir código. Se evalúa que entiendas **c
 - **RAG**: qué problema resuelve (conocimiento congelado, trazabilidad de fuentes), cómo funciona a grandes rasgos, y por qué es el patrón dominante en gobierno.
 - **Agentes**: el ciclo razonar→actuar→observar; qué cambia en las habilidades que importan.
 - El árbol de decisión prompting vs. RAG vs. fine-tuning vs. agente: dado un caso, elegir y justificar.
-- Evaluación de LLMs: por qué BLEU/ROUGE/perplejidad no bastan; contaminación de benchmarks; LLM-as-judge y sus sesgos; alucinación y calibración; los 5 mínimos de una evaluación de despliegue público.
+- Evaluación de LLMs: por qué BLEU/ROUGE/perplejidad no bastan; contaminación de benchmarks (y la respuesta: problemas fechados post-corte, evals privados); LLM-as-judge y sus sesgos; alucinación y calibración; los 5 mínimos de una evaluación de despliegue público.
+- **RLVR**: por qué los dominios con verificador mecánico (matemáticas, código) avanzaron más rápido; qué cambia respecto a RLHF/DPO.
+- **La asignación de cómputo en tres vías** (preentrenamiento / post-entrenamiento con RL / inferencia): qué implica para elegir y cotizar modelos.
+- **MoE**: la idea del router y los expertos; por qué los parámetros totales ya no predicen el costo por token.
+- ViT/CLIP y modelos multimodales a nivel conceptual; el veredicto sobre las alternativas a la atención (SSMs/Mamba).
 
-## 5. Aplicación a políticas públicas (transversal)
+## 5. Agentes: dirigir, supervisar y auditar (deck de Agentes)
+
+- ReAct como línea base de prompting vs. agentes entrenados con RL; qué falla nueva aparece (reward hacking / spec gaming) y cómo se detecta.
+- Los modos de falla y su señal: inyección de prompts (3 vectores y por qué es peor en agentes), envenenamiento de contexto/memoria/herramientas, sycophancy, alucinación de acciones. Dado un escenario, identificar la falla probable y la pregunta de auditoría correcta.
+- Diseño de supervisión: HITL vs HOTL y cuándo usar cada uno; complacencia de automatización; mínimo privilegio y sandboxing; por qué la supervisión es una decisión de gobernanza.
+- Evaluación de agentes: qué mide cada diseño de benchmark (verificación objetiva / juicio / cumplimiento de políticas); por qué el benchmark no predice producción; el patrón juez-offline + clasificador-online; red-teaming como entregable exigible.
+- Casos: el escándalo holandés releído como falla de supervisión; Estonia/Singapur como contraejemplo; qué exigir antes de desplegar un agente público.
+
+## 6. Aplicación a políticas públicas (transversal)
 
 Al menos una pregunta larga planteará un problema real de política pública y pedirá diseñar la solución **en papel**: elección de arquitectura, estrategia de preentrenamiento/transfer learning, protocolo de validación, métricas (incluyendo por subgrupo), y modos de falla previsibles. Contextos tipo:
 - Mapeo de pobreza con imágenes satelitales y pocas etiquetas (cf. Jean et al. 2016).

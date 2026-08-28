@@ -484,6 +484,18 @@ $$\lfloor{(n_h - k_h +p_h + s_h)/s_h}\rfloor x \lfloor{(n_w - k_w +p_w + s_w)/s_
 - Esta red tiene $16.4\%$ de error en el top 5 
 - Y $38.1\%$ en el top 1 
 
+
+## ResNet (2015): conexiones residuales
+
+- Problema: apilar más capas *empeoraba* el entrenamiento — no por sobreajuste, sino porque el gradiente se degrada al atravesar tantas capas
+- Solución de He et al. (2015): el **bloque residual** — la capa aprende una *corrección* sobre la identidad
+
+$$h_{k+1} = h_k + f(h_k)$$
+
+- El término $h_k$ crea una "autopista" directa para el gradiente hacia las capas tempranas
+- Con esto se entrenan redes de 100+ capas; ResNet ganó ImageNet 2015
+- El mismo truco reaparece en el bloque del Transformer (las conexiones residuales que ya vimos) — es de los trucos más reutilizados de todo el DL
+
 ## Métricas para computer vision
 - Clasificación: top-1/top-5 accuracy
 - Detección: Intersección sobre la Unión, Average Precision (AP) y mean AP (mAP)
@@ -550,6 +562,7 @@ $$IoU = \frac{|A \cap B|}{|A \cup B|}$$
 - Yeh et al. (2020, *Nature Communications*): escala el enfoque a ~20,000 aldeas en África; precisión comparable a encuestas para asignar programas sociales
 - Huang, Hsiang & Gonzalez-Navarro (2021, NBER): usan CNNs + satélite para **evaluar el impacto** de un programa anti-pobreza (los outcomes se miden desde el cielo)
 - Rolf et al. (2021, *Nature Communications*, MOSAIKS): features satelitales genéricas y baratas que cualquier equipo de política pública puede usar sin entrenar una CNN
+- La frontera 2026: **modelos de fundación satelitales** — p. ej. Tempov (2026), preentrenado auto-supervisado sobre millones de pares de imágenes Landsat; mapea riqueza con solo 10% de las etiquetas de encuesta y hace *nowcasting* sin etiquetas nuevas
 - Pregunta de examen natural: ¿qué puede salir mal? (sesgo de las luces nocturnas como proxy, validez externa entre países, drift temporal) 
 
 
