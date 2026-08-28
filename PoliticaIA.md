@@ -6,25 +6,23 @@ Los agentes de IA (ChatGPT, Claude, Gemini, Copilot, Claude Code, etc.)
 ya construyen y entrenan modelos de deep learning en el mundo real.
 Prohibirlos sería entrenarlos a ustedes para un mundo que no existe;
 permitirlos sin reglas sería dejar que la IA haga el trabajo y ustedes
-no aprendan nada — y la evidencia es clara en que eso pasa: los
-estudiantes con acceso libre a IA sacan mejores calificaciones en las
-tareas y *peores* en los exámenes.
+no aprendan nada. 
 
-Por eso el curso funciona así: **la IA está permitida donde el trabajo
-es hacer, y prohibida donde el trabajo es demostrar que entiendes.**
+Por eso el curso funciona así: la IA está permitida donde el trabajo
+es hacer, y prohibida donde el trabajo es demostrar que entiendes.
 
 ## En las tareas de práctica: IA libre
 
-Las 8 tareas del curso **no se entregan ni se califican** — son tu
+Las 8 tareas del curso no se entregan ni se califican — son tu
 preparación para los exámenes. Puedes usar cualquier LLM o agente en
-ellas. El mejor uso: escribe qué esperas observar *antes* de correr
+ellas. El mejor uso: escribe qué esperas observar antes de correr
 cada experimento y explica el porqué después de verlo — eso es
-exactamente lo que evalúan los exámenes.
+exactamente lo que van a evaluar los exámenes.
 
 ## En la presentación de paper: IA para entender, con transcripción
 
 Puedes usar LLMs para entender el paper o preparar ideas, pero es
-**obligatorio** entregar la transcripción completa y sin editar de tus
+obligatorio entregar la transcripción completa y sin editar de tus
 conversaciones junto con los entregables. Las preguntas de defensa en
 vivo están diseñadas para distinguir comprensión propia de resumen
 generado.
@@ -42,9 +40,9 @@ no solo está permitido — es el objeto de la evaluación. Se califica:
 3. **Tu interpretación**: ¿conectaste los resultados con la teoría del
    curso?
 
-Entregas la transcripción íntegra. **Un proyecto sin transcripción, o
+Entregas la transcripción íntegra. Un proyecto sin transcripción, o
 con una que no corresponde a los resultados reportados, no se
-califica.** Guía completa en `Evaluacion/ProyectoColaboracionIA.md`.
+califica. Guía completa en `Evaluacion/ProyectoColaboracionIA.md`.
 
 ## En los exámenes: sin IA
 
