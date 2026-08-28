@@ -1,13 +1,21 @@
 ---
 title: "CNN"
 author: "Fernanda Sobrino"
-date: "2025"
-output: ioslides_presentation
+date: "2026"
+output:
+  beamer_presentation:
+    latex_engine: xelatex
+    slide_level: 2
+    includes:
+      in_header: [tema_bugambilia.tex, unicode_compat.tex]
+classoption: "aspectratio=169,12pt"
+lang: es
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.align = "center", dev = "cairo_pdf")
 ```
 
 
@@ -16,14 +24,17 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 
 
 ## Clasificación 
+
 ![](../Imagenes/clasificacion_imagen.png){fig-align="center" width="80%"}
 
 
 ## Detección de Objetos 
+
 ![](../Imagenes/deteccion_imagen.png){fig-align="center" width="80%"}
 
 
-## Segmentacion de Imágenes
+## Segmentación de Imágenes
+
 ![](../Imagenes/segmentacion_imagen.png){fig-align="center" width="80%"}
 
 
@@ -33,8 +44,8 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 - Las imágenes normalmente son RGB's de 224x224 que son 150,528 dimensiones 
 - Por lo general las capas intermedias que usamos son más grandes que el input
 - Una capa oculta tendria 150 mil x 150 mil pesos $\sim$ 22 billones en ingles osea 22 mil millones solo de pesos en 1 capa
-- Esto no aprovecha el hecho que las imágenes tienen características particulares distitas a otros tipos de datos
-    - pixeles cercanos estas relacionados estadisticamente 
+- Esto no aprovecha el hecho que las imágenes tienen características particulares distintas a otros tipos de datos
+    - pixeles cercanos están relacionados estadísticamente 
     - son estables a transformaciones
 
 
@@ -54,6 +65,7 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 
 
 ## Inspiración: ¿Dónde está Wally?
+
 ![](../Imagenes/Wally.png){fig-align="center" width="80%"}
 
 
@@ -132,7 +144,7 @@ $$H_{i,j} = U_{i,j} + \sum_a\sum_b V_{i,j,a,b}X_{i+a,j+b}$$
 
 ## Representación de la red 
 - Para cada ubicación $(i,j)$ en la capa itermedia $H$ su valor va a ser una suma ponderada (usando V) de todos los pixeles de X centrados en $(i,j)$
-- Si tenemos imágenes de milxmil (1 megapixel) entonces H es de las mismas dimensiones y vamos a necesitar $10^12$ parametros!!
+- Si tenemos imágenes de milxmil (1 megapixel) entonces H es de las mismas dimensiones y vamos a necesitar $10^{12}$ parametros!!
 
 
 
@@ -142,6 +154,7 @@ $$H_{i,j} = U_{i,j} + \sum_a\sum_b V_{i,j,a,b}X_{i+a,j+b}$$
 - Solo va a pasar esto si $V$ y $U$ no dependen de la ubicación del pixel, osea de $(i,j)$
 
 $$H_{i,j} = u + \sum_a\sum_b V_{a,b}X_{i+a,j+b}$$
+
 - Esto es una convolución! 
 - Solo nos importan los pixeles en la vecindad $(i+a,b+j)$
 
@@ -166,11 +179,15 @@ $$(f*g)(x) = \int f(z)g(x-z)dz$$
 
 - Esto mide que tanto se traslapan la función f y g, cuando una de las funciones esta volteada 
 - Discretamente seria: $(f*g)(x) = \sum_a f(a)g(i-a)$
-- Para tensores de dos dimensiones
-- En muchos frameworks de DL la operación implementada es cross-correlation (no se invierte el kernel). 
-- La diferencia es solo formal, pero la denominación “convolución” se mantiene por tradición.
+
+
+## ¿Por qué se llama Convolución?
+- Para tensores de dos dimensiones:
 
 $$(f*g)(i,j) = \sum_{a}\sum_bf(a,b)g(i-a,j-b)$$
+
+- En muchos frameworks de DL la operación implementada es cross-correlation (no se invierte el kernel). 
+- La diferencia es solo formal, pero la denominación “convolución” se mantiene por tradición.
 
 
 ## Canales 
@@ -202,12 +219,14 @@ $$H_{i,j} = \sum_{a = -\Delta}^{\Delta}\sum_{b= -\Delta}^{\Delta} \sum_c V_{a,b,
 - Observemos que el tamaño del output depende del kernel y va a ser
 
 $$(n_h - k_h + 1)x(n_w - k_w + 1)$$
+
 - Por definición el output va a ser más pequeño que el input 
 
 
 
 ## Padding 
-- El problema con las capas convoluciones es que vamos a perder los pixeles de los border 
+- El problema con las capas convoluciones es que vamos a perder los pixeles de los bordes 
+
 ![](../Imagenes/padding1.png){fig-align="center" width="60%"}
 
 
@@ -223,6 +242,7 @@ $$(n_h - k_h + 1)x(n_w - k_w + 1)$$
 - Ahora tendremos un output con las siguientes dimensiones
 
 $$(n_h - k_h + p_h + 1)x(n_w - k_w + p_w + 1)$$
+
 - En muchos casos vamos a usar $p_h = k_h -1$ y $p_w = k_w -1$ asi el input y el output van a tener las mismas dimensiones 
 
 
@@ -246,7 +266,7 @@ $$(n_h - k_h + p_h + 1)x(n_w - k_w + p_w + 1)$$
 - Entonces el tamaño del output va a ser
 $$\lfloor{(n_h - k_h +p_h + s_h)/s_h}\rfloor x \lfloor{(n_w - k_w +p_w + s_w)/s_w}\rfloor$$
 
-- Si definimos $p_h = k_h -1 $ y $p_w = k_w - 1$, entonces $\lfloor{(n_h +  s_h - 1)/s_h}\rfloor x \lfloor{(n_w + s_w - 1)/s_w}\rfloor$
+- Si definimos $p_h = k_h - 1$ y $p_w = k_w - 1$, entonces $\lfloor{(n_h +  s_h - 1)/s_h}\rfloor \times \lfloor{(n_w + s_w - 1)/s_w}\rfloor$
 
 
 
@@ -310,6 +330,7 @@ $$\lfloor{(n_h - k_h +p_h + s_h)/s_h}\rfloor x \lfloor{(n_w - k_w +p_w + s_w)/s_
 
 
 ## Canales múltiples: input 
+
 ![](../Imagenes/multiplescanales.png){fig-align="center" width="50%"}
 
 
@@ -334,6 +355,7 @@ $$\lfloor{(n_h - k_h +p_h + s_h)/s_h}\rfloor x \lfloor{(n_w - k_w +p_w + s_w)/s_
 
 
 ## Capas convolucionales de 1x1
+
 ![](../Imagenes/conv1x1.png){fig-align="center" width="50%"}
 
 
@@ -358,7 +380,9 @@ $$\lfloor{(n_h - k_h +p_h + s_h)/s_h}\rfloor x \lfloor{(n_w - k_w +p_w + s_w)/s_
 
 
 ## Pooling 
+
 ![](../Imagenes/maxpooling.png){fig-align="center" width="50%"}
+
 ## Características del pooling
 - Padding: igual que con una capa convolucional podemos agregar ceros
 - Stride: el tamaño del paso para que la ventana de pooling se mueva 
@@ -372,6 +396,7 @@ $$\lfloor{(n_h - k_h +p_h + s_h)/s_h}\rfloor x \lfloor{(n_w - k_w +p_w + s_w)/s_
 ## Upsampling 
 - ¿Qué hacemos si queremos escalar hacia arriba nuestra red? 
 - La manera más sencilla de aumentar la resolución es duplicar todos los canales en todas las ubicaciones 
+
 ![](../Imagenes/upsampling1.png){fig-align="center" width="50%"}
 
 
@@ -387,6 +412,7 @@ $$\lfloor{(n_h - k_h +p_h + s_h)/s_h}\rfloor x \lfloor{(n_w - k_w +p_w + s_w)/s_
 
 ## Upsampling 
 - Interpolacion bilineal entre los inputs que si tenemos 
+
 ![](../Imagenes/upsampling3.png){fig-align="center" width="50%"}
 
 
@@ -417,7 +443,7 @@ $$\lfloor{(n_h - k_h +p_h + s_h)/s_h}\rfloor x \lfloor{(n_w - k_w +p_w + s_w)/s_
 ## Clasificación de imágenes: ImageNet database
 - imágenes de $244 x 244$
 - 1,281,167 imágenes de entrenamiento, 50,000 de validación y 100,000 de prueba 
-- mil clase 
+- mil clases 
 
 
 ![](../Imagenes/ImageNet.png){fig-align="center" width="80%"}
@@ -425,7 +451,7 @@ $$\lfloor{(n_h - k_h +p_h + s_h)/s_h}\rfloor x \lfloor{(n_w - k_w +p_w + s_w)/s_
 ## AlexNet (2012)
 - Primera red de computer vision que aprende las features de la red
 - Antes de AlexNet todo computer vision dependia de generar buenas features de la imagen y luego aplicar ML simple como SVM
-- CNN de 8 capas: 5 convoluciones, dos capas completamente conectas y una capa de salida completamente conectada, utiliza ReLU como función de activación 
+- CNN de 8 capas: 5 convoluciones, dos capas completamente conectadas y una capa de salida completamente conectada, utiliza ReLU como función de activación 
 - Primera CNN en demostrar que las features aprendidas por la red son mejores a las que podemos construir 
 
 
@@ -436,7 +462,7 @@ $$\lfloor{(n_h - k_h +p_h + s_h)/s_h}\rfloor x \lfloor{(n_w - k_w +p_w + s_w)/s_
 ![](../Imagenes/AlexNet.png){fig-align="center" width="80%"}
 
 
-## Data Augmentatio 
+## Data Augmentation
 - AlexNet aumento los datos de entrenamiento usando: 
 1. Transformaciones espaciales
 2. Modificaciones de intensidad de los inputs 
@@ -463,9 +489,10 @@ $$\lfloor{(n_h - k_h +p_h + s_h)/s_h}\rfloor x \lfloor{(n_w - k_w +p_w + s_w)/s_
 - Detección: Intersección sobre la Unión, Average Precision (AP) y mean AP (mAP)
 $$IoU = \frac{|A \cap B|}{|A \cup B|}$$
 
-- Segmentación: pixel accuracy, 
+- Segmentación: pixel accuracy e IoU por clase
 
 ## Historia de clasificación de ImageNet
+
 ![](../Imagenes/ImageNethistory.png){fig-align="center" width="80%"}
 
 
@@ -478,12 +505,13 @@ $$IoU = \frac{|A \cap B|}{|A \cup B|}$$
 - Cuadrícula de $7x7$ de ubicaciones
 - Predecir la clase en cada ubicación 
 - Predecir dos cajas de fronteras para cada ubicación 
-    - 5 parámetros $(-x,y)$, ancho, altura y confianza
+    - 5 parámetros $(x, y)$, ancho, altura y confianza
 - Se uso momentum, weight decay (L2), dropout y data augmentation 
 - Heuristica al final para decidir el threshold de las cajas finales 
 
 
 ## Detección de objetos
+
 ![](../Imagenes/yolo.png){fig-align="center" width="80%"}
 
 
@@ -497,7 +525,7 @@ $$IoU = \frac{|A \cap B|}{|A \cup B|}$$
 ## ¿Cómo se entreno esto?
 - Usando transfer learning
 - La red original era para clasificar imágenes
-- Se hizo fine tunning para que pudiera detectar objetos
+- Se hizo fine tuning para que pudiera detectar objetos
 
 
 # CNNs y políticas públicas

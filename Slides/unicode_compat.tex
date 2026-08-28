@@ -1,0 +1,49 @@
+% Mapeos de caracteres unicode que las fuentes TeX Gyre no cubren
+% (se usa junto con tema_bugambilia.tex en los decks de este curso).
+\usepackage{newunicodechar}
+\newunicodechar{→}{\ensuremath{\rightarrow}}
+\newunicodechar{←}{\ensuremath{\leftarrow}}
+\newunicodechar{↔}{\ensuremath{\leftrightarrow}}
+\newunicodechar{⇒}{\ensuremath{\Rightarrow}}
+\newunicodechar{ℓ}{\ensuremath{\ell}}
+\newunicodechar{ϕ}{\ensuremath{\phi}}
+\newunicodechar{φ}{\ensuremath{\varphi}}
+\newunicodechar{θ}{\ensuremath{\theta}}
+\newunicodechar{α}{\ensuremath{\alpha}}
+\newunicodechar{β}{\ensuremath{\beta}}
+\newunicodechar{γ}{\ensuremath{\gamma}}
+\newunicodechar{δ}{\ensuremath{\delta}}
+\newunicodechar{Δ}{\ensuremath{\Delta}}
+\newunicodechar{λ}{\ensuremath{\lambda}}
+\newunicodechar{μ}{\ensuremath{\mu}}
+\newunicodechar{π}{\ensuremath{\pi}}
+\newunicodechar{σ}{\ensuremath{\sigma}}
+\newunicodechar{τ}{\ensuremath{\tau}}
+\newunicodechar{×}{\ensuremath{\times}}
+\newunicodechar{·}{\ensuremath{\cdot}}
+\newunicodechar{∈}{\ensuremath{\in}}
+\newunicodechar{∂}{\ensuremath{\partial}}
+\newunicodechar{−}{\ensuremath{-}}
+\newunicodechar{±}{\ensuremath{\pm}}
+\newunicodechar{≈}{\ensuremath{\approx}}
+\newunicodechar{≠}{\ensuremath{\neq}}
+\newunicodechar{≤}{\ensuremath{\leq}}
+\newunicodechar{≥}{\ensuremath{\geq}}
+\newunicodechar{∞}{\ensuremath{\infty}}
+\newunicodechar{‖}{\ensuremath{\|}}
+\newunicodechar{‑}{\mbox{-}}
+\newunicodechar{✓}{\textcolor{green!55!black}{\ensuremath{\checkmark}}}
+\newunicodechar{✅}{\textcolor{green!55!black}{\ensuremath{\checkmark}}}
+\newunicodechar{❌}{\textcolor{red!75!black}{\ensuremath{\times}}}
+
+% Salvaguarda global: ninguna imagen crece más allá del alto del frame
+\usepackage{graphicx}
+\setkeys{Gin}{keepaspectratio, totalheight=0.72\textheight}
+
+% Cap duro: toda imagen (markdown o knitr) se ajusta también al alto del frame.
+% Se re-aplica keepaspectratio al final para que width explícito + cap convivan.
+\makeatletter
+\let\ucompat@incgfx\includegraphics
+\renewcommand{\includegraphics}[2][]{%
+  {\centering\ucompat@incgfx[#1,keepaspectratio,totalheight=0.62\textheight]{#2}\par}}
+\makeatother

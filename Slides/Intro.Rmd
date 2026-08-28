@@ -1,13 +1,21 @@
 ---
 title: "Aprendizaje Profundo y sus usos en políticas públicas"
 author: "Fernanda Sobrino"
-date: "2025"
-output: ioslides_presentation
+date: "2026"
+output:
+  beamer_presentation:
+    latex_engine: xelatex
+    slide_level: 2
+    includes:
+      in_header: [tema_bugambilia.tex, unicode_compat.tex]
+classoption: "aspectratio=169,12pt"
+lang: es
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.align = "center", dev = "cairo_pdf")
 ```
 
 # Este curso: 
@@ -151,6 +159,7 @@ ggplot(data, aes(x = x1, y = x2, color = class)) +
 
 
 ## Aprendizaje Profundo
+
 ![](../Imagenes/IntroOverviewSideCap.png){fig-align="center" width="80%"}
 
 
@@ -205,6 +214,7 @@ ggplot(data, aes(x = x1, y = x2, color = class)) +
 
 
 ## Aprendizaje supervisado
+
 ![](../Imagenes/IntroModels.png){fig-align="center" width="50%"}
 
 
@@ -220,6 +230,7 @@ $$\hat{\phi} = arg\min_{\phi}  \quad \quad L(\phi)$$
 
 
 ## Aprendizaje supervisado: ejemplo
+
 ![](../Imagenes/IntroAgeHeight.png){fig-align="center" width="80%"}
 
 ## Aprendizaje supervisado: ejemplo
@@ -272,6 +283,7 @@ $$\hat{\phi} = arg\min_{\phi}  \quad \quad L(\phi)$$
 
 
 ## Aprendizaje No-Supervisado   
+
 ![](../Imagenes/Unsupervised_Learning.png){fig-align="center" width="60%"}
     
 

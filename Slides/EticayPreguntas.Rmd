@@ -1,8 +1,15 @@
 ---
 title: "Preguntas Abiertas y Ética"
 author: "Fernanda Sobrino"
-date: "2025"
-output: ioslides_presentation
+date: "2026"
+output:
+  beamer_presentation:
+    latex_engine: xelatex
+    slide_level: 2
+    includes:
+      in_header: [tema_bugambilia.tex, unicode_compat.tex]
+classoption: "aspectratio=169,12pt"
+lang: es
 ---
 
 # ¿Por qué funciona el aprendizaje profundo?
@@ -43,29 +50,45 @@ output: ioslides_presentation
 
 
 ## Factores que influyen en que el entrenamiento funcione 
+\small
+
 | Factor | ¿Qué aporta? | Limitaciones / Hallazgos |
-|--------|--------------|--------------------------|
+|------------------|----------------------|----------------------|
 | **Datos** | La función objetivo del mundo real suele ser relativamente simple; incluso con ruido o etiquetas permutadas, las redes pueden memorizar (Zhang et al., 2017). | Entrenan bien incluso con datos sin estructura → los datos no explican totalmente el éxito. |
 | **Regularización** | Métodos como dropout, weight decay o batch norm suavizan la superficie de pérdida y pueden mejorar generalización. | No es estrictamente necesaria para entrenar; redes también aprenden datos aleatorios. |
 
+\normalsize
+
 
 
 ## Factores que influyen en que el entrenamiento funcione 
+\small
+
 | Factor | ¿Qué aporta? | Limitaciones / Hallazgos |
-|--------|--------------|--------------------------|
+|------------------|----------------------|----------------------|
 | **Optimización estocástica (SGD, Adam)** | El ruido del muestreo ayuda a escapar de mínimos pobres y favorece soluciones planas que generalizan mejor. | Incluso métodos deterministas entrenan; los valles en la pérdida suelen ser amplios y buenos. |
 | **Sobreparametrización** | Facilita el ajuste: más parámetros → más caminos hacia una buena solución. Explica el fenómeno de *double descent*. | Debería causar overfitting, pero en la práctica no siempre; la teoría aún es incompleta. |
 
-## Factores que influyen en que el entrenamiento funcione 
-| Factor | ¿Qué aporta? | Limitaciones / Hallazgos |
-|--------|--------------|--------------------------|
-| **Funciones de activación** | ReLU y variantes resolvieron problemas de gradientes con sigmoides/tanh; introducen no linealidad esencial. | Sin activaciones, la red sería lineal → incapaz de modelar funciones complejas. |
-| **Inicialización de pesos** | Métodos como Xavier/He mantienen estable la varianza de activaciones y gradientes. | Inicialización deficiente puede colapsar el entrenamiento (explosión o desaparición de gradientes). |
+\normalsize
 
 ## Factores que influyen en que el entrenamiento funcione 
+\small
+
 | Factor | ¿Qué aporta? | Limitaciones / Hallazgos |
-|--------|--------------|--------------------------|
+|------------------|----------------------|----------------------|
+| **Funciones de activacíon** | ReLU y variantes resolvieron problemas de gradientes con sigmoides/tanh; introducen no linealidad esencial. | Sin activaciones, la red sería lineal → incapaz de modelar funciones complejas. |
+| **Inicialización de pesos** | Métodos como Xavier/He mantienen estable la varianza de activaciones y gradientes. | Inicialización deficiente puede colapsar el entrenamiento (explosión o desaparición de gradientes). |
+
+\normalsize
+
+## Factores que influyen en que el entrenamiento funcione 
+\small
+
+| Factor | ¿Qué aporta? | Limitaciones / Hallazgos |
+|------------------|----------------------|----------------------|
 | **Profundidad** | Capas profundas capturan jerarquías de representaciones: de patrones locales a abstracciones complejas. | Redes muy profundas eran inentrenables hasta la llegada de residuals y normalización. |
+
+\normalsize
 
 
 
@@ -79,24 +102,32 @@ output: ioslides_presentation
   
 ## Propiedades de las funciones de pérdida
 
+\small
+
 | Propiedad                          | Qué significa                                                                 | Implicaciones para DL                                                                 |
-|-----------------------------------|-------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
+|------------------|----------------------|----------------------|
 | **No convexidad**                 | La pérdida es altamente no convexa, con muchos mínimos y puntos silla.         | Teóricamente difícil de optimizar, pero en práctica hay muchos buenos caminos de descenso. |
 | **Abundancia de puntos silla**    | Los puntos silla son más comunes que los mínimos locales.                      | Los optimizadores estocásticos pueden escapar de ellos y seguir descendiendo.          |
 | **Valles planos vs. afilados**    | Algunas soluciones están en regiones planas (robustas) y otras en picos estrechos. | Valles planos tienden a generalizar mejor; valles afilados sobreajustan.               |
 
+\normalsize
+
 
 ## Propiedades de las funciones de pérdida
 
+\small
+
 | Propiedad                          | Qué significa                                                                 | Implicaciones para DL                                                                 |
-|-----------------------------------|-------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
+|------------------|----------------------|----------------------|
 | **Degeneración de soluciones**    | Muchas configuraciones distintas de parámetros logran la misma pérdida.        | Explica la estabilidad del entrenamiento y la alta redundancia en redes grandes.       |
 | **Conectividad entre mínimos**    | Los mínimos no están aislados, pueden estar conectados por caminos con pérdidas pequen. | La función* de la pérdida es “suave” → se pueden interpolar modelos sin empeorar mucho. |
 | **Sobreparametrización**          | El número de parámetros excede lo necesario para ajustar los datos.             | Aumenta la probabilidad de encontrar soluciones buenas y conectadas en la pérdida.     |
 
+\normalsize
 
 
-## Intuición general de las funciones de perdida
+
+## Intuición general de las funciones de pérdida
 - Aunque la función de pérdida es altamente no convexa:  
   - Hay muchos **caminos descendentes** hacia buenas soluciones.  
   - Los mínimos relevantes están en **valles anchos y conectados**.  
@@ -116,20 +147,28 @@ output: ioslides_presentation
 
 ## Factores de generalización en deep learning
 
+\small
+
 | Factor                   | Rol en la generalización                                                        | Limitaciones / Hallazgos                                                      |
-|---------------------------|---------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+|------------------|----------------------|----------------------|
 | **Cantidad y calidad de datos** | Más datos reducen el sobreajuste y capturan mejor la distribución real.        | Dataset siempre limitado; distribución de test puede diferir (*dataset shift*). |
 | **Arquitectura y capacidad**    | Redes profundas capturan jerarquías útiles; sobreparametrización sorprendentemente ayuda (*double descent*). | Capacidad excesiva debería sobreajustar, pero en la práctica no siempre.      |
 | **Algoritmo de optimización**  | SGD introduce un “sesgo implícito”: prefiere soluciones planas que generalizan mejor. | No está garantizado teóricamente; depende de tasas de aprendizaje y batch size. |
+
+\normalsize
 
 
 
 ## Factores de generalización en deep learning
 
+\small
+
 | Factor                   | Rol en la generalización                                                        | Limitaciones / Hallazgos                                                      |
-|---------------------------|---------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+|------------------|----------------------|----------------------|
 | **Regularización explícita**   | Técnicas como dropout, weight decay, data augmentation mejoran robustez.         | No explican todo el fenómeno: modelos sin regularización también generalizan. |
 | **Paisaje de la pérdida**      | Soluciones en valles anchos son más estables y tienden a generalizar.            | Difícil de medir directamente en grandes modelos.                             |
+
+\normalsize
 
 
 ## Intuición de la generalización
@@ -150,12 +189,16 @@ output: ioslides_presentation
     
 ## Ideas detrás de la sobreparametrización
 
+\footnotesize
+
 | Idea / hipótesis         | Qué sugiere                                                   | Limitaciones / preguntas abiertas                                      |
-|---------------------------|---------------------------------------------------------------|------------------------------------------------------------------------|
+|------------------|----------------------|----------------------|
 | **Redundancia**           | Muchas neuronas o capas hacen lo mismo → parámetros innecesarios. | Entonces, ¿por qué al podar solo moderadamente baja el rendimiento?    |
 | **Paisaje de pérdida más “amigable”** | Más parámetros → más caminos hacia soluciones buenas → optimización más estable. | Explica el entrenamiento fácil, pero no toda la generalización.        |
 | **Representaciones más ricas** | Redes grandes aprenden múltiples subfunciones o especializaciones internas. | Difícil de interpretar; ¿qué tanto es aprovechado?                     |
 | **Pruning & Compresión**  | Modelos entrenados pueden reducirse (podado, distillation) sin perder mucho. | Pero necesitan entrenarse primero con exceso de parámetros.            |
+
+\normalsize
 
 
 
@@ -174,20 +217,24 @@ output: ioslides_presentation
 
 
 
-## Necesitamos redes tan profundas
+## ¿Necesitamos redes tan profundas?
 - En teoría, una red con una sola capa oculta suficientemente grande puede aproximar cualquier función continua (teorema de aproximación universal).
 - Entonces, ¿por qué usar redes profundas en lugar de redes anchas?
 
 
 ## Profundidad vs agregar muchas neuronas
 
+\footnotesize
+
 | Aspecto               | Redes poco profundas (muy anchas)                    | Redes profundas                                      |
-|------------------------|------------------------------------------------------|------------------------------------------------------|
+|------------------|----------------------|----------------------|
 | **Capacidad teórica**  | Universal approximators si son lo bastante grandes.  | También lo son, pero con menos neuronas totales.     |
 | **Eficiencia de representación** | Necesitan un número *exponencial* de neuronas para ciertas funciones. | Con profundidad logran la misma función con *mucho menos*. |
 | **Composición de funciones** | Difícil de representar jerarquías o estructuras modulares. | Cada capa construye abstracciones progresivas (jerárquicas). |
 | **Práctica de entrenamiento** | Redes anchas son costosas en memoria y parámetros. | Más fáciles de entrenar con técnicas modernas (residuals, normalización). |
 | **Generalización**    | Tienden a sobreajustar o memorizar más fácilmente.   | Profundidad favorece reutilización y composicionalidad. |
+
+\normalsize
 
 
 
@@ -212,10 +259,10 @@ output: ioslides_presentation
 - Solo tenemos hints de cuales podrían ser las explicaciones detrás.
 
 
-# Etica en Aprendizaje profundo     
+# Ética en Aprendizaje profundo     
 
 
-## Historia de la Etica en DL
+## Historia de la Ética en DL
 - Desde AlexNet(2012) varios académicos intentaron enviar paneles de 'justicia' algorítmica y ética sin mucho éxito
 - Fue hasta 2016 que ProPublica expuso el sesgo de COMPAS (modelo de predicción de reincidencia delictiva) que comenzó el interés en la ética/justicia detrás de estos modelos 
 - Desde 2019 se han creado al menos 84 documentos de distintas organizaciones con recomendaciones de política para el entrenamiento/arquitectura y uso de modelos de DL
@@ -224,7 +271,7 @@ output: ioslides_presentation
 
 
 ## Alineación de Problemas
-- Idealmenete quisiéramos que los valores de los sistemas de AI se alineen con los de la humanidad 
+- Idealmente quisiéramos que los valores de los sistemas de AI se alineen con los de la humanidad 
 - Pero esto es dificil porque:
     1. Es dificil definir nuestros valores de manera completa y correcta
     2. Es difícil codificar estos valores como objetivos de un modelo de IA
@@ -274,7 +321,8 @@ output: ioslides_presentation
 
 ## Transparencia 
 - Hay tres niveles de transparencia: 
-1. Transparencia funcional: conocer el funcionamiento algorítmico del sistema 2. Transparencia estructural: sabemos como un programa ejecuta el algoritmo 
+1. Transparencia funcional: conocer el funcionamiento algorítmico del sistema
+2. Transparencia estructural: sabemos como un programa ejecuta el algoritmo 
 3. Run transparency: sabemos como se ejecuto un programa en una instancia en particular, esto incluye el hardware, los datos de entrenamiento, los hyperparametros, etc
 - La mayoria de los LLMs (hasta GPT3) y otros sistemas de DL que usamos solo tienen transparencia funcional, conocemos la estructura de la red detras pero no tenemos ni el código, ni los parámetros, etc.
 
@@ -287,9 +335,9 @@ output: ioslides_presentation
 - A la fecha no tenemos modelos complejos de AI que generalizan bien y que además sean explicables 
 
 ## Mal uso Intencional de la AI
-- Face recognition: por ejemplo usar fotos obtenidas sin consentimiento para para hacer frenología
+- Face recognition: por ejemplo usar fotos obtenidas sin consentimiento para hacer frenología
 - Militarización: cyber ataques, campañas de desinformación, drones autónomos
-- Fraude: mails de pishing mas convincentes, deep fakes, chatbots que parecen humanos y solo quieren tu información 
+- Fraude: mails de phishing mas convincentes, deep fakes, chatbots que parecen humanos y solo quieren tu información 
 - Privacidad de datos: con el volumen de datos que se usan para entrenar DL aunque quitemos identificadores únicos puede ser fácil inferir estos identificadores 
 
 
@@ -312,7 +360,7 @@ output: ioslides_presentation
     
 
 ## El ideal de la ciencia libre de valores 
-- Ni los científicos ni los programadores existen en un vació, sus valores se filtran a sus algoritmos/modelos/apps
+- Ni los científicos ni los programadores existen en un vacío, sus valores se filtran a sus algoritmos/modelos/apps
 - ML/DL no es objetiva solo porque los algoritmos son matemáticas 
 - Los valores del investigador/programador/desarrollador van a afectar su trabajo a través de: 
 1. La elección del problema de investigación

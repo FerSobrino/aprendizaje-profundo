@@ -1,20 +1,28 @@
 ---
 title: "¿Cómo vamos a entrenar las RN?"
 author: "Fernanda Sobrino"
-date: "2025"
-output: ioslides_presentation
+date: "2026"
+output:
+  beamer_presentation:
+    latex_engine: xelatex
+    slide_level: 2
+    includes:
+      in_header: [tema_bugambilia.tex, unicode_compat.tex]
+classoption: "aspectratio=169,12pt"
+lang: es
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.align = "center", dev = "cairo_pdf")
 ```
 
 
 # Funciones de pérdida 
 
 
-## ¿Qué necesitamos para entrenar un algorítmos de ML? 
+## ¿Qué necesitamos para entrenar un algoritmos de ML? 
 - Conjunto de entrenamiento $\{x_i, y_i\}$
 - Función de pérdida o de costos $L(\phi)$
 - La función de pérdida nos regresa un escalar de que tan bien o mal lo está haciendo el modelo 
@@ -54,7 +62,7 @@ arg\max_{\phi} \Big[\prod_{i=1}^I P(y_i|f(x_i,\phi))\Big]$$
 ## Criterio de Máxima Verosimilitud
 - Aca estamos haciendo dos supuestos: 
 1. que los datos son identicamente distribuidos
-2. que la distribucion condicional P(y_i|x_i) de cada  output dado el input son independientesde de tal manera que podemos escribir la funcion de maxima verosimilitud de la siguiente manera: 
+2. que la distribución condicional $P(y_i|x_i)$ de cada output dado el input son independientes, de tal manera que podemos escribir la funcion de maxima verosimilitud de la siguiente manera: 
 
 $$P(y_1,...,y_I|x_1,...,x_I) = \prod_{i=1}^I p(y_i|x_i)$$
 
@@ -163,6 +171,7 @@ $$ = arg\min -\sum_{i=1}^I - \frac{(y-f(x,\phi))^2}{2\sigma^2} = arg\min \sum_{i
 
 ## Ejemplo: regresión univariada
 - ¿Cómo se ve esto gráficamente? 
+
 ![](../Imagenes/least_squares.png){fig-align="center" width="80%"}
 
 ## Ejemplo: regresión univariada
@@ -175,6 +184,7 @@ $$ = arg\min -\sum_{i=1}^I - \frac{(y-f(x,\phi))^2}{2\sigma^2} = arg\min \sum_{i
 - Y seguimos los mismo pasos que antes
 
 ## Ejemplo: regresión univariada
+
 ![](../Imagenes/Heteroscedastic.png){fig-align="center" width="80%"}
 
 
@@ -204,6 +214,7 @@ $$P(y|\lambda) = \begin{cases}
 ## Ejemplo 2: clasificación binaria
 - Entonces podemos escribir la probabilidad como 
 $$P(y|x) = (1-\lambda)^{1-y}\lambda^y = (1-sig(f(x,\phi)))^{1-y}sig(f(x,\phi))^y$$
+
 ## Ejemplo 2: clasificación binaria
 - Para entrenar el modelo necesitamos encontrar $\hat{\phi}$ que minimice - log verosimilitud 
 $$\hat{\phi} = arg\min_{\phi} L(\phi)$$
@@ -234,6 +245,7 @@ $$ L(\phi) = \sum_{i=1}^I-(1-y_i)log(1-sig(f(x_i,\phi)))- y_ilog(sig(f(x_i,\phi)
 
 
 ## Ejemplo 3: clasificación multiclase 
+
 ![](../Imagenes/softmax1.png){fig-align="center" width="80%"}
 
 
@@ -250,6 +262,7 @@ $$L(\phi) = -\sum_{i=1}^If_{y_i}(x_i,\phi) - log \sum_{k=1}^K e^{f_k(x_i,
 
 
 ## ¿Qué pasa si tenemos otros tipos de datos?
+
 ![](../Imagenes/otros_datos.png){fig-align="center" width="80%"}
 
 
@@ -266,6 +279,7 @@ $$L(\phi) = -\sum_{i=1}^If_{y_i}(x_i,\phi) - log \sum_{k=1}^K e^{f_k(x_i,
 - Podemos medir esta distancia usando la divergencia de Kullback-Leiber (KL)
 
 $$D_{KL}(q||p) = \int q(z)log(q(z))dz - \int q(z)log(p(z))dz$$
+
 - Donde la distribución empírica esta dada por: $q(y) = \frac{1}{I}\sum_{i=1}^I \delta(y-y_i)$
 - Con $\delta$ la función delta de Dirac 
 
@@ -274,6 +288,7 @@ $$D_{KL}(q||p) = \int q(z)log(q(z))dz - \int q(z)log(p(z))dz$$
 - Queremos minimizar la KL entre estas dos distribuciones lo que es lo mismo que: 
 
 $$\hat{\theta} = arg\min_{\theta} -\int q(y)log(P(y|\theta))dy$$
+
 - ¿Qué le paso al primer término? no depende de $\theta$
 - Sustituyendo la distribución empírica regresamos a 
 
@@ -315,12 +330,14 @@ $$f(x, ϕ) = sin[ϕ_0 + 0.06 · ϕ_1x] · e^{-\frac{(\phi_0 + 0.06\phi_1 x)^2}{3
 
 
 ## Gradient descent
+
 ![](../Imagenes/Gabor1.png){fig-align="center" width="80%"}
 
 
 ## Gradient descent
 - ¿Cuál es el problema si queremos minimizar $L(\phi) = \sum_{i=1}^I(f(x_i,
 \phi) - y_i)^2$
+
 - Está función va a tener varios mínimos locales 
 - Si comenzamos en un punto aleatorio y comenzamos a descender no hay garantía que terminemos en el mínimo global 
 - Si terminamos en un mínimo local no hay manera de saber que hay una mejor solución 
@@ -328,6 +345,7 @@ $$f(x, ϕ) = sin[ϕ_0 + 0.06 · ϕ_1x] · e^{-\frac{(\phi_0 + 0.06\phi_1 x)^2}{3
 
 
 ## Gradient descent
+
 ![](../Imagenes/Gabor2.png){fig-align="center" width="80%"}
 
 
@@ -357,6 +375,7 @@ $$\phi_{t+1} \leftarrow \phi_t -\alpha \sum_{i \in B_t} \frac{\partial l_i(\phi_
 - Funciona mejor si la tasa de aprendizaje no es constante y decrece con el tiempo 
 
 ## GD vs SGD
+
 ![](../Imagenes/GDvsSGD.png){fig-align="center" width="80%"}
 
 
@@ -374,6 +393,7 @@ $$ϕ_{t+1} ← ϕ_t − αm_{t+1}$$
 
 
 ## Momentum: 
+
 ![](../Imagenes/momentum.png){fig-align="center" width="80%"}
 
 
@@ -387,6 +407,7 @@ $$ϕ_{t+1} ← ϕ_t − αm_{t+1}$$
 ## Momentum acelarado Nesterov: 
 - En el momentum normal nos movemos de 1-2-3
 - En el de nesterov nos movemos de 1-4-5
+
 ![](../Imagenes/nesterov.png){fig-align="center" width="80%"}
 
 
@@ -404,9 +425,10 @@ $$ϕ_{t+1} ← ϕ_t − αm_{t+1}$$
 $$m_{t+1} \leftarrow \frac{\partial L(\phi_t)}{\partial \phi}$$
 $$v_{t+1} \leftarrow \Big(\frac{\partial L(\phi_t)}{\partial \phi}\Big)^2$$
 $$\phi_{t+1} \leftarrow - \alpha \frac{m_{t+1}}{\sqrt{v_{t+1}} + \epsilon}$$
+
 - El algorítmo se mueve una distancia fija $\alpha$ sobre cada coordenada, donde la dirección es hacia donde sea que sea abajo 
 
-## Adaptive Momement Estimation (Adam)
+## Adaptive Moment Estimation (Adam)
 
 - Adam normaliza los gradientes y además agrega momentum
 - Momentum: $m_{t+1} \leftarrow \beta m_t + (1-\beta)\frac{\partial L(\phi_t)}{\partial \phi}$
@@ -416,12 +438,14 @@ $$\phi_{t+1} \leftarrow - \alpha \frac{m_{t+1}}{\sqrt{v_{t+1}} + \epsilon}$$
     - $\tilde{v}_{t+1} \leftarrow \frac{v_{t+1}}{1-\gamma^{t+1}}$\
 - Como $\beta,\gamma \in (0,1]$ los términos elevados se vuelven más pequeños en cada iteración  
 
-## Adaptive Momement Estimation (Adam)
+## Adaptive Moment Estimation (Adam)
 $$\phi_{t+1} \leftarrow \phi_t - \alpha \frac{\tilde{m}_{t+1}}{\sqrt{\tilde{v}_{t+1}}+\epsilon}$$
+
 - Ojo: todos estos algoritmos los vamos a usar con mini-batches!! 
 - Adam es menos sensible que otros algoritmos a donde inicializamos los parámetros 
 - Para problemas de computer vision es una buena idea comparar Adam con SGD+momentum 
 
 
 ## Adam 
+
 ![](../Imagenes/optimizacion.png){fig-align="center" width="80%"}

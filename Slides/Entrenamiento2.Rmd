@@ -1,13 +1,21 @@
 ---
 title: "¿Cómo vamos a entrenar las RN 2?"
 author: "Fernanda Sobrino"
-date: "2025"
-output: ioslides_presentation
+date: "2026"
+output:
+  beamer_presentation:
+    latex_engine: xelatex
+    slide_level: 2
+    includes:
+      in_header: [tema_bugambilia.tex, unicode_compat.tex]
+classoption: "aspectratio=169,12pt"
+lang: es
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.align = "center", dev = "cairo_pdf")
 ```
 
 
@@ -61,6 +69,7 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 - Tenemos la siguiente función: podemos pensar que es una red neuronal superficial con un solo input y un solo output  
 
 $$f(x,\phi) = \beta_3 + \omega_3 cos(\beta_2 + \omega_2 e^{\beta_1+\omega_1sin(\beta_0 + \omega_0x)})$$
+
 - Y una función de pérdida $L(\phi) = \sum_{i} ℓ_i$
 - Donde $ℓ_i = (f(x,\phi) - y)^2$
 - Si queremos por ejemplo saber como un pequeño cambio en $\beta_3$ afecta la función de pérdida necesitamos $\frac{\partial ℓ_i}{\partial \beta_3}$
@@ -101,11 +110,13 @@ $$f(x,\phi) = \beta_3 + \omega_3 cos(\beta_2 + \omega_2 e^{\beta_1+\omega_1sin(\
    
    
 ## Ejemplo sencillo: backward pass
+
 ![](../Imagenes/backwardpass.png){fig-align="center" width="80%"}
 
 
 ## Ejemplo en forma vectoria/matricial de backprop
 - Tenemos la siguiente red
+
 ![](../Imagenes/redbackprop.png){fig-align="center" width="80%"}
 
 ## Ejemplo en forma vectoria/matricial de backprop
@@ -124,7 +135,7 @@ $$f(x,\phi) = \beta_3 + \omega_3 cos(\beta_2 + \omega_2 e^{\beta_1+\omega_1sin(\
 - $\frac{\partial ℓ_i}{\partial f_2} = \frac{\partial h_3}{\partial f_2}\frac{\partial f_3}{\partial h_3}\frac{\partial ℓ_i}{\partial f_3}$
 - Pero casi todas estas parciales son relativamente sencillas: 
     - $\frac{\partial f_3}{\partial h_3} = \frac{\partial}{\partial h_3}(\beta_3 + \Omega_3 h_3) = \Omega_3^T$
-    - Si las funciones de activación son ReLU $max(0,x)$ entonces $\frac{\partial h_3}{\partial f_2} = \frac{\partial a}{\partial f_2} = \mathbb{I}[f_2 >0]$
+    - Si las funciones de activación son ReLU $max(0,x)$ entonces $\frac{\partial h_3}{\partial f_2} = \frac{\partial a}{\partial f_2} = \mathbf{1}[f_2 >0]$
 
 
 ## Ejemplo en forma vectoria/matricial de backprop
@@ -138,8 +149,8 @@ $$f(x,\phi) = \beta_3 + \omega_3 cos(\beta_2 + \omega_2 e^{\beta_1+\omega_1sin(\
 - Comenzamos con la parcial $\frac{\partial ℓ_i}{\partial f_k}$ y nos movemos en reversa sobre la red
     - $\frac{\partial ℓ_i}{\partial \beta_k} = \frac{\partial ℓ_i}{\partial f_k}$
     - $\frac{\partial ℓ_i}{\partial \Omega_k} = \frac{\partial ℓ_i}{\partial f_k}h_k^T$
-    - $\frac{\partial ℓ_i}{\partial f_{k-1}} = \mathbb{I}[f_{k-1} >0] \odot \Omega_{k}^T \frac{\partial ℓ_i}{\partial f_k}$
-    - Acá $\odot$ es la multiplicación punto por punto y $\mathbb{I}[f_{k-1} >0]$ es un vector con 1's donde $f_{k-1} >0$, 0 en todo lo demás
+    - $\frac{\partial ℓ_i}{\partial f_{k-1}} = \mathbf{1}[f_{k-1} >0] \odot \Omega_{k}^T \frac{\partial ℓ_i}{\partial f_k}$
+    - Acá $\odot$ es la multiplicación punto por punto y $\mathbf{1}[f_{k-1} >0]$ es un vector con 1's donde $f_{k-1} >0$, 0 en todo lo demás
 
 
 ## Algoritmo de propagación hacia atrás
@@ -194,7 +205,7 @@ $$f(x,\phi) = \beta_3 + \omega_3 cos(\beta_2 + \omega_2 e^{\beta_1+\omega_1sin(\
     - $h = a(f)$
     - $f' = \beta + \Omega h$
 - Donde $f_j$ tiene varianza $\sigma_f^2$
-- Inicializamos las $\beta_i = 0 $ y $\Omega_{ij} \sim N(0,\sigma_{\Omega}^2)$
+- Inicializamos las $\beta_i = 0$ y $\Omega_{ij} \sim N(0,\sigma_{\Omega}^2)$
 
 
 ## ¿Por qué esto es un problema?
@@ -207,12 +218,14 @@ $$E[f'_i] = E[\beta_i + \sum_{j=1}^{D_h} \Omega_{ij}h_j] = E[\beta_i] + \sum_{j=
 
 $$\sigma_{f'}^2 = E[f_i^{'2}] - E[f_i']^2 = E[(\beta_i + \sum_{j=1}^{D_h} \Omega_{ij}h_j)^2] = E[(\sum_{j=1}^{D_h} \Omega_{ij}h_j)^2)]$$
 $$= \sum_{j=1}^{D_h} E[\Omega_{ij}^2]E[h_j^2] = \sigma_{\Omega}^2\sum_{j=1}^{D_h}E[h_j^2]$$
+
 - Si asumimos que las pre activación son simétricas alrededor del 0, entonces la mitad van a ser negativas y se van con la ReLU
 - Entonces $\sigma_{f'}^2 = \sigma_{\Omega}^2\sum_{j=1}^{D_h}\frac{\sigma_f^2}{2} = \frac{1}{2}D_h\sigma_{\Omega}^2\sigma_f^2$ 
 
 ## ¿Por qué esto es un problema?
 - Si queremos que la varianza de las siguientes pre activaciones f' sea la misma que la de f necesitamos 
 $$\sigma_{\Omega}^2 = \frac{2}{D_h}$$
+
 - Donde $D_h$ es la dimensionalidad de la capa original
 - Esta se conoce como la incialización He
 
@@ -220,6 +233,7 @@ $$\sigma_{\Omega}^2 = \frac{2}{D_h}$$
 - Si hacemos lo mismo pero en el backward pass vamos a llegar a que si queremos preservar la varianza necesitamos que se cumpla lo siguiente 
 
 $$\sigma_{\Omega}^2 = \frac{2}{D_h'}$$
+
 - donde $D_{h'}$ es la dimensionalidad de la capa previa recorriendo de atrás hacia adelante 
 - El problema es que si $\Omega$ no es cuadrada (la cantidad de neuronas es distinta entre capas adyacentes) no hay manera de satisfacer estas dos condiciones 
 
@@ -229,7 +243,7 @@ $$\sigma_{\Omega}^2 = \frac{2}{D_h'}$$
 
 $$\sigma_{\Omega}^2 = \frac{4}{D_h + D_{h'}}$$
 
-## Otras incializaciones: 
+## Otras inicializaciones: 
 - La inicialización es un área de open research en DL
 - Hay muchas heuristicas
 - Dependiendo de que tipo de red y problema quieres resolver tendras que buscar algo que funcione 
@@ -264,6 +278,7 @@ $$\sigma_{\Omega}^2 = \frac{4}{D_h + D_{h'}}$$
 
 
 ## Reduciendo la varianza     
+
 ![](../Imagenes/variance.png){fig-align="center" width="60%"}
 
 ## Reduciendo el sesgo 
@@ -273,26 +288,28 @@ $$\sigma_{\Omega}^2 = \frac{4}{D_h + D_{h'}}$$
 
 
 ## Reduciendo el sesgo
+
 ![](../Imagenes/sesgo.png){fig-align="center" width="60%"}
 
 
 
 ## ¿Qué pasa si reducimos el sesgo? overfitting 
-- Más capacida describe mejor los ejemplos de entrenamiento pero no la función 
+- Más capacidad describe mejor los ejemplos de entrenamiento pero no la función 
 
 ![](../Imagenes/overfitting.png){fig-align="center" width="60%"}
 
 
 
 ## Sesgo vs Varianza 
+
 ![](../Imagenes/biasvsvariance.png){fig-align="center" width="60%"}
 
 
 ## ¿Qué es double descent?
 
-- La itución de ML básico nos dice que a + capacida + overfitting
+- La itución de ML básico nos dice que a + capacidad + overfitting
 - Esto no va a ser cierto con las redes (RF, ensambles)
-- En está región el modelo se memoriza los datos de entrenamiento pero puede encontrar soluciones que generalizen 
+- En esta región el modelo se memoriza los datos de entrenamiento pero puede encontrar soluciones que generalizen 
 - Aumentamos aún más la capacidad del modelo, lo sobreparametrizamos y después el error de prueba vuelve a disminuir 
 - Vamos a tener dos zonas con error bajo:
     - sub-parametrizada
@@ -301,7 +318,7 @@ $$\sigma_{\Omega}^2 = \frac{4}{D_h + D_{h'}}$$
 - Ojo: no es ley! depende de los datos, la optimización, regularización, etc 
 
 
-##¿Qué es double descent?
+## ¿Qué es double descent?
 
 ![](../Imagenes/doubledescent.png){fig-align="center" width="60%"}
 
@@ -357,7 +374,7 @@ $$\sigma_{\Omega}^2 = \frac{4}{D_h + D_{h'}}$$
 
 
 
-# Hiperparametros 
+# Hiperparámetros 
 
 ## ¿Cómo los escogemos en la práctica? 
 

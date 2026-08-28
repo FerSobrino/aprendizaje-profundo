@@ -1,13 +1,21 @@
 ---
 title: "Transformers"
 author: "Fernanda Sobrino"
-date: "2025"
-output: ioslides_presentation
+date: "2026"
+output:
+  beamer_presentation:
+    latex_engine: xelatex
+    slide_level: 2
+    includes:
+      in_header: [tema_bugambilia.tex, unicode_compat.tex]
+classoption: "aspectratio=169,12pt"
+lang: es
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.align = "center", dev = "cairo_pdf")
 ```
 
 
@@ -45,7 +53,8 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 - Tratamos el *context vector* como un estadistico suficiente de la señal de todo el input 
 
 ## Encoder-Decoder 
-![](../Imagenes/encoder-decoder.png){fig-align="center" width="75%"}
+
+![](../Imagenes/encoder-decorder.png){fig-align="center" width="75%"}
 
 
 # Atención 
@@ -93,12 +102,13 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 - Podemos definir la atención sobre $D$ como:
 
 $$Attention(q,D) = \sum_{i=1}^m \alpha(q,k_i)v_i$$
+
 - Donde $\alpha(q,k_i)$ son los pesos de atención 
 - Y esta operación se conoce como *attention pooling*
 
 ## ¿Qué nos dice esta función de atención?
 - Si los pesos $\alpha(q,k_i) > 0$ el resultado vive en un cono convexo de los valores de $v_i$
-- Los pesos van a formar una combinación convexa si $\sum_{i} \alpha(q,k_i) = $ y $\alpha(q,k_i) \geq 0$, normalmente vamos a asumir esto
+- Los pesos van a formar una combinación convexa si $\sum_{i} \alpha(q,k_i) = 1$ y $\alpha(q,k_i) \geq 0$, normalmente vamos a asumir esto
 - Si solo un $\alpha(q,k_i) = 1$ y los demás son cero solo prestamos atención a un valor
 - Si $\alpha(q,k_i) = \frac{1}{m}$ vamos a tener average pooling, le prestamos la misma atención a todos los tokens 
 
@@ -107,6 +117,7 @@ $$Attention(q,D) = \sum_{i=1}^m \alpha(q,k_i)v_i$$
 ## ¿Qué nos dice esta función de atención?
 - Por lo general vamos a usar como mecanismo de atención 
 $$\alpha(q,k_i) = \frac{e^{a(q,k_i)}}{\sum_j e^{a(q,k_j)}}$$
+
 - Esta función tiene varias propiedades que nos van a ayudar en DL: 
     - los pesos suman 1
     - son no negativos 
@@ -116,17 +127,20 @@ $$\alpha(q,k_i) = \frac{e^{a(q,k_i)}}{\sum_j e^{a(q,k_j)}}$$
     
     
 ## ¿Qué nos dice esta función de atención? 
+
 ![](../Imagenes/queries.png){fig-align="center" width="75%"}
 
 
 # Distintas funciones de atención 
 
 ## Ejemplo de attention pooling
+
 ![](../Imagenes/attentionpooling.png){fig-align="center" width="75%"}
 
 
 ## Atención producto punto 
 $$ a(q,k_i) = \frac{q^{T}k_i}{\sqrt{d}}$$
+
 - Donde $d$ es la dimensión de $q$ y $k_i$
 - Esta es nuestra función $a$ pero necesitamos $\alpha$
 
@@ -147,6 +161,7 @@ $$\alpha(q,k_i) = softmax(a) = \frac{e^{q^{T}k_{i}/\sqrt{d}}}{\sum_j e^{q^{T}k_j
 - Como es aditiva puede ser más rapida y eficiente computacionalmemte que otras atenciones
 
 $$ a(q,k) = w_v^{T}tanh(W_qq + W_kk)$$
+
 - Donde $w_v, W_q$ y $W_k$ son parametros que va a aprender el modelo
 - Esto lo metemos en una softmax
 
@@ -159,7 +174,7 @@ $$ a(q,k) = w_v^{T}tanh(W_qq + W_kk)$$
 - Forma original de atención propuesta en Bahdanau et al. (2014) para traducción automática
 
 
-# Mecanismo de antención 
+# Mecanismo de atención 
 
 ## Introducción  
 - La solución al problema de los encoder-decoders de RNN es la atención
@@ -175,19 +190,21 @@ $$ a(q,k) = w_v^{T}tanh(W_qq + W_kk)$$
 - En el paso $t'$ del decoder:
 
 $$c_{t'} = \sum_{t=1}^T \alpha(s_{t'-1},h_t)h_t$$
+
 - Donde: 
     - $s_{t'-1}$ = estado oculto del decoder en el paso anterior (query)
     - $h_t$ = estado oculto del encoder en el tiempo $t$ (key y value)
     - $\alpha(s_{t'-1}, h_t)$ = peso de atención que indica la relevancia de $h_t$ para la predicción en $t'$
     
     
-## Intuicion
+## Intuición
 - En lugar de un solo *context vector* fijo, ahora tenemos un contexto adaptado a cada paso de generación
 - Esto permite que el decoder consulte directamente las partes relevantes del input en cada momento
 - Ejemplo: al traducir “The cat sat on the mat”, al predecir “gato” el modelo pondrá más atención en el hidden state correspondiente a “cat”
 
 
 ## ¿Cómo se ve?
+
 ![](../Imagenes/Bahdanau.png){fig-align="center" width="75%"}
 
 
@@ -222,9 +239,11 @@ $$c_{t'} = \sum_{t=1}^T \alpha(s_{t'-1},h_t)h_t$$
 - Cada cabeza de atención la calculamos como 
 
 $$h_i = f(W_i^{(q)}q, W_i^{(k)}k, W_i^{(v)}v)$$
+
 - La multi-head se compone: 
 
 $$[h_1,....,h_h]W_o$$
+
 - Donde vamos a aprender todas las matrices $W_i^Q, W_i^K, W_i^V$ y $W^O$ que mezcla las salidas de todas las cabezas
 
 
@@ -240,17 +259,22 @@ $$[h_1,....,h_h]W_o$$
     
 
 ## ¿Cómo se ve esto? 
+
 ![](../Imagenes/multihead.png){fig-align="center" width="75%"}
 
 
 ## Comparación Self-Attention vs Multi-Head Attention
+\small
+
 | Aspecto                | Self-Attention                                    | Multi-Head Attention                                        |
-|-------------------------|--------------------------------------------------|-------------------------------------------------------------|
+|------------------|----------------------|----------------------|
 | **Definición**          | Cada token atiende a todos los demás en una sola matriz de atención | Ejecuta varias auto-atenciones en paralelo con diferentes proyecciones |
 | **Perspectiva**         | Una sola “vista” de la secuencia                 | Varias “vistas” simultáneas que capturan distintos patrones |
 | **Capacidad expresiva** | Limitada: puede pasar por alto ciertas relaciones| Más rica: cada cabeza puede enfocarse en dependencias diferentes |
 | **Ejemplo**   | Una lupa única para leer la secuencia            | Muchas lupas que enfocan en diferentes detalles a la vez     |
-| **Uso pratico**     | Base del mecanismo de atención                   | Núcleo de los Transformers modernos                         |
+| **Uso práctico**     | Base del mecanismo de atención                   | Núcleo de los Transformers modernos                         |
+
+\normalsize
 
 
 # Self-Attention y Positional Encoding
@@ -270,6 +294,7 @@ $$[h_1,....,h_h]W_o$$
 
 
 ## ¿Cómo se ve esto?
+
 ![](../Imagenes/selfattention.png){fig-align="center" width="75%"}
 
 
@@ -289,7 +314,7 @@ $$[h_1,....,h_h]W_o$$
     - Diferentes dimensiones codifican distintas escalas de posición.
     - Tokens cercanos tienen codificaciones similares.
     - Funciona para secuencias más largas que las vistas en entrenamiento.
-- Intuicion: similar a dar coordenadas a cada palabra en la secuencia.
+- Intuición: similar a dar coordenadas a cada palabra en la secuencia.
 
 
 
@@ -297,13 +322,17 @@ $$[h_1,....,h_h]W_o$$
 
 ## Comparación de codificaciones posicionales
 
+\footnotesize
+
 | Aspecto                  | Sinusoidal (fija)                                                                 | Aprendida                                                   |
-|---------------------------|-----------------------------------------------------------------------------------|-------------------------------------------------------------|
+|------------------|----------------------|----------------------|
 | **Definición**            | Vectores generados con senos y cosenos de distintas frecuencias                   | Vectores de posición entrenables como embeddings            |
 | **Generalización**        | Funciona para secuencias más largas que las vistas en entrenamiento               | Limitada a longitudes de secuencia vistas en entrenamiento  |
 | **Interpretabilidad**     | Fácil de visualizar → posiciones cercanas tienen representaciones similares       | Más difícil de interpretar                                  |
 | **Parámetros adicionales**| No añade parámetros → eficiente                                                   | Añade parámetros proporcionales a la longitud máxima de secuencia |
 | **Uso práctico**          | Se usa en el Transformer original (Vaswani et al., 2017)                          | Ampliamente usada en modelos modernos (BERT, GPT, etc.)     |
+
+\normalsize
 
 # Transformers
 
@@ -361,6 +390,7 @@ $$[h_1,....,h_h]W_o$$
 
 
 ## Transformer 
+
 ![](../Imagenes/transformer.png){fig-align="center" width="75%"}
 
 
@@ -394,6 +424,7 @@ $$[h_1,....,h_h]W_o$$
     
     
 ## Tokenización
+
 ![](../Imagenes/tokenization.png){fig-align="center" width="75%"}
 
 
@@ -440,13 +471,16 @@ $$[h_1,....,h_h]W_o$$
 
 
 ## BERT
+
 ![](../Imagenes/BERTMask.png){fig-align="center" width="75%"}
 
 ## GPT
+
 ![](../Imagenes/GPT1.png){fig-align="center" width="75%"}
 
 
 ## T5 
+
 ![](../Imagenes/T5.png){fig-align="center" width="75%"}
 
 
@@ -470,15 +504,18 @@ $$[h_1,....,h_h]W_o$$
 
 
 ## BERT + sentiment analysis
+
 ![](../Imagenes/BERTSent.png){fig-align="center" width="75%"}
 
 
 
 ## GPT context learning
+
 ![](../Imagenes/GPTtextgen.png){fig-align="center" width="75%"}   
 
 
-## T5 imagen generation 
+## T5: generación de imágenes 
+
 ![](../Imagenes/T5image.png){fig-align="center" width="75%"}   
 
 
@@ -508,6 +545,7 @@ $$[h_1,....,h_h]W_o$$
 
 
 ## Tamaño de los LLMs
+
 ![](../Imagenes/sizeLLMs.png){fig-align="center" width="75%"}  
 
 
@@ -585,12 +623,17 @@ $$[h_1,....,h_h]W_o$$
 
 
 ## ¿Qué opción elegir?
+\small
+
 | Necesitas... | Opción |
-|---|---|
+|--------------------|----------------------|
 | Cambiar el formato o el tono, tarea estándar | Prompting (zero/few-shot) |
 | Responder sobre documentos propios/cambiantes, con fuentes | RAG |
 | Comportamiento especializado consistente, mucho volumen, datos etiquetados | Fine-tuning (LoRA) |
 | Tareas de varios pasos con acciones | Agente + herramientas |
+
+\normalsize
+
 - En la práctica se combinan; empezar siempre por lo más barato (prompting) y escalar solo si la evaluación lo justifica
 
 

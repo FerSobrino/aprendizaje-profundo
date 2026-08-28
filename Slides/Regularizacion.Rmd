@@ -1,13 +1,21 @@
 ---
 title: "Regularización"
 author: "Fernanda Sobrino"
-date: "2025"
-output: ioslides_presentation
+date: "2026"
+output:
+  beamer_presentation:
+    latex_engine: xelatex
+    slide_level: 2
+    includes:
+      in_header: [tema_bugambilia.tex, unicode_compat.tex]
+classoption: "aspectratio=169,12pt"
+lang: es
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.align = "center", dev = "cairo_pdf")
 ```
 
 
@@ -32,6 +40,7 @@ $$\hat{\phi} = arg\min_{\phi}\Big[\sum_{i=1}^I l(x_i,y_i) + \lambda g(\phi)\Big]
 
 
 ## Regularización Explícita: visualización
+
 ![](../Imagenes/regularization.png){fig-align="center" width="80%"}
 
 
@@ -63,12 +72,14 @@ $$\hat{\phi} = arg\min_{\phi}\Big[\prod_{i=1}^I P(y_i|x_i,\phi)P(\phi)\Big]$$
 ## Regularización L2 
 - Previene que los pesos se vuelvan muy grandes 
 $$\hat{\phi} = arg\min_{\phi}\Big[\sum_{i=1}^I l_i(x_i,y_i) + \lambda \sum_j \phi_j ^2\Big]$$
+
 - En redes normalmente la vamos a aplicar a los pesos pero no a los biases 
 - Se le conoce como el término de `weight decay`
 - El objetivo es que los pesos se vuelvan más pequeños y la función de pérdida más suave 
 
 
 ## Regularización L2 
+
 ![](../Imagenes/weightdecay.png){fig-align="center" width="80%"}
 
 
@@ -87,7 +98,7 @@ $$\hat{\phi} = arg\min_{\phi}\Big[\sum_{i=1}^I l_i(x_i,y_i) + \lambda \sum_j \ph
 
 # Regularización Implícita 
 
-## Regularización Implicita
+## Regularización Implícita
 - Recientemente descubrimos que los algoritmos basados en GD no se mueven neutralmente al mínimo de la función de pérdida sino que tienen preferencias por algunas soluciones 
 - GD hace lo siguiente $\phi_{t+1} = \phi_t - \alpha \frac{\delta L}{\delta \phi}$
 - Esta discretización causa que el GD se desvié del path continuo al mínimo global 
@@ -95,11 +106,12 @@ $$\hat{\phi} = arg\min_{\phi}\Big[\sum_{i=1}^I l_i(x_i,y_i) + \lambda \sum_j \ph
 - Agregar regularización al GD va a hacer que el GD continuo y el discreto convergan 
 
 
-## Regularización Implicita
+## Regularización Implícita
+
 ![](../Imagenes/implicit.png){fig-align="center" width="80%"}
 
 
-## Regularización Implicita
+## Regularización Implícita
 - Vamos a agregar lo siguiente a la función de pérdida 
 
 $$\tilde{L}_{GD}(\phi) = L(\phi) + \frac{\alpha}{4}\Big\|\frac{\partial L}{\partial \phi}\Big\|^2$$
@@ -109,7 +121,7 @@ $$\tilde{L}_{GD}(\phi) = L(\phi) + \frac{\alpha}{4}\Big\|\frac{\partial L}{\part
 - Pero cambia la función de pérdida en el resto de los lugares y modifica la trayectoria de optimización que podría converger a otro mínimo 
 
 
-## Regularización Implicita en SGD 
+## Regularización Implícita en SGD 
 - Buscamos una función de pérdida modificada de tal manera que la versión contuina llegue al mismo punto que el promedio de las actualizaciones del SGD. 
 $$\tilde{L}_{SGD}(\phi) = \tilde{L}_{GD}(\phi) + \frac{\alpha}{4B}\sum_{b=1}^B\Big\|\frac{\partial L_b}{\partial \phi} - \frac{\partial L}{\partial \phi}\Big\|^2$$
 $$= L(\phi) + \frac{\alpha}{4}\Big\|\frac{\partial L}{\partial \phi}\Big\|^2 + \frac{\alpha}{4B}\sum_{b=1}^B\Big\|\frac{\partial L_b}{\partial \phi} - \frac{\partial L}{\partial \phi}\Big\|^2$$
@@ -139,6 +151,7 @@ $$= L(\phi) + \frac{\alpha}{4}\Big\|\frac{\partial L}{\partial \phi}\Big\|^2 + \
 - Idea: normalizar las activaciones de una capa por minibatch, restamos la media y dividimos por la desviación estándar
 
 $$  \hat{x} = \frac{x - \mu_B}{\sqrt{\sigma_B^2 + \epsilon}},\quad y = \gamma \hat{x} + \beta$$
+
 - Reduce la sensibilidad de la red a la inicialización y permite usar tasas de aprendizaje más grandes
 - Actua como regularizador implícito 
 - Acelara la convergencia y estabiliza el entrenamiento en redes muy profundas
@@ -155,6 +168,7 @@ $$  \hat{x} = \frac{x - \mu_B}{\sqrt{\sigma_B^2 + \epsilon}},\quad y = \gamma \h
 
 
 ## Early Stopping
+
 ![](../Imagenes/earlystopping.png){fig-align="center" width="80%"}
 
 
@@ -175,6 +189,7 @@ $$  \hat{x} = \frac{x - \mu_B}{\sqrt{\sigma_B^2 + \epsilon}},\quad y = \gamma \h
 
 
 ## Ensambles 
+
 ![](../Imagenes/ensamble.png){fig-align="center" width="80%"}
 
 
@@ -205,6 +220,7 @@ $$h'= \begin{cases}
     - esto es parecido a ensambles 
 
 ## Dropout 
+
 ![](../Imagenes/dropout1.png){fig-align="center" width="80%"}
 
 
@@ -218,6 +234,7 @@ $$h'= \begin{cases}
 
 
 ## Agregar ruido
+
 ![](../Imagenes/agregarruido.png){fig-align="center" width="80%"}
 
 
@@ -252,6 +269,7 @@ $$h'= \begin{cases}
 
 
 ## Multi-task learning
+
 ![](../Imagenes/multitask.png){fig-align="center" width="80%"}
 
 
@@ -264,7 +282,8 @@ $$h'= \begin{cases}
 
 
 ## Self-supervised learning
-![](../Imagenes/self.png){fig-align="center" width="120%"}
+
+![](../Imagenes/self.png){fig-align="center" width="95%"}
 
 
 ## Augmentation 

@@ -1,15 +1,21 @@
 ---
 title: "Redes Neuronales"
 author: "Fernanda Sobrino"
-date: "2025"
+date: "2026"
 output:
-  ioslides_presentation:
-    mathjax: default
+  beamer_presentation:
+    latex_engine: xelatex
+    slide_level: 2
+    includes:
+      in_header: [tema_bugambilia.tex, unicode_compat.tex]
+classoption: "aspectratio=169,12pt"
+lang: es
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.align = "center", dev = "cairo_pdf")
 ```
 
 # Repaso Redes Neuronales Superficiales
@@ -124,6 +130,7 @@ combined <- plot_grid(
   ncol  = 3,
   align = "hv"
 )
+combined <- combined + theme(plot.background = element_rect(fill = "black", colour = NA))
 print(combined)
 ```
 
@@ -183,6 +190,7 @@ p1 <- make_panel_theta(lines[[1]], lines[[1]])
 p2 <- make_panel_theta(lines[[2]], lines[[2]])
 p3 <- make_panel_theta(lines[[3]], lines[[3]])
 combined <- plot_grid(p1, p2, p3, ncol = 3, align = "hv")
+combined <- combined + theme(plot.background = element_rect(fill = "black", colour = NA))
 print(combined)
 ```
 
@@ -237,6 +245,7 @@ combined <- plot_grid(
   ncol  = 3, align = "hv"
 )
 
+combined <- combined + theme(plot.background = element_rect(fill = "black", colour = NA))
 print(combined)
 ```
 
@@ -294,6 +303,7 @@ combined <- plot_grid(
   ncol  = 3,
   align = "hv"
 )
+combined <- combined + theme(plot.background = element_rect(fill = "black", colour = NA))
 print(combined)
 ```
 
@@ -302,7 +312,7 @@ print(combined)
 ## ¿Cómo funciona la red neuronal?  
 - **Paso 4:** suma ponderada de las unidades ocultas para crear y
 - $y = \phi_0 + \phi_1h_1 + \phi_2h_2 + \phi_3h_3$
-```{r}
+```{r, fig.height=4.6, out.width="52%"}
 library(patchwork)
 thetas <- list(
   list(theta0 = -0.2, theta1 =  0.3, col = "tomato"),
@@ -375,8 +385,9 @@ p2 <- make_hi_panel(df, thetas[[2]], 2)
 p3 <- make_hi_panel(df, thetas[[3]], 3)
 p_comb <- make_combined_panel(df)
 row1 <- plot_grid(p1, p2, p3, ncol=3, align="hv")
-row2 <- plot_grid(plot_spacer(), p_comb, plot_spacer(), ncol=3, rel_widths=c(1,1,1))
+row2 <- plot_grid(NULL, p_comb, NULL, ncol=3, rel_widths=c(1,1,1))
 combined <- plot_grid(row1, row2, nrow=2, rel_heights=c(1,1))
+combined <- combined + theme(plot.background = element_rect(fill = "black", colour = NA))
 print(combined)
 
 ```
@@ -400,6 +411,7 @@ print(combined)
 
 
 ## ¿Qué red neuronal representa esto que acabamos de escribir?
+
 ![](../Imagenes/RNshallow.png){fig-align="center" width="80%"}
 
 
@@ -447,6 +459,7 @@ p5  <- make_panel( 5, col = "deepskyblue3")
 p10 <- make_panel(10, col = "tomato")
 p20 <- make_panel(20, col = "steelblue")
 combined <- plot_grid(p5, p10, p20, ncol = 3, align = "hv")
+combined <- combined + theme(plot.background = element_rect(fill = "black", colour = NA))
 print(combined)
 ```
 
@@ -457,6 +470,7 @@ print(combined)
 
 ## Outputs >> 1D
 - Esta red tiene 1 input, 4 neuronas y dos outputs
+
 ![](../Imagenes/dos_outputs.png){fig-align="center" width="80%"}
 
 ## Outputs >> 1D
@@ -531,6 +545,7 @@ ggplot(df, aes(x = x, y = y, color = which)) +
  
 ## Inputs >> 1D
 - Esta red tiene inputs de dos dimensiones, 3 neuronas y output de 1 dimensión
+
 ![](../Imagenes/dos_inputs.png){fig-align="center" width="80%"} 
  
  
@@ -547,6 +562,7 @@ ggplot(df, aes(x = x, y = y, color = which)) +
 ## Inputs >> 1D: gráficamente 
 - El input de cada unidad oculta es una función lineal de $x_1$ y $x_2$, osea un plano orientado. Las lineas son curvas de nivel
 - A cada plano le aplicamos una función ReLU
+
 ![](../Imagenes/dos_inputs_graf1.png){fig-align="center" width="80%"}
 
 ## Inputs >> 1D: gráficamente 
@@ -562,6 +578,7 @@ ggplot(df, aes(x = x, y = y, color = which)) +
 ## Inputs >> 1D: gráficamente 
 - Ponderamos los planos recortados 
 - El resultado es una superficie compuesta por regiones poligonales lineales convexas por partes
+
 ![](../Imagenes/output.png){fig-align="center" width="80%"}
 
 ## Caso General
@@ -574,6 +591,7 @@ ggplot(df, aes(x = x, y = y, color = which)) +
 ## Caso general
 - ¿Cuántos parámetros va a tener una red que se ve así?
 <!-- 3 inputs (3*4 + 4*2  = 12 + 8 = 20) -->
+
 ![](../Imagenes/parametros_graph.png){fig-align="center" width="80%"}
 
 
@@ -637,6 +655,7 @@ ggplot(df, aes(x = x, y = y, color = which)) +
 
 
 ## ¿Cómo se ve esto?
+
 ![](../Imagenes/explicacion_dos_redes.png){fig-align="center" width="80%"}
 
 
@@ -648,6 +667,7 @@ ggplot(df, aes(x = x, y = y, color = which)) +
 - En esta última gráfica vemos como nuestras x en gris se mapean al mismo $y'$
 
 ## Ejemplo de como se ve esto: 
+
 ![](../Imagenes/ejemplo_dos_redes.png){fig-align="center" width="80%"}
 
 
@@ -657,12 +677,14 @@ ggplot(df, aes(x = x, y = y, color = which)) +
 ## Comparación: 
 - ¿Cuántos parámetros y cuántas regiones produce esta red?
 <!-- 20 parámetros y 9 o más regiones-->
+
 ![](../Imagenes/dos_redes.png){fig-align="center" width="80%"}
 
 
 ## Comparación: 
 - ¿Cuántos parámetros y cuántas regiones produce esta red?
 <!-- 19 parámetros y cuando mucho 7 regiones-->
+
 ![](../Imagenes/red_seis_nodos.png){fig-align="center" width="80%"}
 
  
@@ -684,18 +706,18 @@ ggplot(df, aes(x = x, y = y, color = which)) +
 4. El resultado es una combinación lineal de estas unidades ocultas
 
 
-## Hyperparámetros
+## Hiperparámetros
 
-- ¿Qué es un hyperparámetro?
+- ¿Qué es un hiperparámetro?
 - En una red neuronal profunda tenemos: 
     - K capas: que tan profunda es la red
     - $D_k$ para $k=1,...K$ neuronas por capa: que tan ancha/larga es la red 
 - Los seleccionamos antes de entrenar el modelo 
-- Para un set de hyperparámetros el modelo describe una familia de funciones y de parámetros que determinan el modelo en particular 
+- Para un set de hiperparámetros el modelo describe una familia de funciones y de parámetros que determinan el modelo en particular 
 
-## ¿Qué es un hyperparámetro?
-- Podemos re-entrenar con otros parámetros... recordemos: optimización de hyperparámetros o busqueda de hyperparámetros. 
-- Tomando en cuenta los hyperparámetros la red representa una familia de familias que relacionan los inputs con los outputs 
+## ¿Qué es un hiperparámetro?
+- Podemos re-entrenar con otros parámetros... recordemos: optimización de hiperparámetros o busqueda de hiperparámetros. 
+- Tomando en cuenta los hiperparámetros la red representa una familia de familias que relacionan los inputs con los outputs 
 
 
 ## ¿Cómo escribimos una red neuronal profunda general?
@@ -720,15 +742,15 @@ h_3
 \end{bmatrix}x \Bigr)$$
 
 
-## ¿Cómo escribirmos una red neuronal profunda general?
+## ¿Cómo escribimos una red neuronal profunda general?
 - Podemos hacer lo anterior con todas las partes de la red y escribir todo en forma vectorial de la siguiente manera: 
-     - $\mathbf {h = a(\theta_0 + \theta x)}$
-     - $\mathbf {h' = a(\psi_0 + \Psi h)}$
-     - $y = \mathbf{\phi'_0 + \phi' h'}$
+     - $\mathbf{h} = a(\boldsymbol{\theta}_0 + \boldsymbol{\theta}\, \mathbf{x})$
+     - $\mathbf{h}' = a(\boldsymbol{\psi}_0 + \boldsymbol{\Psi}\, \mathbf{h})$
+     - $y = \boldsymbol{\phi}'_0 + \boldsymbol{\phi}'\, \mathbf{h}'$
 - Entonces podemos escribir todas las capas en términos de un vector de bias y una matriz de pesos 
-     - $\mathbf {h_1 = a(\beta_0 + \Omega_0 x)}$
-     - $\mathbf {h_2 = a(\beta_1 + \Omega_1 h_1)}$
-     - $y = \mathbf{\beta_2 + \Omega_2 h_2}$
+     - $\mathbf{h}_1 = a(\boldsymbol{\beta}_0 + \boldsymbol{\Omega}_0\, \mathbf{x})$
+     - $\mathbf{h}_2 = a(\boldsymbol{\beta}_1 + \boldsymbol{\Omega}_1\, \mathbf{h}_1)$
+     - $y = \boldsymbol{\beta}_2 + \boldsymbol{\Omega}_2\, \mathbf{h}_2$
      
      
      
@@ -736,6 +758,7 @@ h_3
 ## Hiperparámetros
 - **¿Qué es un hiperparámetro?**  
   Parámetro que se define **antes** del entrenamiento (no se aprende con backprop).
+
 - En redes profundas típicamente ajustamos:
   - **K capas:** profundidad de la red.  
   - **\(D_k\) unidades por capa \(k\):** largo de cada capa.  
@@ -773,6 +796,7 @@ h_3
 
 
 ## Redes superficiales vs profundas: número de regiones lineales
+
 ![](../Imagenes/crecimiento_parametros.png){fig-align="center" width="80%"}
 
     

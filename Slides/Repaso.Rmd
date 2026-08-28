@@ -1,15 +1,21 @@
 ---
 title: "Repaso: básicos de ML"
 author: "Fernanda Sobrino"
-date: "2025"
+date: "2026"
 output:
-  ioslides_presentation:
-    mathjax: default
+  beamer_presentation:
+    latex_engine: xelatex
+    slide_level: 2
+    includes:
+      in_header: [tema_bugambilia.tex, unicode_compat.tex]
+classoption: "aspectratio=169,12pt"
+lang: es
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.align = "center", dev = "cairo_pdf")
 ```
 
 
@@ -54,9 +60,9 @@ $$\hat{\phi} = arg \min_{\phi} L(\phi)$$
 
 ¿Por qué regresamos a la regresión lineal?
 
-    - ya todos la entendemos y podemos correrla desde 0 (en teoria)
-    - la vamos a usar como base para recordar ML básico 
-    - la vamos a usar de base para programar DL
+- ya todos la entendemos y podemos correrla desde 0 (en teoria)
+- la vamos a usar como base para recordar ML básico
+- la vamos a usar de base para programar DL
 
 
 
@@ -112,7 +118,8 @@ ggplot(df, aes(x = x, y = y, color = label)) +
     panel.grid.major = element_line(colour = "grey30"),
     panel.grid.minor = element_line(colour = "grey20"),
     axis.text        = element_text(colour = "grey80"),
-    axis.title       = element_text(colour = "grey90")
+    axis.title       = element_text(colour = "grey90"),
+    legend.position  = "none"
   )
 
 ```
@@ -122,7 +129,7 @@ ggplot(df, aes(x = x, y = y, color = label)) +
 ## Regresión lineal
 - Función de costos: cuadrática 
 
-$$L(\phi) = \sum_{i=1}^I (\phi_0 + \phi_1 x_i + y_i)^2$$
+$$L(\phi) = \sum_{i=1}^I (\phi_0 + \phi_1 x_i - y_i)^2$$
 
 ## Regresión lineal
 
@@ -191,12 +198,14 @@ combined <- plot_grid(
   ncol  = 3,
   align = "hv"
 )
+combined <- combined + theme(plot.background = element_rect(fill = "black", colour = NA))
 print(combined)
 ```
 
 
 ## Regresión lineal
 - Usamos gradient descent para encontrar el óptimo 
+
 ![](../Imagenes/gradient_descent.png){fig-align="center" width="80%"}
 
 
@@ -214,6 +223,7 @@ print(combined)
 2. iterativamente samplear minibatches de los datos, actualizando los parámetros en la dirección negativa del gradiente
 
 $$(w,b) \leftarrow (w, b) - \frac{\eta}{|B|}\sum_{i \in B_t} \nabla l(w,b)$$
+
 - donde $B_t$ es el minibatch sampleado en t, $\nabla$ el gradiente evaluado en esos puntos y $\eta$ es la tasa de aprendizaje
 
 
@@ -224,13 +234,13 @@ $$(w,b) \leftarrow (w, b) - \frac{\eta}{|B|}\sum_{i \in B_t} \nabla l(w,b)$$
     - otros algoritmos más complicados no tienen soluciones cerradas
 - ¿Por qué no hacer una búsqueda exhaustiva probando todas las combinaciones de parámetros?
     - no tan costoso si tenemos 2 parámetros 
-    - muy costoso si tenemos millones de parámetros (CCNs/RNNs/GANs/LLMs)
+    - muy costoso si tenemos millones de parámetros (CNNs/RNNs/GANs/LLMs)
 
 
 ## Regresión lineal 
-- Recordemos que podemos motivar la regresión lineal con función de pérdida cuadrática asumiendo que las observaciones vienen de observaciones medidas con ruido $N \sim (0,\sigma^2)$
+- Recordemos que podemos motivar la regresión lineal con función de pérdida cuadrática asumiendo que las observaciones vienen de observaciones medidas con ruido $N(0,\sigma^2)$
 - La verosimilitud de una y en particular la podemos escribir como: 
-$$P(x|y) = \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{1}{2\sigma^2}(y - w^Tx -b)^2}$$
+$$P(y|x) = \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{1}{2\sigma^2}(y - w^Tx -b)^2}$$
 
 
 
@@ -238,12 +248,14 @@ $$P(x|y) = \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{1}{2\sigma^2}(y - w^Tx -b)^2}$
 ## Regresión lineal 
 - Y de acuerdo al principio de máxima verosimilitud los mejores valores w y b son los que maximicen la verosimilitud de los datos observados:
 $$P(y|x) = \prod_{i=1}^n p(y_i|x_i)$$
+
 - Esto es cierto porque $y_i$,$x_i$ se samplearon de manera independiente
 
 
 ## Regresión lineal 
 - Simplificamos la maximización aplicando logaritmos: 
 $$- log P(y|x) = \sum_{i=1}^n \frac{1}{2} log(2\pi \sigma^2) + \frac{1}{2\sigma^2}(y-w^Tx-b)^2$$
+
 - El segundo término de está ecuación es igual a la pérdida cuadrática
 - Minimizar el error cuadrático medio es equivalente a la estimación de máxima verosimilitud de un modelo lineal bajo el supuesto de ruido gaussiano aditivo
 
@@ -263,6 +275,7 @@ $$R_{train}[X,y,f] = \frac{1}{n}\sum_{i=1}^n l(x,y,f(x))$$
 - Error: 
 
 $$R[p,f] = E[l(x,y,f(x))] = \int \int l(x,y,f(x))p(x,y)dx dy$$
+
 - Este nunca lo vamos a poder calcular porque no conocemos la distribución de los datos 
 
 
@@ -272,6 +285,7 @@ $$R[p,f] = E[l(x,y,f(x))] = \int \int l(x,y,f(x))p(x,y)dx dy$$
 - La pregunta central de la generalización es cuando el error de entrenamiento es lo suficientemente cercano al error $R$ (de la población)
 
 ## Overfitting vs Underfitting: 
+
 ![](../Imagenes/over_underfitting.png){fig-align="center" width="80%"}
 
 ## Overfitting vs Underfitting: 

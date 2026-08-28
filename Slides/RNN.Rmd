@@ -1,13 +1,21 @@
 ---
 title: "RNN"
 author: "Fernanda Sobrino"
-date: "2025"
-output: ioslides_presentation
+date: "2026"
+output:
+  beamer_presentation:
+    latex_engine: xelatex
+    slide_level: 2
+    includes:
+      in_header: [tema_bugambilia.tex, unicode_compat.tex]
+classoption: "aspectratio=169,12pt"
+lang: es
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.align = "center", dev = "cairo_pdf")
 ```
 
 
@@ -16,17 +24,20 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 
 
 ## Podemos hacer lo siguiente con las redes que aprendimos hasta ahora 
+
 ![](../Imagenes/caption.png){fig-align="center" width="75%"}
 
 
 
 
 ## Podemos hacer lo siguiente con las redes que aprendimos hasta ahora 
+
 ![](../Imagenes/machinetranslation.png){fig-align="center" width="75%"}
 
 
 
 ## Podemos hacer lo siguiente con las redes que aprendimos hasta ahora 
+
 ![](../Imagenes/textprediction.png){fig-align="center" width="75%"}
 
 
@@ -219,7 +230,7 @@ $$P(x_1,...,x_T) = P(x_1)\prod_{t=2}^TP(x_t|x_{t-1})$$
 # Modelos del Lenguaje
 
 ## ¿Cómo transformamos el texto en algo que la máquina pueda leer?
-- Normalmente vamos a usar pre-procesamiento y esto se basa en 3 pasos
+- Normalmente vamos a usar pre-procesamiento y esto se basa en 4 pasos
 1. Cargar el texto a la memoria
 2. Dividir los strings en tokens
 3. Construir un vocabulario y asociar cada elemento del vocabulario son un indice numérico
@@ -255,7 +266,11 @@ $$n_i \propto \frac{1}{i^\alpha} \quad \equiv\quad log n_i = -\alpha log i + c$$
 
 ## ¿Cómo aprenden los modelos del lenguaje?
 - Primero necesitamos convertir en tokens nuestro texto y aplicar probabilidades
-- $P(deep,learning,is,fun) = P(deep)P(learning|deep)P(is|deep,learning)P(fun|deep,learning,is)$
+\small
+
+$$P(deep,learning,is,fun) = P(deep)P(learning|deep)P(is|deep,learning)P(fun|deep,learning,is)$$
+
+\normalsize
 - ¿Cómo vamos a estimar estas probabilidades?
      - asumimos que tenemos un corpus enorme (todo el internet/Wikiped/..)
      - contamos
@@ -263,7 +278,7 @@ $$n_i \propto \frac{1}{i^\alpha} \quad \equiv\quad log n_i = -\alpha log i + c$$
      
 
 ## ¿Cómo aprenden los modelos del lenguaje?     
-- Hay algún problema con cacular así las probabilidades observadas de bigramas?
+- Hay algún problema con calcular así las probabilidades observadas de bigramas?
 - Que pasa con parejas raras.. o con palabras que nunca ocurren juntas
 
 
@@ -300,6 +315,7 @@ $$n_i \propto \frac{1}{i^\alpha} \quad \equiv\quad log n_i = -\alpha log i + c$$
 ## ¿Cómo vamos a medir que tan bien lo hace un modelo del lenguaje?
 - Si normalizamos y sacamos el logaritmo de la verosimilitud regresamos a la cross-entropy 
 $$ \frac{1}{n}\sum_{t=1}^n -log P(x_t|x_{t-1},...,x_1)$$
+
 - Donde P es nuestro modelo del lenguaje y $x_t$ es el token que observamos en el paso t 
 - Ahora podemos ver que tan bien lo hace el modelo independientemente de la longitud de la secuencia 
 
@@ -319,7 +335,7 @@ $$ exp \Big(\frac{1}{n}\sum_{t=1}^n -log P(x_t|x_{t-1},...,x_1)\Big)$$
 - Supongamos que tenemos una secuencia de T tokens 
 - Para poder entrenar el modelo necesitamos partir la secuencia en sub-secuencias
 - Al principio de cada época vamos a introducir cierta aleatoriedad y vamos a tirar los primeros $d \sim U[0,n)$
-- Partimos lo que queda de la secuencia en $m = \lfloor{(T-d)/n} \rfloor $
+- Partimos lo que queda de la secuencia en $m = \lfloor{(T-d)/n} \rfloor$
 - Queremos sub-secuencias de tamaño n
 - Cada una de estas subsecuencias las vamos a usar de input en el modelo 
 - Como queremos predecir el siguiente token las etiquetas van a ser las secuencias originales desplazadas un token 
@@ -370,6 +386,7 @@ $$H_t = \phi(X_tW_{xh} + H_{t-1}W_{hh} + b_h)$$
 
 
 ##  *Hidden State*
+
 ![](../Imagenes/hiddenstate.png){fig-align="center" width="75%"}
 
 
@@ -381,16 +398,17 @@ $$H_t = \phi(X_tW_{xh} + H_{t-1}W_{hh} + b_h)$$
     - inestabilidad numérica $\implies$ que los gradientes explotan o desaparezcan 
 - ya conocemos un par de técnicas para evitar esto en capas intermedias ahora veremos como hacerlo en capas recurrentes 
 
-## Recortar gradinets (gradient clipping)
+## Recortar gradientes (gradient clipping)
 - Nos va a ayudar a evitar gradientes que explotan 
 - Usando GD con una tasa de aprendizaje de $\eta$ $x \leftarrow x - \eta g$ con g el gradiente
 - Una función es  continua de Lipschitz si cumple con lo siguiente 
 
 $$|f(x) - f(y)| \leq L\|x - y\|$$
+
 - Si avanzamos un paso en el GD esto se ve así: 
 $$|f(x) - f(x - \eta g)| \leq L\eta \|g\|$$
 
-## Recortar gradinets (gradient clipping)
+## Recortar gradientes (gradient clipping)
 - Esto nos da un cota superior a cuanto va a cambiar la función objetivo cuando nos movemos 
 - Si esta cota superior no es muy grande puede se bueno y malo
     - malo nos vamos a mover muy lento 
@@ -399,12 +417,14 @@ $$|f(x) - f(x - \eta g)| \leq L\eta \|g\|$$
 - La solución sin mover mucho la tasa de aprendizaje: recortar el gradiente 
 
 
-## Recortar gradinets (gradient clipping)
+## Recortar gradientes (gradient clipping)
 
 $$g \leftarrow min\Big(1, \frac{\theta}{g}\Big)g$$
+
 - Esto asegura que la norma del gradiente nunca es mas grande que $\theta$
 - Y que el nuevo gradiente va en la dirección del original, no va a saltar el GD 
-- También reduce el efecto que cada minibatch puede tener en el entrenamiento - Esto es un truco pero no sabemos analíticamente como afecta encontrar o no el mínimo
+- También reduce el efecto que cada minibatch puede tener en el entrenamiento
+- Esto es un truco pero no sabemos analíticamente como afecta encontrar o no el mínimo
 - Solo sabemos que se usa mucho con RNNs porque vuelve el entrenamiento menos inestable 
 
 
@@ -416,7 +436,8 @@ $$g \leftarrow min\Big(1, \frac{\theta}{g}\Big)g$$
 
 
 ## Gradientes
--*hidden state* $h_t = f(x_t, h_{t-1}, w_h)$
+- *hidden state* $h_t = f(x_t, h_{t-1}, w_h)$
+
 - output del time step t: $o_t = g(h_t, w_o)$
 - Medimos el error como $L(x_1,...,x_T,y_1,...,y_T,w_h,w_o) = \frac{1}{T}\sum_{t=1}^Tl(y_t,o_t)$
 - Para propagación hacia atrás vamos a necesitar calcular 
@@ -431,7 +452,7 @@ $$= \frac{1}{T}\sum_{t=1}^T\frac{\partial l(y_t,o_t)}{\partial o_t}\frac{\partia
 ## Gradientes
 - $\frac{\partial h_t}{\partial w_h}$ se calcula de manera recurrente
 
-$$\frac\partial {h_t}{ \partial w_h} = \frac{ \partial f(x_t,h_{t-1},w_h)}{\partial  w_h} + \frac{ \partial  f(x_t,h_{t-1},w_h)}{\partial h_{t-1}}\frac{\partial h_{t-1}}{\partial w_h}$$
+$$\frac{\partial h_t}{\partial w_h} = \frac{ \partial f(x_t,h_{t-1},w_h)}{\partial  w_h} + \frac{ \partial  f(x_t,h_{t-1},w_h)}{\partial h_{t-1}}\frac{\partial h_{t-1}}{\partial w_h}$$
 
 - ¿Cómo sacamos esto? vamos a usar un truco 
 
@@ -450,13 +471,18 @@ $$a_t = b_t + \sum_{i=1}^{t-1}\Big(\prod_{j=i+1}^t c_j\Big)b_i$$
 - $c_t = \frac{\partial f(x_t,h_{t-1},w_h)}{\partial h_{t-1}}$
 - Y podemos escribirlo como: 
 
+\small
+
 $$\frac{\partial h_t}{\partial w_h} = \frac{\partial f(x_t,h_{t-1},w_h)}{\partial w_h} + \sum_{i=1}^{t-1}\Big(\prod_{j=i+1}^t \frac{\partial f(x_t,h_{j-1},w_h)}{\partial h_{j-1}}\Big)\frac{\partial f(x_t,h_{i-1},w_h)}{\partial w_h}$$
+
+\normalsize
 
 - podemos calcular esta regla de la cadena pero si es muy larga va a ser un problema 
 
 
 ## ¿Cómo calculamos el gradiente?
-- **Completo**: se puede pero va a ser muy lento y puede explotar rápidamente - **Truncado en el tiempo**:
+- **Completo**: se puede pero va a ser muy lento y puede explotar rápidamente
+- **Truncado en el tiempo**:
     - Podemos truncar la suma después de $\tau$ pasos 
     - Aproximación del verdadero gradiente 
     - El modelo se centra en la influencia de corto plazo (igual y esto no es tan mala idea)
@@ -507,16 +533,17 @@ $$\frac{\partial h_t}{\partial w_h} = \frac{\partial f(x_t,h_{t-1},w_h)}{\partia
 
 
 ## Memory cell y Gates  
+
 ![](../Imagenes/gates.png){fig-align="center" width="75%"}    
 
 
 ## Memory cell y Gates 
 
-- donde $ \odot$ es la multiplicación elemento por elemento 
+- donde $\odot$ es la multiplicación elemento por elemento 
 
 $$c_t = f_t  \odot c_{t-1} + i_t  \odot \tilde{c}_t$$
 
-- si $f_1 = $ y $i_t = 0$ la célula de memoria va a permanecer constante 
+- si $f_t = 1$ y $i_t = 0$ la célula de memoria va a permanecer constante 
 - estas dos gates son las que le dan flexibilidad al modelo 
 - y nos ayudan a resolver el problema de los gradientes que desaparecen 
 - la célula puede mantener información estable y solo modificar lo que sea necesario 
@@ -526,11 +553,12 @@ $$h_t = o_t \odot tanh(c_t)$$
 
 - si $c_t \approx 1$ entonces la *memory cell* va a impactar en las capas que siguen 
 - si $c_t \approx 0$ evitamos que la *memory cell* afecte a otras capas en $t$
-- las unidades de memoria pueden almacenar información a lo largo de varios intervalos de tiempo din afectar a la red (si la salida es cerca a 0) y de repente encenderse ($\sim 1$) y afectarla 
+- las unidades de memoria pueden almacenar información a lo largo de varios intervalos de tiempo sin afectar a la red (si la salida es cerca a 0) y de repente encenderse ($\sim 1$) y afectarla 
 
 
 
 ## Hidden state 
+
 ![](../Imagenes/lstmMC.png){fig-align="center" width="75%"}   
 
 
@@ -565,16 +593,16 @@ $$h_t = o_t \odot tanh(c_t)$$
 
 
 
-# RRNs bidereccionales
+# RNNs bidireccionales
 
-## RRNs bidereccionales
+## RNNs bidireccionales
 - Hasta ahora solo hemos tomado el contexto de antes de la palabra
 - Esto tiene sentido para algunas tareas pero para otras no tanto 
 - ¿Cómo podemos tomar el contexto de ambos lados? rnns bidireccionales 
 - Por ejemplo para detección de voz o si queremos adivinar palabras faltantes de un texto (no necesariamente la que sigue)
 
 
-## RRNs bidereccionales
+## RNNs bidireccionales
 - Implementar dos capas de RNN unidireccionales juntas en direcciones contrarias en los mismos datos va a resolver esto 
 - Para la primera el primer input es $x_1$ y el último $x_T$
 - Para la segunda el primero es $x_T$ y el último $x_1$ 
@@ -587,6 +615,7 @@ $$h_t = o_t \odot tanh(c_t)$$
  
  
 ## ¿Cómo se ven estas redes? 
+
 ![](../Imagenes/bidereccional.png){fig-align="center" width="75%"} 
 
 # Secuencias y políticas públicas
