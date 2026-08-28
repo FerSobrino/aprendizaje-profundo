@@ -1,13 +1,49 @@
-# OS / editor
-.DS_Store
+# ===== artefactos de LaTeX / R =====
+*.log
+*.aux
+*.out
+*.toc
+*.tex
+*.tex~
 .Rhistory
-*.Rproj.user
+ltximg/
 
-# logs de sesión
-handoff-trace.log
+# ===== PDFs: solo se versionan los explícitamente permitidos =====
+*.pdf
+!PoliticaIA.pdf
+!tech-help/*.pdf
+# (los PDFs de slides/ se permiten en slides/.gitignore)
 
-# material privado del instructor: respuestas completas y banco de preguntas de examen
+# ===== Python =====
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.python-version
+.env
+.venv
+env/
+venv/
+
+# ===== macOS =====
+.DS_Store
+
+# ===== datos descargados (MNIST etc.) =====
+notebooks/data/
+
+# ===== material privado del instructor =====
+# respuestas completas de tareas y banco de preguntas de presentaciones
 RespuestasTareas/
+# reactivos y banco de teoría de los exámenes
+Examenes/reactivos/
 
-# datos descargados (MNIST etc.)
-Notebooks/data/
+# ===== archivos de continuidad de sesión (solo instructora) =====
+handoff-trace.log
+TODO.org
+GIT_REMOTE
+docs/
+working-outline.md
+CLAUDE.md
+.project
+COMPACT.md
+COMPACT-archive-*.md
+REDISENO_NOTAS.md

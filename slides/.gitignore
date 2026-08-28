@@ -1,0 +1,5 @@
+# los PDFs de las slides sí se versionan, a pesar del *.pdf global
+!*.pdf
+# fuente comercial: mantener local, no subir (igual que en intro-ciencia-datos)
+*.OTF
+*.otf
