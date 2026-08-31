@@ -56,9 +56,9 @@ knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.
 
 
 ## Política de IA y tareas de práctica
-- Las 8 tareas del curso ahora son práctica **no calificada**: son la preparación directa para los exámenes
-- El uso de LLMs está permitido en todo — pero los exámenes son en clase y a mano: úsenlos para entender, no para evitar entender
-- En las presentaciones y en el proyecto es **obligatorio** entregar la transcripción completa de sus conversaciones con el LLM/agente
+- Las 8 tareas del curso son práctica no calificada: son la preparación directa para los exámenes
+- El uso de LLMs está permitido en todo — pero los exámenes son en clase y a mano: úsenlos para entender, no para evitar entender/pensar
+- En las presentaciones y en el proyecto es obligatorio entregar la transcripción completa de sus conversaciones con el LLM/agente
 
 
 ## Papers a presentar: 
@@ -72,7 +72,7 @@ knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.
 8. Double Descent — Belkin et al. (2019) / Nakkiran et al. (2019)
 
 
-## Papers a presentar (adicionales, era LLM):
+## Papers a presentar:
 9. Scaling Laws / Chinchilla — Hoffmann et al. (2022)
 10. InstructGPT (RLHF) — Ouyang et al. (2022)
 11. LoRA — Hu et al. (2021)
@@ -169,7 +169,7 @@ ggplot(data, aes(x = x1, y = x2, color = class)) +
 1. **Datos masivos**  
    - Internet y sensores generan billones de ejemplos diarios.  
 2. **Cómputo acelerado**  
-   - GPUs/TPUs permiten ejecutar en horas lo que antes tomaba meses.  
+   - GPUs permiten ejecutar en horas lo que antes tomaba meses.  
 3. **Autodiferenciación**  
    - Frameworks (PyTorch, TensorFlow) construyen grafos dinámicos y calculan gradientes por ti.  
    
@@ -178,8 +178,11 @@ ggplot(data, aes(x = x1, y = x2, color = class)) +
 
 - **AlphaGo (2016)**: vence al campeón mundial de Go usando redes profundas + MCTS.  
 - **Neural Style Transfer (2015)**: mezcla contenido y estilo de imágenes con CNNs.  
-- **Transformers & GPT (2017– )**: revolucionan NLP con atención auto-regresiva.  
-- **Vision Transformers (2020)**: llevan la atención a visión por computador.   
+- **Transformers & GPT (2017– )**: revolucionan NLP con atención auto-regresiva.
+- **Vision Transformers (2020)**: llevan la atención a visión por computador.
+- **ChatGPT / RLHF (2022)**: los LLMs se vuelven asistentes de propósito general — DL sale del laboratorio al público.
+- **Modelos de razonamiento (2024)**: RL sobre problemas verificables; el modelo "piensa" más en los problemas difíciles.
+- **Agentes (2025– )**: modelos que usan herramientas y completan tareas de varios pasos — los vamos a dirigir y auditar en este curso.
 
 
 ## División de ML 
