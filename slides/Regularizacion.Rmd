@@ -19,23 +19,33 @@ knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.
 ```
 
 
-## Regularización 
-- ¿Por qué hay una brecha de generalización entre los errores de entrenamiento y los de prueba?
-    - Overfitting 
-    - Modelo sin restricciones donde no tenemos ejemplos de entrenamiento
-- Regularización: métodos que ayudan a reducir la brecha de generalización
+## Regularización
 
+- ¿Por qué puede existir una brecha entre el error de entrenamiento y el error de prueba?
+    - El modelo puede sobreajustarse al conjunto de entrenamiento
+    - El modelo debe hacer predicciones en regiones donde no tenemos ejemplos observados
+    - El conjunto de entrenamiento puede no representar perfectamente la distribución de prueba
+- Regularización: conjunto de métodos que buscan mejorar el desempeño fuera de muestra, no solamente reducir la pérdida de entrenamiento
 
 # Regularización Explícita 
 
-## Regularización Explícita 
-- Función de pérdida estandar: $\hat{\phi} = arg\min_{\phi} L(\phi)$
-- Donde $L(\phi) = \sum_{i=1}^I \Big[l(x_i,y_i)\Big]$
-- Regularización, agregamos un término extra: 
 
-$$\hat{\phi} = arg\min_{\phi}\Big[\sum_{i=1}^I l(x_i,y_i) + \lambda g(\phi)\Big]$$
 
-- Recordemos $\lambda$ controla que tanto nos importa regularizar relativo a la función de pérdida original 
+
+## Regularización explícita
+
+- Función de pérdida estándar: $\hat{\phi} = \arg\min_{\phi} L(\phi)$
+
+- Donde, por ejemplo: $L(\phi)=\sum_{i=1}^I\ell_i(x_i,y_i,\phi)$
+
+- Con regularización agregamos un término extra:
+
+$$\hat{\phi}=\arg\min_{\phi}\left[\sum_{i=1}^I\ell_i(x_i,y_i,\phi) + \lambda g(\phi) \right]$$
+
+- $g(\phi)$ penaliza ciertos tipos de soluciones
+- $\lambda$ controla qué tanto pesa la regularización relativo a la pérdida original
+
+
 
 
 
@@ -43,39 +53,86 @@ $$\hat{\phi} = arg\min_{\phi}\Big[\sum_{i=1}^I l(x_i,y_i) + \lambda g(\phi)\Big]
 
 ![](../images/regularization.png){fig-align="center" width="80%"}
 
+## Interpretación probabilística
+
+- Recordemos que muchas funciones de pérdida se pueden construir usando máxima verosimilitud
+- Sin regularización, buscamos los parámetros que maximicen la probabilidad de los datos observados:
+
+$$ \hat{\phi} = \arg\max_{\phi} \prod_{i=1}^I P(y_i|x_i,\phi) $$
+
+- Con regularización podemos interpretar que además tenemos una creencia previa sobre los parámetros: $P(\phi)$
+
+- Esta distribución se llama **prior**
 
 
-## Interpretación probabilistica 
-- Recordemos que podemos construir las funciones de pérdida usando el criterio de máxima verosimilitud 
-$$\hat{\phi} = arg\min_{\phi}\Big[\prod_{i=1}^I P(y_i|x_i,\phi)\Big]$$
 
-- Podemos considerar el término de regularización como una prior de $P(\phi)$ que representa lo que sabemos de los parámetros antes de observar los datos 
+
 
 ## ¿Qué es una prior?
-- En estadística una prior representa el conocimiento inicial que tenemos acerca de una variable aleatoria antes de observarla 
-- La distribución de probabilidad que le asignas a algúna variable o parámetro antes de tener datos 
-- Por lo general refleja conocimiento previo sobre esa variable: conocimiento experto o la falta del mismo (podemos tener priors no informativas)
-- Cuando observamos los datos usamoes el teorema de Bayes para actualizar esta prior usando la verosimilitud de los datos observados
+
+- En estadística bayesiana, una prior representa lo que asumimos sobre una variable o parámetro antes de observar los datos
+- Puede reflejar conocimiento experto o simplemente una preferencia por ciertas soluciones
+- Por ejemplo, podemos preferir parámetros de menor magnitud
+- Después de observar los datos, combinamos:
+
+$$
+\text{prior}
++
+\text{verosimilitud}
+$$
+
+para obtener una distribución posterior
+
+
+## Interpretación probabilística
+
+- Usando $P(\phi)$ como prior, podemos buscar el máximo de la posterior:
+
+$$
+\hat{\phi}
+=
+\arg\max_{\phi}
+\left[
+\prod_{i=1}^I
+P(y_i|x_i,\phi)
+\right]
+P(\phi)
+$$
+
+- Esto se conoce como estimación MAP: $\text{Maximum A Posteriori}$
+
+- Si minimizamos el negativo del logaritmo:
+
+$$
+\hat{\phi}
+=
+\arg\min_{\phi}
+\left[
+-
+\sum_{i=1}^I
+\log P(y_i|x_i,\phi)
+-
+\log P(\phi)
+\right]
+$$
+
+- El término de regularización puede verse como: $\lambda g(\phi) \approx - \log P(\phi)$
 
 
 
-## Interpretación probabilistica 
-- Usando  $P(\phi)$ como prior podemos escribir la máxima verosimilitud como 
-
-$$\hat{\phi} = arg\min_{\phi}\Big[\prod_{i=1}^I P(y_i|x_i,\phi)P(\phi)\Big]$$
 
 
+## Regularización $L_2$
 
-- Si sacamos la - log verosimilitud entonces $\lambda g(\phi) = - log P(\phi)$
+- La regularización $L_2$ penaliza pesos con magnitud grande:
+
+$$\hat{\phi} = \arg\min_{\phi} \left[ \sum_{i=1}^I \ell_i(x_i,y_i,\phi) + \lambda \sum_j \phi_j^2 \right]$$
+
+- En redes neuronales normalmente la aplicamos a los pesos, pero no a los biases
+- Para SGD estándar, esta penalización está relacionada con **weight decay**
+- Intuición: preferimos soluciones con pesos más pequeños
 
 
-## Regularización L2 
-- Previene que los pesos se vuelvan muy grandes 
-$$\hat{\phi} = arg\min_{\phi}\Big[\sum_{i=1}^I l_i(x_i,y_i) + \lambda \sum_j \phi_j ^2\Big]$$
-
-- En redes normalmente la vamos a aplicar a los pesos pero no a los biases 
-- Se le conoce como el término de `weight decay`
-- El objetivo es que los pesos se vuelvan más pequeños y la función de pérdida más suave 
 
 
 ## Regularización L2 
@@ -84,26 +141,59 @@ $$\hat{\phi} = arg\min_{\phi}\Big[\sum_{i=1}^I l_i(x_i,y_i) + \lambda \sum_j \ph
 
 
 
-## Regularización L2 
+## Regularización $L_2$
+
 - Ya la habíamos visto con ridge regression
-- Lo que hace es que el algoritmo de aprendizaje aprenda pesos distribuidos más uniformemente entre todas las features
-- Y normalmente esto hace un modelo sencillo como una regresión menos sensible y más generalizable 
+- $L_2$ encoge los pesos hacia cero
+- Cuando hay variables correlacionadas, puede repartir peso entre ellas de forma más estable
+- En muchos problemas esto puede hacer al modelo menos sensible a pequeñas variaciones del conjunto de entrenamiento
 
+Pero:
 
-## Regularización L2 
-- ¿Por qué el weight decay mejora el error de generalización?
-1. Si la red está sobreajustando agregar la regularización quiere decir que la red tiene que equilibrar entre aprenderse los ejemplos de entrenamiento y volverse más suave. Se reduce el error relacionado a la varianza aumentando el del sesgo 
-2. Si la red está sobreparametrizada, el modelo describe áreas donde no tenemos ejemplos de entrenamiento. La regularización favorece funciones más suaves que interpolan mejor en áreas sin ejemplos. 
+$$
+\boxed{
+L_2 \text{ no garantiza mejor generalización en todos los problemas}
+}
+$$
+
+## ¿Por qué puede ayudar weight decay?
+
+- Si la red está sobreajustando, la regularización obliga a equilibrar:
+
+$$
+\text{ajustar bien entrenamiento}
+\quad vs \quad
+\text{mantener pesos pequeños}
+$$
+
+- Esto puede reducir varianza, aunque puede aumentar sesgo
+- En redes sobreparametrizadas, weight decay introduce una preferencia por soluciones de menor norma
+- Esta preferencia puede ayudar a elegir entre muchas soluciones que ajustan bien el conjunto de entrenamiento
+
+No es una garantía universal: depende de los datos, arquitectura, optimizador y fuerza de regularización.
+
 
 
 # Regularización Implícita 
 
-## Regularización Implícita
-- Recientemente descubrimos que los algoritmos basados en GD no se mueven neutralmente al mínimo de la función de pérdida sino que tienen preferencias por algunas soluciones 
-- GD hace lo siguiente $\phi_{t+1} = \phi_t - \alpha \frac{\delta L}{\delta \phi}$
-- Esta discretización causa que el GD se desvié del path continuo al mínimo global 
-- Si resolviéramos el problema de minimización de manera continua el mínimo que encontramos es el mínimo global 'verdadero' distinto a la discretización
-- Agregar regularización al GD va a hacer que el GD continuo y el discreto convergan 
+## Regularización implícita
+
+- Los algoritmos de optimización no siempre son neutrales: pueden favorecer ciertos tipos de soluciones
+- Aunque no agreguemos explícitamente un término $g(\phi)$, el proceso de entrenamiento puede introducir sesgos
+- Este efecto se conoce como **regularización implícita**
+
+Por ejemplo, Gradient Descent actualiza:
+
+$$
+\phi_{t+1}
+=
+\phi_t
+-
+\alpha
+\nabla_\phi L(\phi_t)
+$$
+
+- El learning rate, batch size, inicialización y optimizador pueden afectar qué solución encontramos
 
 
 ## Regularización Implícita
@@ -111,33 +201,87 @@ $$\hat{\phi} = arg\min_{\phi}\Big[\sum_{i=1}^I l_i(x_i,y_i) + \lambda \sum_j \ph
 ![](../images/implicit.png){fig-align="center" width="80%"}
 
 
-## Regularización Implícita
-- Vamos a agregar lo siguiente a la función de pérdida 
+## Regularización implícita en GD
 
-$$\tilde{L}_{GD}(\phi) = L(\phi) + \frac{\alpha}{4}\Big\|\frac{\partial L}{\partial \phi}\Big\|^2$$
+- Bajo ciertas aproximaciones, el GD discreto puede interpretarse como una dinámica continua sobre una pérdida modificada:
 
-- Esto obliga al GD a alejarse de lugares donde la pendiente es muy empinada
-- Esto no cambia la posición donde los gradientes son cero 
-- Pero cambia la función de pérdida en el resto de los lugares y modifica la trayectoria de optimización que podría converger a otro mínimo 
+$$
+\tilde{L}_{GD}(\phi)
+=
+L(\phi)
++
+\frac{\alpha}{4}
+\left\|
+\frac{\partial L}{\partial \phi}
+\right\|^2
+$$
 
+- Este término penaliza regiones donde la norma del gradiente es grande
+- Los puntos con gradiente cero de $L$ también son puntos críticos de este término adicional
+- Pero la trayectoria de optimización puede cambiar
+- Por eso GD puede favorecer algunas soluciones sobre otras
 
-## Regularización Implícita en SGD 
-- Buscamos una función de pérdida modificada de tal manera que la versión contuina llegue al mismo punto que el promedio de las actualizaciones del SGD. 
-$$\tilde{L}_{SGD}(\phi) = \tilde{L}_{GD}(\phi) + \frac{\alpha}{4B}\sum_{b=1}^B\Big\|\frac{\partial L_b}{\partial \phi} - \frac{\partial L}{\partial \phi}\Big\|^2$$
-$$= L(\phi) + \frac{\alpha}{4}\Big\|\frac{\partial L}{\partial \phi}\Big\|^2 + \frac{\alpha}{4B}\sum_{b=1}^B\Big\|\frac{\partial L_b}{\partial \phi} - \frac{\partial L}{\partial \phi}\Big\|^2$$
-
-- Donde $L_b$ es la pérdida del batch b de los B batches 
-- Y $L = \frac{1}{I}\sum_{i=1}^I l_i(x_i,y_i)$ y $L_b = \frac{1}{|B|}\sum_{i \in B_b} l_i(x_i,y_i)$
-
-
-
-## Regularización Implícita en SGD 
-- Acá agregamos un término extra que corresponde a la varianza de lo gradientes en un batch 
-- SGD favorece lugares donde el gradiente es estable (todos los batches coinciden en la pendiente)
-- Igual que antes esto va a modificar la trayectoria alejando la discreta de la trayectoria continua 
-- Hacia que mínimo se muevan GD/SGD va a depender del paso (learning rate), el batch size y el tipo de optimizador que utilicemos 
+Esta es una aproximación útil, no una ley exacta para cualquier red y cualquier learning rate.
 
 
+
+## Regularización implícita en SGD
+
+- Para SGD, también aparece el efecto del ruido introducido por los mini-batches
+- Una forma aproximada de verlo es mediante una pérdida modificada:
+
+$$
+\tilde{L}_{SGD}(\phi)
+=
+\tilde{L}_{GD}(\phi)
++
+\frac{\alpha}{4M}
+\sum_{m=1}^M
+\left\|
+\frac{\partial L_m}{\partial \phi}
+-
+\frac{\partial L}{\partial \phi}
+\right\|^2
+$$
+
+$$
+=
+L(\phi)
++
+\frac{\alpha}{4}
+\left\|
+\frac{\partial L}{\partial \phi}
+\right\|^2
++
+\frac{\alpha}{4M}
+\sum_{m=1}^M
+\left\|
+\frac{\partial L_m}{\partial \phi}
+-
+\frac{\partial L}{\partial \phi}
+\right\|^2
+$$
+
+- $L_m$ es la pérdida del mini-batch $m$
+- $M$ es el número de mini-batches considerados
+- El término extra mide qué tanto varían los gradientes entre mini-batches
+
+
+
+## Regularización implícita en SGD
+
+- SGD introduce ruido porque cada mini-batch produce una estimación distinta del gradiente
+- Ese ruido puede cambiar la trayectoria de optimización
+- En algunos casos, SGD puede favorecer regiones donde los gradientes de distintos mini-batches son más consistentes
+- El mínimo encontrado puede depender de: learning rate, batch size, inicialización, optimizador y schedule del learning rate
+
+La idea clave:
+
+$$
+\boxed{
+\text{optimización también puede actuar como regularización}
+}
+$$
 
 
 
@@ -145,26 +289,59 @@ $$= L(\phi) + \frac{\alpha}{4}\Big\|\frac{\partial L}{\partial \phi}\Big\|^2 + \
 # Heurísticas de regularización 
 
 
+## Batch Normalization (BN)
+
+- Idea: normalizar activaciones usando estadísticas del mini-batch
+- Restamos la media y dividimos por la desviación estándar:
+
+$$
+\hat{x}
+=
+\frac{x-\mu_B}{\sqrt{\sigma_B^2+\epsilon}}
+$$
+
+- Después aprendemos una escala y un desplazamiento:
+
+$$
+y
+=
+\gamma \hat{x}+\beta
+$$
+
+- BN puede reducir la sensibilidad a la inicialización
+- A menudo permite usar learning rates más grandes
+- En algunos casos actúa como regularizador implícito
+
+
+
 
 ## Batch Normalization (BN)
-- Esto lo hicimos en la última tarea
-- Idea: normalizar las activaciones de una capa por minibatch, restamos la media y dividimos por la desviación estándar
 
-$$  \hat{x} = \frac{x - \mu_B}{\sqrt{\sigma_B^2 + \epsilon}},\quad y = \gamma \hat{x} + \beta$$
-
-- Reduce la sensibilidad de la red a la inicialización y permite usar tasas de aprendizaje más grandes
-- Actua como regularizador implícito 
-- Acelara la convergencia y estabiliza el entrenamiento en redes muy profundas
-
+- Durante entrenamiento usamos estadísticas del mini-batch
+- Durante inferencia normalmente usamos estadísticas acumuladas durante entrenamiento
+- BN suele funcionar bien en muchas CNNs
+- Pero si los batches son muy pequeños, sus estimaciones pueden ser ruidosas
+- En esos casos a veces se usan alternativas como:
+    - LayerNorm
+    - GroupNorm
 
 
 ## Early Stopping
-- Si paramos el entrenamiento antes los pesos no tienen tiempo de aprenderse los ejemplos de entrenamiento 
-- Los pesos comienzan pequeños y no tienen tiempo de volverse más grandes 
-- Reduce la complejidad del modelo 
-- No tienes que re-entrenar, entrenas una vez pero monitoreas la validación cada T iteraciones 
-- Efecto similar a la regularización L2
-- Tiene solo un hiperparametro el número de pasos cuando términamos de entrenar
+
+- Durante entrenamiento, la pérdida de entrenamiento puede seguir bajando mientras la pérdida de validación deja de mejorar
+- Early stopping detiene el entrenamiento usando una métrica de validación
+- Esto puede evitar que el modelo se ajuste demasiado a detalles del training set
+- También ahorra tiempo de entrenamiento
+
+La idea:
+
+$$
+\boxed{
+\text{paramos antes de optimizar demasiado el training set}
+}
+$$
+
+
 
 
 ## Early Stopping
@@ -173,18 +350,32 @@ $$  \hat{x} = \frac{x - \mu_B}{\sqrt{\sigma_B^2 + \epsilon}},\quad y = \gamma \h
 
 
 ## Early Stopping
-- La manera más común de determinar cuando parar es monitoreando el error de validación y térmninar de entrenar cuando el error de validación ya no baje más que alguna $\epsilon$ para alguna cantidad de épocas o de iteraciones
-- No solo suele generalizar mejor sino que nos ahorra tiempo de entrenamiento lo cual va a ser importante para modelos muy pesados
-- Normalmente funciona mejor cuando tenemos datos con etiquetas con ruido 
-- Si tenemos datos con clases perfectamente separables (distinguir perros de gatos) `early stopping` no va a ayudar mucho 
+
+- Una regla común es monitorear la pérdida de validación
+- Terminamos cuando no mejora más que cierta tolerancia durante varias épocas
+- Hiperparámetros típicos:
+    - métrica monitoreada
+    - paciencia
+    - tolerancia mínima
+    - frecuencia de evaluación
+- Puede mejorar generalización, pero no está garantizado
+- Es especialmente útil cuando entrenar hasta convergencia empieza a degradar validación
 
 
-## Ensambles 
-- En ML básico vimos modelos de ensamble (RF, ET, etc)
-- Entrenamos varios modelos y usamos la media de sus predicciones 
-- Por lo general reduce el error de generalización pero el costo es tener que entrenar varios modelos 
-- Podriamos usar la misma ifraestructura de red con distintas inicializaciones 
-- Usar diferentes sub conjuntos de los datos de entrenamiento con reemplazo (bagging)
+
+## Ensambles
+
+- En ML básico vimos modelos de ensamble como Random Forests o Extra Trees
+- En redes neuronales también podemos entrenar varios modelos y combinar sus predicciones
+- Para regresión podemos promediar predicciones
+- Para clasificación podemos promediar probabilidades o votar por clase
+- Muchas veces reducen error fuera de muestra, pero el costo es entrenar y evaluar varios modelos
+
+Opciones comunes:
+
+- misma arquitectura con distintas inicializaciones
+- distintos subconjuntos de datos
+- distintos checkpoints del entrenamiento
 
 
 
@@ -193,31 +384,43 @@ $$  \hat{x} = \frac{x - \mu_B}{\sqrt{\sigma_B^2 + \epsilon}},\quad y = \gamma \h
 ![](../images/ensamble.png){fig-align="center" width="80%"}
 
 
-## Dropout 
-- La idea del dropout es iyectar ruido cuando hacemos el forward pass en cada capa intermedia 
-- Se llama dropout porque vamos a tirar algunas neuronas durante el entrenamiento 
-- Consiste en volver cero ciertas neuronas en cada capa antes de calcular la capa siguiente 
-- ¿Cómo inyectamos este ruido? con probabilidad de dropout $p$ cada activación $h$ es reemplazada por: 
 
-$$h'= \begin{cases} 
-      0 & with\quad probability \quad p\\
-      \frac{h}{1-p} & otherwise \\
-   \end{cases}$$
-   
+## Dropout
 
-- Por definición la esperanza es la misma $E[h'] = h$
+- Dropout inyecta ruido durante el forward pass
+- Durante entrenamiento apagamos aleatoriamente algunas activaciones
+- Con probabilidad de dropout $p$, cada activación $h$ se reemplaza por:
+
+$$
+h'
+=
+\begin{cases}
+0 & \text{con probabilidad } p\\
+\frac{h}{1-p} & \text{con probabilidad } 1-p
+\end{cases}
+$$
+
+- Esta versión se llama **inverted dropout**
+- Mantiene la esperanza:
+
+$$
+E[h'] = h
+$$  
 
 
+## Dropout
 
-## Dropout 
-- Normalmente durante las pruebas apagamos el dropout 
-- Como la red va a tener más neuronas que para las que fue entrenada
-- Usamos la probabilidad de dropout para compensar 
-- Esto se conoce como: `weight scaling inference rule`
-- Una segunda opción es usar dropout Monte carlo: 
-    - corremos la red varias veces con diferentes neuronas apagadas 
-    - combinamos los resultados 
-    - esto es parecido a ensambles 
+- Durante entrenamiento usamos dropout
+- Durante inferencia normalmente apagamos dropout
+- Como usamos inverted dropout, no necesitamos reescalar en inferencia
+- Dropout puede verse como entrenar muchas subredes que comparten pesos
+- También se puede usar Monte Carlo dropout:
+    - mantenemos dropout activo en inferencia
+    - corremos la red varias veces
+    - combinamos los resultados
+
+MC dropout se parece a un ensamble aproximado.
+
 
 ## Dropout 
 
@@ -225,11 +428,19 @@ $$h'= \begin{cases}
 
 
 ## Agregar ruido
-- Podemos interpretar dropout (como lo definimos antes) como aplicarle ruido Bernoulli multiplicativo a las activaciones de la red 
-- Las otras tres cosas a las que les podemos agregar ruido son: 
-    - los pesos 
-    - los inputs/datos de entrada
-    - las etiquetas 
+
+- Podemos interpretar dropout como ruido Bernoulli multiplicativo sobre las activaciones
+- También podemos agregar ruido controlado a:
+    - pesos
+    - inputs
+    - representaciones intermedias
+    - etiquetas
+
+Pero hay que tener cuidado:
+
+- ruido en inputs puede ayudar si preserva la etiqueta
+- ruido en etiquetas suele ser dañino si no está controlado
+
 
 
 
@@ -240,32 +451,59 @@ $$h'= \begin{cases}
 
 
 ## Transfer Learning
-- Cuando tenemos pocos ejemplos de entrenamiento, podemos usar otros datos para mejorar el desempeño
-- Pre-entrenamos la red para llevar a cabo una tarea secundaria relacionada a la tarea principal pero para la cual tenemos más datos de entrenamiento 
-- Adaptamos este modelo pre-entrenado a la tarea original 
-- Normalmente se lleva a cabo quitando la última capa y agregando una o más para producir el resultado deseado 
+
+- Cuando tenemos pocos ejemplos de entrenamiento, podemos usar un modelo preentrenado en otra tarea o dataset
+- La idea es aprovechar representaciones aprendidas previamente
+- Después adaptamos el modelo a la tarea original
+
+Formas comunes:
+
+- reemplazar la última capa y entrenar solo esa parte
+- fine-tuning parcial
+- fine-tuning de toda la red
+
+Transfer learning suele ayudar cuando la tarea fuente y la tarea objetivo están suficientemente relacionadas.
+
 
 
 ## Transfer Learning
-- La lógica detrás es que la red va a construir una buena representación interna de los datos en la tarea secundaria
-- Esta representación puede ser explotada para la tarea original 
-- También se puede ver como inicializar todos los parámetros de la red en una parte buena del espacio que puede que produzca buenos resultados
+
+- La lógica es que el modelo preentrenado ya aprendió representaciones útiles
+- Estas representaciones pueden reutilizarse en una tarea nueva
+- También puede verse como una forma de inicialización informativa
+- Si el dominio fuente y el dominio objetivo son muy diferentes, el beneficio puede ser menor o incluso negativo
+
 
 
 ## Transfer Learning
 
 ![](../images/transferlearning.png){fig-align="center" width="80%"}
 
-- Tenemos pocos datos de entrenamiento para depth estimation pero muchos para segmentation 
-- Entrenamos un modelo para segmentation quitamos las ultimas capas y las reemplazamos por unas que sirvan para depth estimation 
-- Entrenamos las nuevas capas o fine-tune toda la red
+- Tenemos pocos datos de entrenamiento para depth estimation, pero muchos para segmentation
+- Entrenamos un modelo para segmentation
+- Quitamos o reemplazamos las últimas capas
+- Entrenamos las nuevas capas o hacemos fine-tuning de toda la red
 
 
 
 ## Multi-task learning
-- Entrenamos la red para resolver distintos problemas 
-- Por ejemplo una red puede tomar una imagen y de manera simultanea aprender a segmentarla, estimar la profundidad o predecir una frase que la describa 
-- Todas estas tareas necesitan un entendimiento de la imagen 
+
+- Entrenamos una red para resolver varias tareas al mismo tiempo
+- Por ejemplo, una red puede tomar una imagen y simultáneamente:
+    - segmentarla
+    - estimar profundidad
+    - generar una descripción
+- La esperanza es que las tareas compartan representaciones útiles
+
+Pero:
+
+$$
+\boxed{
+\text{multi-task learning no siempre mejora todas las tareas}
+}
+$$
+
+Si las tareas compiten entre sí, puede haber transferencia negativa.
 
 
 ## Multi-task learning
@@ -275,10 +513,17 @@ $$h'= \begin{cases}
 
 
 ## Self-supervised learning
-- Generative: partes de cada uno de los ejemplos de entrenamiento se esconde (masked) y la tarea secundaria predice lo que falta
-    - Por ejemplo los modelos del lenguaje suelen hacer esto, enmascaran algunas palabras, aprenden a predecirlas (representaciones vectoriales de cada palabra) y luego puedes fine-tune la red a hacer casi cualquier tarea relacionada con el lenguaje 
-- Contrastive: se comparan pares de ejemplos parecidos con ejemplos que no tengan nada que ver. 
-    - Por ejemplo para imágenes la tarea secundaria es identificar si un par de imágenes son transformaciones de otra imagen o no tienen nada que ver 
+
+- En self-supervised learning construimos una tarea auxiliar usando los propios datos
+- No necesitamos etiquetas humanas explícitas para esa tarea auxiliar
+
+Ejemplos:
+
+- **Masked prediction:** escondemos partes del input y entrenamos al modelo a predecirlas
+- **Next-token prediction:** entrenamos al modelo a predecir el siguiente token
+- **Contrastive learning:** acercamos representaciones de ejemplos relacionados y alejamos ejemplos no relacionados
+
+Después podemos adaptar el modelo a una tarea supervisada mediante fine-tuning.
 
 
 ## Self-supervised learning
@@ -286,45 +531,98 @@ $$h'= \begin{cases}
 ![](../images/self.png){fig-align="center" width="95%"}
 
 
-## Augmentation 
-- En algunos casos sobre todo para imágenes podemos transformar los ejemplos de entrenamiento sin que cambie la etiqueta 
-- Podemos rotar, poner en espejo, aplicar filtros, cambiar el balance de color y la etiqueta de la imagen no va a cambiar 
-- Para texto podríamos cambiar algunas palabras por sinónimos o traducir a otro idioma
-- Para audio podemos amplificar o atenuar la frecuencia de las bandas 
-- Por lo general aumentar el training data nos va a ayudar a reducir el error de generalización 
+## Augmentation
+
+- En algunos casos podemos transformar ejemplos de entrenamiento sin cambiar su etiqueta
+- En imágenes, a veces podemos usar:
+    - flips
+    - crops
+    - cambios de color
+    - pequeñas rotaciones
+- En texto, algunas transformaciones pueden cambiar el significado, así que hay que tener cuidado
+- En audio, podemos usar transformaciones como ruido, cambios de volumen o pequeñas deformaciones temporales
+
+Data augmentation ayuda cuando las transformaciones preservan la etiqueta relevante.
 
 
 ## Catálogo rápido de técnicas de regularización
+
 - **Regularización explícita**
-  - L2 (weight decay), L1 — penalizan la magnitud de los pesos (prior Gaussiano / Laplaciano).
+  - $L_2$ / weight decay, $L_1$
+  - penalizan la magnitud de los pesos
+  - pueden interpretarse como priors bajo ciertas condiciones
+
 - **Ruido / stochasticidad**
-  - Dropout (neuronas), Input noise (jitter), Label noise (data labelling noise).
+  - Dropout
+  - input noise
+  - noise injection en activaciones o pesos
+  - label smoothing
+
 - **Arquitectura**
-  - Red más pequeña (capacity control), weight sharing (convoluciones), convoluciones en vez de FC.
-  
-  
-## Catálogo rápido de técnicas de regularización  
+  - modelos más pequeños
+  - weight sharing
+  - convoluciones en vez de capas totalmente conectadas
+
+
+## Catálogo rápido de técnicas de regularización
+
 - **Datos**
-  - Data augmentation (rotaciones, crop, traducciones), recolección/curación, synthetic data, transfer learning (pretrain + fine-tune).
+  - data augmentation
+  - recolección y curación de datos
+  - synthetic data
+  - transfer learning
+
 - **Entrenamiento**
-  - Early stopping, optimizadores (SGD vs Adam), learning-rate schedules, batch size control.
-  
-  
-## Catálogo rápido de técnicas de regularización  
+  - early stopping
+  - learning-rate schedules
+  - batch size
+  - elección del optimizador
+
+Estos últimos no siempre son “regularización” en sentido explícito, pero pueden afectar la generalización.
+
+
+
+## Catálogo rápido de técnicas de regularización
+
 - **Post-hoc / ensamblado**
-  - Ensembles, model averaging, MC-Dropout (como ensemble aproximado).
-- **Self-supervised / multi-task**
-  - Pretraining contrastivo / masked modeling; multi-task learning como regularizador vía shared representations.
+  - ensembles
+  - model averaging
+  - MC dropout
+
+- **Pretraining / tareas auxiliares**
+  - self-supervised pretraining
+  - masked modeling
+  - contrastive learning
+  - multi-task learning
+
+Estas técnicas suelen combinarse en modelos modernos.
+
 
 
 ## Tips
-- **Ojo:** Estas categorías de regularización no son mutuamente excluyentes y suelen combinarse
-- **Regla general:** empezar simple (weight decay + augmentation si hay imágenes) → medir gap train/val → añadir dropout o early stopping si overfitting persiste.  
-- **Si hay pocos datos:** prioriza data augmentation y transfer learning antes que ensanchar la red.  
-- **Cuando usar dropout:** útil en FCs profundas; en CNNs suele usarse en la última parte (fc) con p moderado (0.3–0.5).  
+
+- Estas categorías no son mutuamente excluyentes
+- Empieza simple:
+    - weight decay
+    - augmentation si las transformaciones preservan la etiqueta
+    - monitoreo claro de train/validation
+- Si hay pocos datos, suele ser mejor priorizar:
+    - data augmentation
+    - transfer learning
+    - modelos preentrenados
+- Añadir capacidad sin más datos o inductive bias puede empeorar la generalización
 
 
 ## Tips
-- **BatchNorm handy-tips:** permite lr más altas; pero si el batch es pequeño, reemplazar por *GroupNorm* o *LayerNorm*.  
-- **Medir, siempre:** reporta train loss, val loss, val accuracy y métricas por subgrupo; muestra ejemplos cualitativos donde el modelo falla.  
-- **Coste/beneficio:** balancea regularización con coste computacional y transparencia (ensambles y grandes pretrains mejoran accuracy, pero suben costo y difuminan interpretabilidad).
+
+- Dropout puede ser útil en capas densas grandes
+- En CNNs modernas, muchas veces se combina con otras técnicas y no siempre es la primera herramienta
+- BatchNorm permite a menudo learning rates más grandes
+- Si el batch es muy pequeño, considera GroupNorm o LayerNorm
+- Medir siempre:
+    - train loss
+    - validation loss
+    - métricas relevantes
+    - ejemplos cualitativos de errores
+- Balancea desempeño con costo computacional e interpretabilidad
+
