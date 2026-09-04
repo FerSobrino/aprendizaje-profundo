@@ -22,269 +22,700 @@ knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.
 # Gradientes
 
 
-## Problemas entrenando RN 
-- Para poder entrenar una red neuronal vamos a necesitar:  
-1. Una manera eficiente de calcular gradientes, los LLMs tienen alrededor de $\sim 10^{12}$ parámetros
-2. Una manera buena de inicializar los parámetros 
+## Problemas entrenando redes neuronales
+
+Para poder entrenar una red neuronal necesitamos:
+
+1. una manera eficiente de calcular gradientes;
+2. una buena manera de inicializar los parámetros;
+3. un algoritmo de optimización estable.
+
+En modelos grandes, el número de parámetros puede ser enorme, así que calcular gradientes a mano no es una opción práctica.
 
 
-## El problema con los gradientes:
-- Consideremos la siguiente red: 
+
+
+
+
+## El problema con los gradientes
+
+Consideremos la siguiente red:
 
 ![](../images/red_gradientes.png){fig-align="center" width="80%"}
 
 
-  
-## El problema con los gradientes:
-- La red anterior la podemos escribir como: 
-    - $h_1 = a(\beta_0 + \Omega_0 x)$
-    - $h_2 = a(\beta_1 + \Omega_2 h_1)$
-    - $h_3 = a(\beta_2 + \Omega_2 h_2)$
-    - $f(x, \phi) = \beta_3 + \Omega_3 h_3$
-    
-- ¿Qué necesitamos para entrenar esta red?
-    - $L(\phi) = \sum_{i=1}^I l(f(x, \phi))$
-    - $\phi_{t+1} \leftarrow \phi_t - \alpha \sum_{i \in B_t} \frac{\partial ℓ_i(\phi_t)}{\partial \phi}$
-    - Necesitamos las parciales: $\frac{\partial ℓ_i(\phi_t)}{\beta_k}$ y $\frac{\partial ℓ_i(\phi_t)}{\Omega_k}$
-    
-    
-    
+## El problema con los gradientes
+
+Podemos escribir la red como una composición:
+
+$$
+h_1=a(\beta_0+\Omega_0x)
+$$
+
+$$
+h_2=a(\beta_1+\Omega_1h_1)
+$$
+
+$$
+h_3=a(\beta_2+\Omega_2h_2)
+$$
+
+$$
+f(x,\phi)=\beta_3+\Omega_3h_3
+$$
+
+
+
+## El problema con los gradientes
+
+Para entrenar necesitamos una pérdida:
+
+$$
+L(\phi)
+=
+\sum_{i=1}^{n}
+\ell(f(x_i,\phi),y_i)
+$$
+
+Y actualizamos usando mini-batch SGD:
+
+$$
+\phi_{t+1}
+=
+\phi_t
+-
+\alpha
+\frac{1}{|B_t|}
+\sum_{i\in B_t}
+\nabla_\phi \ell_i(\phi_t)
+$$
+
+Por lo tanto necesitamos derivadas como $\dfrac{\partial \ell_i}{\partial \beta_k}$ y $\dfrac{\partial \ell_i}{\partial \Omega_k}$.
+
+
+
+
 ## Gradientes
-- Las parciales de la función de pérdida nos dicen como cambia la pérdida cuando cambiamos un poco los parámetros
-- Los algoritmos de optimización aprovechan esta info para cambiar los parámetros y disminuir la pérdida 
-- Cuando tenemos una red neuronal:
-    - Cada $w_k \in \Omega_k$ esta en una regresión lineal que luego pasa por una activación y luego pasa a la siguiente capa
-    - Entonces el $\Delta w_k$ es amplificado o atenuado por la red 
-    - Este cambio puede tener efectos domino en la siguiente capa
-    - Para saber como afecta $w_k$ la pérdida necesitamos saber como afecta a todas las capas 
-    
-    
-## Recordemos:
-- Forward pass (propagación hacia adelante): recorrer la red hacia adelante, dado un conjunto de parámetros y un ejemplo de entrenamiento $x$ obtenemos el output $\hat{y}$ y calculamos la función de pérdida para ver como lo hace en relación al y verdadero. 
-- Backward pass (propagación hacia atrás): recorremos la red al revés utilizando la regla de la cadena, el objetivo es encontrar los gradientes para poder actualizar los pesos usando los algoritmos de optimización
-    
-    
+
+Las parciales de la pérdida nos dicen cómo cambia la pérdida cuando cambiamos un poco los parámetros.
+
+En una red neuronal:
+
+- cada parámetro afecta una transformación intermedia;
+- esa transformación afecta a la siguiente capa;
+- el efecto se propaga hasta la salida;
+- la salida afecta la pérdida.
+
+Para saber cómo un parámetro afecta la pérdida, necesitamos seguir todo ese camino.
+
+Ese camino se calcula con la regla de la cadena.
+
+
+
+
+## Recordemos
+
+**Forward pass:**
+
+Recorremos la red hacia adelante. Dado $x_i$ y los parámetros, calculamos:
+
+$$
+\hat y_i=f(x_i,\phi)
+$$
+
+y después la pérdida:
+
+$$
+\ell(f(x_i,\phi),y_i)
+$$
+
+**Backward pass:**
+
+Recorremos la red hacia atrás usando la regla de la cadena para calcular los gradientes necesarios para actualizar los pesos.
+
 
 ## Ejemplo sencillo
-- Tenemos la siguiente función: podemos pensar que es una red neuronal superficial con un solo input y un solo output  
 
-$$f(x,\phi) = \beta_3 + \omega_3 cos(\beta_2 + \omega_2 e^{\beta_1+\omega_1sin(\beta_0 + \omega_0x)})$$
+Consideremos la función:
 
-- Y una función de pérdida $L(\phi) = \sum_{i} ℓ_i$
-- Donde $ℓ_i = (f(x,\phi) - y)^2$
-- Si queremos por ejemplo saber como un pequeño cambio en $\beta_3$ afecta la función de pérdida necesitamos $\frac{\partial ℓ_i}{\partial \beta_3}$
+$$
+f(x,\phi)
+=
+\beta_3
++
+\omega_3
+\cos\left(
+\beta_2
++
+\omega_2
+\exp\left(
+\beta_1+
+\omega_1
+\sin(\beta_0+\omega_0x)
+\right)
+\right)
+$$
+
+Podemos verla como una red pequeña con un input y un output.
+
+Usamos:
+
+$$
+\ell_i=(f(x_i,\phi)-y_i)^2
+$$
+
 
 
 ## Ejemplo sencillo
-- En este ejemplo podríamos calcular todas estas parciales a mano
-- Pero.. algunas de estas expresiones son muy complicadas y además hay redundancia de la cual nos podemos aprovechar 
-- Vamos a usar el algoritmo de propagación hacia atrás para solucionar esto: 
-    - forward pass donde calculamos y guardamos los valores intermedios y la salida de la red
-    - backward pass calculamos las parciales de cada parámetro y las reusamos para calcular las parciales mas complejas 
+
+Podríamos calcular todas las parciales a mano.
+
+Pero:
+
+- las expresiones se vuelven largas rápidamente;
+- hay muchos cálculos repetidos;
+- podemos reutilizar derivadas intermedias.
+
+Backpropagation resuelve esto mediante:
+
+1. forward pass: calcular y guardar valores intermedios;
+2. backward pass: calcular gradientes de atrás hacia adelante.
+
+
+
 
 ## Ejemplo sencillo: forward pass
-1. Escribimos nuestra red como una serie de funciones intermedias
-2. Calculamos estas en vez de la función super compleja 
-    - $f_0 = \beta_0 +\omega_0 x_i$
-    - $h_1 = sin(f_0)$
-    - $f_1 = \beta_1 + \omega_1 h_1$
-    - $h_2 = e^{f_1}$
-    - $f_3 = \beta_2 + \omega_2 h_2$
-    - $h_3 = cos(f_3)$
-    - $f_3 = \beta_3 + \omega_3 h_3$
-    - $ℓ_i = (f_3 - y_i)^2$
-    
-## Ejemplo sencillo: backward pass
-1. Calculamos las parciales de la función de pérdida con respecto a estas funciones intermedias (de atrás hacia adelante)
-- $\frac{\partial ℓ_i}{\partial f_3} = 2(f_3 - y_i)$
-- $\frac{\partial ℓ_i}{\partial h_3} = \frac{\partial f_3}{\partial h_3} \frac{\partial ℓ_i}{\partial f_3}$
-- Podemos seguir haciendo esto hasta llegar a: 
-- $\frac{\partial ℓ_i}{\partial f_0} = \frac{\partial h_1}{\partial f_0} \frac{\partial f_1}{\partial h_1} \frac{\partial h_2}{\partial f_1} \frac{\partial f_2}{\partial h_2} \frac{\partial h_3}{\partial f_2} \frac{\partial f_3}{\partial h_3} \frac{\partial ℓ_i}{\partial f_3}$
-- Tenemos todas las parciales necesarias porque las calculamos en el paso anterior 
+
+Escribimos la función como una serie de pasos intermedios:
+
+$$
+\begin{aligned}
+f_0&=\beta_0+\omega_0x_i &\qquad h_1&=\sin(f_0)\\
+f_1&=\beta_1+\omega_1h_1 &\qquad h_2&=\exp(f_1)\\
+f_2&=\beta_2+\omega_2h_2 &\qquad h_3&=\cos(f_2)\\
+f_3&=\beta_3+\omega_3h_3 &\qquad \ell_i&=(f_3-y_i)^2
+\end{aligned}
+$$
 
 ## Ejemplo sencillo: backward pass
-- Ok pero no queremos las parciales con respecto a estas funciones intermedias las que necesitamos son las de los pesos $\beta$ y $\omega$
-- Podemos hacer lo mismo que antes: 
-    - $\frac{\partial ℓ_i}{\partial \omega_k} = \frac{\partial f_k}{\partial \omega_k} \frac{\partial ℓ_i}{\partial f_k}$
-- Hacer esto es más sencillo y eficiente que calcular las parciales de manera individual    
-   
-   
+
+Empezamos desde la pérdida: $\dfrac{\partial \ell_i}{\partial f_3}=2(f_3-y_i)$.
+
+Luego aplicamos la regla de la cadena:
+
+$$
+\frac{\partial \ell_i}{\partial h_3}
+=
+\frac{\partial \ell_i}{\partial f_3}
+\frac{\partial f_3}{\partial h_3}
+$$
+
+Y podemos seguir hacia atrás hasta llegar a:
+
+$$
+\frac{\partial \ell_i}{\partial f_0}
+=
+\frac{\partial \ell_i}{\partial f_3}
+\frac{\partial f_3}{\partial h_3}
+\frac{\partial h_3}{\partial f_2}
+\frac{\partial f_2}{\partial h_2}
+\frac{\partial h_2}{\partial f_1}
+\frac{\partial f_1}{\partial h_1}
+\frac{\partial h_1}{\partial f_0}
+$$
+
+
+## Ejemplo sencillo: backward pass
+
+Pero no queremos solo derivadas respecto a variables intermedias.
+
+Queremos derivadas respecto a los parámetros:
+
+$$
+\frac{\partial \ell_i}{\partial \omega_k}
+\qquad
+\frac{\partial \ell_i}{\partial \beta_k}
+$$
+
+Usamos otra vez la regla de la cadena:
+
+$$
+\frac{\partial \ell_i}{\partial \omega_k}
+=
+\frac{\partial \ell_i}{\partial f_k}
+\frac{\partial f_k}{\partial \omega_k}
+$$
+
+Esto es más eficiente que recalcular cada derivada desde cero.
+    
+
+
+
 ## Ejemplo sencillo: backward pass
 
 ![](../images/backwardpass.png){fig-align="center" width="80%"}
 
 
-## Ejemplo en forma vectoria/matricial de backprop
-- Tenemos la siguiente red
+## Ejemplo vectorial/matricial de backprop
+
+Tenemos la siguiente red:
 
 ![](../images/redbackprop.png){fig-align="center" width="80%"}
 
-## Ejemplo en forma vectoria/matricial de backprop
-1. Forward pass: escribir la red como una serie de funciones intermedias
-- $f_0 = \beta_0 + \Omega_0 x_i$
-- $h_1 = a(f_0)$
-- $f_1 = \beta_1 + \Omega_1 h_1$
-- $h_2 = a(f_1)$
-- $f_2 = \beta_2 + \Omega_2 h_2$
-- $h_3 = a(f_3)$
-- $f_3 = \beta_3 + \Omega_3 h_3$
-- $ℓ_i = l(f_3,y_i)$
-
-## Ejemplo en forma vectoria/matricial de backprop
-2. Backward pass: encontramos las parciales en términos de otras parciales 
-- $\frac{\partial ℓ_i}{\partial f_2} = \frac{\partial h_3}{\partial f_2}\frac{\partial f_3}{\partial h_3}\frac{\partial ℓ_i}{\partial f_3}$
-- Pero casi todas estas parciales son relativamente sencillas: 
-    - $\frac{\partial f_3}{\partial h_3} = \frac{\partial}{\partial h_3}(\beta_3 + \Omega_3 h_3) = \Omega_3^T$
-    - Si las funciones de activación son ReLU $max(0,x)$ entonces $\frac{\partial h_3}{\partial f_2} = \frac{\partial a}{\partial f_2} = \mathbf{1}[f_2 >0]$
 
 
-## Ejemplo en forma vectoria/matricial de backprop
-- Nos faltan las derivadas con respecto a los parámetros
-- $\frac{\partial ℓ_i}{\partial \beta_k} = \frac{\partial f_k}{\partial \beta_k}\frac{\partial ℓ_i}{\partial f_k} = \frac{\partial}{\partial \beta_k} (\beta_k +\Omega_k h_k) \frac{\partial ℓ_i}{\partial f_k} = \frac{\partial ℓ_i}{\partial f_k}$
-- $\frac{\partial ℓ_i}{\partial \Omega_k} = \frac{\partial f_k}{\partial \Omega_k}\frac{\partial ℓ_i}{\partial f_k} = \frac{\partial}{\partial \Omega_k} (\beta_k +\Omega_k h_k) \frac{\partial ℓ_i}{\partial f_k} = \frac{\partial ℓ_i}{\partial f_k} h_k^T$
+
+
+## Ejemplo vectorial/matricial de backprop
+
+Forward pass:
+
+$$
+\begin{aligned}
+f_0&=\beta_0+\Omega_0x_i &\qquad h_1&=a(f_0)\\
+f_1&=\beta_1+\Omega_1h_1 &\qquad h_2&=a(f_1)\\
+f_2&=\beta_2+\Omega_2h_2 &\qquad h_3&=a(f_2)\\
+f_3&=\beta_3+\Omega_3h_3 &\qquad \ell_i&=\ell(f_3,y_i)
+\end{aligned}
+$$
+
+
+
+
+
+## Ejemplo vectorial/matricial de backprop
+
+Definimos:
+
+$$
+\delta_k
+=
+\frac{\partial \ell_i}{\partial f_k}
+$$
+
+Para la última capa, calculamos $\delta_3$ desde la pérdida.
+
+Luego propagamos hacia atrás:
+
+$$
+\delta_2
+=
+\left(\Omega_3^T\delta_3\right)
+\odot
+ a'(f_2)
+$$
+
+Si $a$ es ReLU: $a'(f_2)=\mathbf{1}[f_2>0]$.
+
+## Ejemplo vectorial/matricial de backprop
+
+Nos faltan las derivadas respecto a los parámetros.
+
+Para una capa:
+
+$$
+f_k=\beta_k+\Omega_kh_k
+$$
+
+las derivadas son:
+
+$$
+\frac{\partial \ell_i}{\partial \beta_k}
+=
+\delta_k
+\qquad
+\frac{\partial \ell_i}{\partial \Omega_k}
+=
+\delta_k h_k^T
+$$
+
+Para la primera capa podemos tomar $h_0=x_i$.
 
 
 
 ## Algoritmo de propagación hacia atrás
-- Comenzamos con la parcial $\frac{\partial ℓ_i}{\partial f_k}$ y nos movemos en reversa sobre la red
-    - $\frac{\partial ℓ_i}{\partial \beta_k} = \frac{\partial ℓ_i}{\partial f_k}$
-    - $\frac{\partial ℓ_i}{\partial \Omega_k} = \frac{\partial ℓ_i}{\partial f_k}h_k^T$
-    - $\frac{\partial ℓ_i}{\partial f_{k-1}} = \mathbf{1}[f_{k-1} >0] \odot \Omega_{k}^T \frac{\partial ℓ_i}{\partial f_k}$
-    - Acá $\odot$ es la multiplicación punto por punto y $\mathbf{1}[f_{k-1} >0]$ es un vector con 1's donde $f_{k-1} >0$, 0 en todo lo demás
+
+Backpropagation calcula los gradientes moviéndose de la salida hacia el input.
+
+Para cada capa:
+
+$$
+\frac{\partial \ell_i}{\partial \beta_k}
+=
+\delta_k
+\qquad
+\frac{\partial \ell_i}{\partial \Omega_k}
+=
+\delta_kh_k^T
+$$
+
+$$
+\delta_{k-1}
+=
+(\Omega_k^T\delta_k)
+\odot a'(f_{k-1})
+$$
+
+Si $a$ es ReLU: $a'(f_{k-1})=\mathbf{1}[f_{k-1}>0]$.
 
 
 ## Algoritmo de propagación hacia atrás
-- Este algoritmo es extremadamente eficiente
-    - Solo necesitas multiplicar matrices 
-- Pero requiere mucha memoria, tenemos que guardar todas la parciales intermedias
-- Secuencial:
-    - podemos procesar distintos batches en paralelo
-    - pero nos vamos a meter en problemas si el modelo completo no cabe en la máquina 
-    
-## Diferenciación algoritmica
-- Los frameworks modernos de deep learning calculan las parciales automáticamente 
-- Solo necesitas definir el modelo y la función de pérdida 
-- ¿Cómo? usando diferenciación algorítmica 
-    - Cada componente sabe su derivada
-    - Por ejemplo $z_{out} = relu(z_{in})$ sabe la derivada de $z_{out}$ en relación a $z_{in}$
-- Puede calcular el forward y el backward pass por batches en paralelo 
-- Backprop va a funcionar siempre y cuando la gráfica computacional se acyclica (que no haya loops en la red, pero puede no ser secuencial)
+
+Este algoritmo es eficiente porque reutiliza derivadas intermedias.
+
+Computacionalmente usa principalmente:
+
+- multiplicaciones de matrices;
+- operaciones elemento a elemento;
+- acumulación de gradientes por mini-batch.
+
+Pero requiere memoria.
+
+Durante el forward pass tenemos que guardar activaciones intermedias para poder usarlas en el backward pass.
+
+
+
+
+## Diferenciación algorítmica
+
+Los frameworks modernos calculan los gradientes automáticamente.
+
+Durante el **forward pass**:
+
+- calculan el output y la pérdida;
+- guardan las operaciones y valores intermedios.
+
+Durante el **backward pass**:
+
+- recorren esas operaciones en sentido contrario;
+- aplican la regla de la cadena;
+- calculan los gradientes de todos los parámetros.
+
+$$
+\text{forward}
+\rightarrow
+L
+\rightarrow
+\text{backward}
+\rightarrow
+\nabla_\phi L
+$$
+
+## Diferenciación algorítmica
+
+Backpropagation es diferenciación algorítmica en **modo reverso**: $L \rightarrow$ capas finales $\rightarrow$ capas iniciales.
+
+La red no tiene que ser una cadena simple. Puede tener:
+
+- ramas;
+- conexiones residuales;
+- operaciones reutilizadas;
+- recurrencia.
+
+En una RNN, la recurrencia se puede "desenrollar" en el tiempo, $h_1\rightarrow h_2\rightarrow\cdots\rightarrow h_T$, y después aplicar backpropagation sobre esta gráfica.
+
+$$
+\boxed{
+\text{forward pass construye el cómputo}
+\qquad
+\text{backward pass calcula los gradientes}
+}
+$$
+
 
 
 
 # Inicialización 
 
 ## ¿Cómo inicializamos los parámetros?
-- Donde comenzamos a buscar parámetros tiene efectos en como va a aprender la red y es crucial para la estabilidad numérica 
-- ¿Por qué?
-- Durante el forward pass cada $f_k$ está dada por: $f_k = \beta_k + \Omega_k h_k$, donde $h_k = a(f_{k-1})$ con a una función de activación ReLU
-- Si inicializamos todas las $\beta_k$ en 0 y los pesos de $\Omega_k \sim N(0,\sigma^2)$
-- Acá pueden pasar dos cosas dependiendo de como elegimos $\sigma$
+
+El punto donde comenzamos afecta:
+
+- estabilidad numérica;
+- magnitudes de activaciones;
+- magnitudes de gradientes;
+- velocidad de entrenamiento.
+
+Durante el forward pass:
+
+$$
+f_k=\beta_k+\Omega_kh_k
+\qquad
+h_{k+1}=a(f_k)
+$$
+
+Si usamos ReLU e inicializamos $\beta_k=0$ y $\Omega_{ij}\sim N(0,\sigma_\Omega^2)$, la elección de $\sigma_\Omega^2$ es crucial.
+
+
 
 ## ¿Cómo inicializamos los parámetros?
-1. Si $\sigma \approx 10^{-5}$: 
-    - cada elemento de $\beta_k + \Omega_k h_k$ va a ser una suma ponderada de $h_k$ con pesos muy pequeños entonces el resultado probablemente sea mas pequeño que el input
-    - como $a$ es ReLu nos deshacemos de los negativos y el rango de $h_k$ va a ser la mitad que el de $f_{k-1}$
-    - las magnitudes de las pre-activaciones se van a hacer cada vez más pequeñas 
-2. Si $\sigma \approx 10^{5}$:
-    - los pesos van a ser muy grandes 
-    - la suma ponderada va a ser mas grande que h 
-    - ReLU divide el rango a la mitad igual que antes
-    - las magnitudes se van a hacer cada vez más grandes 
 
-## ¿Por qué esto es un problema?
-- No pasa solo en el forward pass va a pasar en el backward pass
-- Generando gradientes extremadamente pequeños o extremadamente grandes 
-- Estos gradientes inestables son un problema para los algoritmos de optimización 
+Si $\sigma_\Omega$ es demasiado pequeño:
 
+- las preactivaciones tienden a hacerse pequeñas;
+- las activaciones pueden contraerse capa tras capa;
+- los gradientes también pueden hacerse muy pequeños.
 
+Si $\sigma_\Omega$ es demasiado grande:
 
+- las preactivaciones pueden crecer capa tras capa;
+- las activaciones pueden explotar;
+- los gradientes también pueden explotar.
 
-## ¿Por qué esto es un problema?
-- Consideremos el siguiente paso en una red entre f y f'
-    - $h = a(f)$
-    - $f' = \beta + \Omega h$
-- Donde $f_j$ tiene varianza $\sigma_f^2$
-- Inicializamos las $\beta_i = 0$ y $\Omega_{ij} \sim N(0,\sigma_{\Omega}^2)$
+El objetivo es mantener escalas razonables hacia adelante y hacia atrás.
+
 
 
 ## ¿Por qué esto es un problema?
-- Podemos calcular $E[f'_i]$
-$$E[f'_i] = E[\beta_i + \sum_{j=1}^{D_h} \Omega_{ij}h_j] = E[\beta_i] + \sum_{j=1}^{D_h}E[\Omega_{ij}h_j] = 0 + \sum_{j=1}^{D_h}E[\Omega_{ij}]E[h_j] = 0$$
+
+El problema aparece tanto en el forward pass como en el backward pass.
+
+Si las activaciones o gradientes se vuelven extremadamente pequeños:
+
+$$
+\text{vanishing gradients}
+$$
+
+Si se vuelven extremadamente grandes:
+
+$$
+\text{exploding gradients}
+$$
+
+Ambos problemas dificultan la optimización.
 
 
-## ¿Por qué esto es un problema?
-- Podemos calcular $\sigma_{f'}$
 
-$$\sigma_{f'}^2 = E[f_i^{'2}] - E[f_i']^2 = E[(\beta_i + \sum_{j=1}^{D_h} \Omega_{ij}h_j)^2] = E[(\sum_{j=1}^{D_h} \Omega_{ij}h_j)^2)]$$
-$$= \sum_{j=1}^{D_h} E[\Omega_{ij}^2]E[h_j^2] = \sigma_{\Omega}^2\sum_{j=1}^{D_h}E[h_j^2]$$
+## Preservar la varianza hacia adelante
 
-- Si asumimos que las pre activación son simétricas alrededor del 0, entonces la mitad van a ser negativas y se van con la ReLU
-- Entonces $\sigma_{f'}^2 = \sigma_{\Omega}^2\sum_{j=1}^{D_h}\frac{\sigma_f^2}{2} = \frac{1}{2}D_h\sigma_{\Omega}^2\sigma_f^2$ 
+Consideremos una capa:
 
-## ¿Por qué esto es un problema?
-- Si queremos que la varianza de las siguientes pre activaciones f' sea la misma que la de f necesitamos 
-$$\sigma_{\Omega}^2 = \frac{2}{D_h}$$
+$$
+h=a(f)
+\qquad
+f'=\beta+\Omega h
+$$
 
-- Donde $D_h$ es la dimensionalidad de la capa original
-- Esta se conoce como la incialización He
+Supongamos $\beta_i=0$ y $\Omega_{ij}\sim N(0,\sigma_\Omega^2)$.
 
-## ¿Por qué esto es un problema?
-- Si hacemos lo mismo pero en el backward pass vamos a llegar a que si queremos preservar la varianza necesitamos que se cumpla lo siguiente 
+Si $f$ es simétrica alrededor de cero y $a$ es ReLU, entonces aproximadamente:
 
-$$\sigma_{\Omega}^2 = \frac{2}{D_h'}$$
+$$
+E[h_j^2]\approx \frac{1}{2}\sigma_f^2
+$$
 
-- donde $D_{h'}$ es la dimensionalidad de la capa previa recorriendo de atrás hacia adelante 
-- El problema es que si $\Omega$ no es cuadrada (la cantidad de neuronas es distinta entre capas adyacentes) no hay manera de satisfacer estas dos condiciones 
+## Preservar la varianza hacia adelante
+
+Para la unidad $i$:
+
+$$
+f_i'
+=
+\sum_{j=1}^{D_h}\Omega_{ij}h_j
+$$
+
+Como los pesos tienen media cero, $E[f_i']=0$.
+
+La varianza queda aproximadamente (con ReLU):
+
+$$
+\sigma_{f'}^2
+=
+D_h\sigma_\Omega^2E[h_j^2]
+\approx
+\frac{1}{2}D_h\sigma_\Omega^2\sigma_f^2
+$$
 
 
-## Xavier Inicialization 
-- Una opción que cumple las dos condiciones que necesitamos es esta: 
 
-$$\sigma_{\Omega}^2 = \frac{4}{D_h + D_{h'}}$$
+## Inicialización He
 
-## Otras inicializaciones: 
-- La inicialización es un área de open research en DL
-- Hay muchas heuristicas
-- Dependiendo de que tipo de red y problema quieres resolver tendras que buscar algo que funcione 
+Queremos que $\sigma_{f'}^2\approx\sigma_f^2$, entonces necesitamos $\frac{1}{2}D_h\sigma_\Omega^2\approx1$.
+
+Por lo tanto:
+
+$$
+\boxed{
+\sigma_\Omega^2=\frac{2}{D_h}
+}
+$$
+
+Esta es la idea detrás de la inicialización He para ReLU.
+
+Aquí $D_h$ es el número de inputs de la capa, también llamado **fan-in**.
+
+
+
+
+
+## Inicialización y backward pass
+
+Un razonamiento parecido se puede hacer para el backward pass.
+
+Queremos que los gradientes tampoco exploten ni desaparezcan al propagarse hacia atrás.
+
+La condición hacia atrás depende del número de outputs de la capa, llamado **fan-out**.
+
+Si la capa no es cuadrada, preservar exactamente ambas varianzas al mismo tiempo puede no ser posible.
+
+Por eso las inicializaciones prácticas son compromisos diseñados para mantener escalas razonables.
+
+
+
+## Xavier/Glorot initialization
+
+Para activaciones aproximadamente simétricas como tanh, una inicialización clásica es Xavier/Glorot:
+
+$$
+\boxed{
+\sigma_\Omega^2
+=
+\frac{2}{D_{in}+D_{out}}
+}
+$$
+
+donde $D_{in}$ es el fan-in y $D_{out}$ es el fan-out.
+
+Para ReLU, normalmente se usa He initialization:
+
+$$
+\boxed{
+\sigma_\Omega^2=\frac{2}{D_{in}}
+}
+$$
+
+
+
+
+## Otras inicializaciones
+
+La inicialización sigue siendo importante en Deep Learning.
+
+Reglas prácticas útiles:
+
+- ReLU / Leaky ReLU: empezar con He initialization.
+- tanh / sigmoid: empezar con Xavier/Glorot.
+- redes muy profundas: revisar si las activaciones y gradientes explotan o desaparecen.
+
+No es magia negra, aunque a veces los tutoriales se empeñen en hacerla parecer astrología con matrices.
+
+
+
+
 
 
 # Desempeño
 
-## Desempeño 
-- Con suficientes datos las redes neuronales por lo general lo van a hacer muy bien en los conjuntos de entrenamiento pero los errores que vamos a ver en los sets de prueba van a venir de: 
-1. Incertidumbre inherente a lo que queremos resolver 
-2. Cantidad de ejemplos de entrenamiento 
-3. El modelo (hiperparámetros)
+
+## Desempeño
+
+El error en test puede venir de varias fuentes:
+
+1. ruido inherente del problema;
+2. pocos ejemplos de entrenamiento;
+3. modelo con capacidad insuficiente;
+4. modelo con demasiada flexibilidad para los datos disponibles;
+5. problemas de optimización;
+6. diferencias entre la distribución de entrenamiento y la de prueba.
+
+En Deep Learning queremos distinguir dos preguntas:
+
+$$
+\text{¿podemos optimizar el modelo?}
+\qquad
+\text{¿el modelo generaliza?}
+$$
 
 
-## Ruido, sesgo y varianza 
 
-- Ruido: el proceso generador de los datos incluye ruido así que hay varias y's validas para cada input 
-    - ruido en como medimos
-    - variables no observadas
-    - datos mal clasificados o con etiquetas erróneas 
-    - casí siempre vamos a tener ruido (los problemas no son deterministicos)
-    
-- Sesgo: desviación sistemática de la media de la función que estamos modelando
-    - el modelo no es lo suficientemente flexible 
-    
-- Varianza: la incertidumbre en el modelo ajustado que viene del conjunto de entrenamiento 
-    - con distintos set de entrenamiento vamos a tener distintos modelos 
-    - podemos tener varianza adicional por el algoritmo de optimización que seleccionemos 
-    
-## Reduciendo la varianza 
-- Podemos reducir la varianza aumentando la cantidad de ejemplos de entrenamiento 
+## Ruido, sesgo y varianza
+
+**Ruido:** parte impredecible del proceso generador de datos.
+
+Puede venir de:
+
+- error de medición;
+- variables no observadas;
+- etiquetas erróneas;
+- variabilidad inherente del fenómeno.
+
+Este error no desaparece simplemente cambiando el modelo.
+
+
+
+## Ruido, sesgo y varianza
+
+**Sesgo:** error sistemático porque la familia de modelos no puede representar bien la relación verdadera.
+
+Intuición:
+
+$$
+\text{modelo demasiado simple}
+\Rightarrow
+\text{alto sesgo}
+$$
+
+En redes neuronales, reducir sesgo suele implicar aumentar capacidad:
+
+- más neuronas;
+- más capas;
+- mejores arquitecturas.
+
+
+
+
+## Ruido, sesgo y varianza
+
+**Varianza:** sensibilidad del modelo al conjunto de entrenamiento.
+
+Si entrenamos el mismo algoritmo con distintos datasets, podemos obtener modelos distintos.
+
+La varianza puede venir de:
+
+- tamaño finito del conjunto de entrenamiento;
+- ruido en los datos;
+- flexibilidad del modelo;
+- aleatoriedad del algoritmo de entrenamiento.
+
+
+## Reduciendo la varianza
+
+Una forma usual de reducir varianza es aumentar la cantidad de datos de entrenamiento.
+
+Intuición:
+
+$$
+n\uparrow
+\quad\Rightarrow\quad
+\text{menos dependencia de ejemplos particulares}
+$$
+
+Esto suele ayudar, pero no garantiza automáticamente mejor desempeño si los datos nuevos son ruidosos, sesgados o vienen de otra distribución.
+
+
+
+
+
 
 
 ## Reduciendo la varianza     
 
 ![](../images/variance.png){fig-align="center" width="60%"}
 
-## Reduciendo el sesgo 
-- Necesitamos hacer el modelo más flexible aumentando su capacidad 
-- En las redes esto quiere decir agregar mas neuronas o mas capas intermedias 
+## Reduciendo el sesgo
 
+Para reducir sesgo necesitamos una familia de modelos más flexible.
+
+En redes neuronales esto puede significar:
+
+- agregar neuronas;
+- agregar capas;
+- cambiar la arquitectura;
+- usar mejores representaciones.
+
+Pero aumentar capacidad también puede aumentar la varianza.
+
+Ese es el trade-off clásico.
 
 
 ## Reduciendo el sesgo
@@ -292,9 +723,27 @@ $$\sigma_{\Omega}^2 = \frac{4}{D_h + D_{h'}}$$
 ![](../images/sesgo.png){fig-align="center" width="60%"}
 
 
+## ¿Qué pasa si reducimos demasiado el sesgo?
+
+En la intuición clásica, aumentar demasiado la capacidad puede llevar a overfitting.
+
+El modelo ajusta muy bien los datos de entrenamiento, incluyendo ruido o peculiaridades de la muestra.
+
+Entonces podemos observar:
+
+$$
+R_{train}\downarrow
+$$
+
+pero:
+
+$$
+R_{test}\uparrow
+$$
+
+
 
 ## ¿Qué pasa si reducimos el sesgo? overfitting 
-- Más capacidad describe mejor los ejemplos de entrenamiento pero no la función 
 
 ![](../images/overfitting.png){fig-align="center" width="60%"}
 
@@ -307,15 +756,40 @@ $$\sigma_{\Omega}^2 = \frac{4}{D_h + D_{h'}}$$
 
 ## ¿Qué es double descent?
 
-- La itución de ML básico nos dice que a + capacidad + overfitting
-- Esto no va a ser cierto con las redes (RF, ensambles)
-- En esta región el modelo se memoriza los datos de entrenamiento pero puede encontrar soluciones que generalizen 
-- Aumentamos aún más la capacidad del modelo, lo sobreparametrizamos y después el error de prueba vuelve a disminuir 
-- Vamos a tener dos zonas con error bajo:
-    - sub-parametrizada
-    - sobre-parametrizada
-- El umbral crítico acá es la capacidad mínima para lograr error de entrenamiento cercano a 0 
-- Ojo: no es ley! depende de los datos, la optimización, regularización, etc 
+La intuición clásica dice:
+
+$$
+\text{más capacidad}
+\Rightarrow
+\text{menos sesgo pero más riesgo de overfitting}
+$$
+
+Pero en modelos modernos muchas veces vemos otro patrón.
+
+Al aumentar la capacidad:
+
+1. baja el error de test;
+2. luego sube cerca del umbral de interpolación;
+3. después vuelve a bajar en el régimen sobreparametrizado.
+
+A este patrón se le llama **double descent**.
+
+
+## ¿Qué es double descent?
+
+El umbral de interpolación ocurre cerca del punto donde el modelo apenas puede lograr:
+
+$$
+R_{train}\approx0
+$$
+
+Tenemos tres zonas:
+
+- **subparametrizada:** el modelo no tiene suficiente capacidad;
+- **cerca del umbral de interpolación:** puede ajustar los datos, pero puede ser inestable;
+- **sobreparametrizada:** hay muchas soluciones que interpolan los datos.
+
+Ojo: double descent no es una ley universal. Depende de datos, ruido, arquitectura y optimización.
 
 
 ## ¿Qué es double descent?
@@ -325,63 +799,122 @@ $$\sigma_{\Omega}^2 = \frac{4}{D_h + D_{h'}}$$
 
 
 ## ¿Qué es double descent?
-- Intuición: 
-    - Región baja-capacidad: el modelo no puede representar la función + sesgo
-    - Umbral de interpolación: el modelo puede ajustar los datos ruidosos + varianza
-    - Región sobre-parametrizada: hay muchas soluciones que interpolan - error de prueba 
-- Factores que afectan el dd: 
-    - Tamaño del conjunto de entrenamiento 
-    - Ruido en las etiquetas 
-    - Regularización 
-    - Arquitectura y algoritmo de optimización 
+
+Intuición:
+
+- En baja capacidad, el modelo no puede representar bien la función.
+- Cerca del umbral de interpolación, puede ajustar los datos pero quizá de forma inestable.
+- En sobreparametrización, existen muchas soluciones que ajustan entrenamiento.
+- El algoritmo de optimización y la inicialización pueden sesgar la búsqueda hacia algunas soluciones y no otras.
+
+La pregunta difícil es:
+
+$$
+\boxed{
+\text{¿por qué algunas de esas soluciones generalizan bien?}
+}
+$$
+
 
 
 
 ## ¿Qué es double descent?
-- Esto se descubrio hace poco, es inesperado y algo desconcertante
-- Desconcertante: 
-    - El rendimiento en la prueba continua mejorando con la capacidad incluso después de que el rendimiento del conjunto de entrenamiento sea perfecto 
-- Confuso: 
-    - No es claro porque pasa esto
-    - Un modelo sobre-parametrizado ya no tiene suficientes datos de entrenamiento para caracterizar los parámetros del modelo de forma única 
-- Sesgo inductivo: la tendencia de un modelo a priorizar una solución sobre otra al interpolar entre puntos de datos 
+
+Double descent es desconcertante porque el error de test puede seguir mejorando incluso después de que el error de entrenamiento ya es casi cero.
+
+Esto contradice la versión más simple de la historia clásica de sesgo-varianza.
+
+Una idea importante es el **sesgo inductivo**:
+
+$$
+\text{el algoritmo y la arquitectura prefieren ciertas soluciones sobre otras}
+$$
+
+Aunque muchas soluciones interpolen los datos, no todas son igualmente probables de encontrar durante el entrenamiento.
 
 
-## La maldición de la dimensionalidad 
-- Cuando tenemos datos de alta dimensionalidad 
-- Aunque tengamos muchos datos de entrenamiento 
-- La dimensión del espacio de los ejemplos va a sobrepasar la cantidad de ejemplos que tenemos 
-- En un espacio de inputs muy grande, los puntos de entrenamiento van a estar muy alejados entre si, aunque tengamos muchos 
-- Para problemas de altas dimensiones vamos a tener lo siguiente: 
-    - pequeñas regiones con ejemplos de entrenamiento
-    - regiones grandes sin nada 
+
+## La maldición de la dimensionalidad
+
+En espacios de alta dimensión, los datos se vuelven escasos.
+
+Aunque tengamos muchos ejemplos, el espacio posible de inputs puede ser enorme.
+
+Intuición:
+
+- los puntos de entrenamiento pueden estar muy alejados entre sí;
+- muchas regiones del espacio no contienen ejemplos;
+- generalizar requiere hacer supuestos sobre qué ocurre entre los puntos observados.
 
 
-## La maldición de la dimensionalidad 
-- La explicación de double descent con alta dimensionalidad 
-- A medida que aumentamos la capacidad el modelo es capaz de interpolar los puntos más cercanos de manera suave 
-- En ausencia de información sobre lo que sucede entre los puntos de entrenamiento, asumimos que la interpolacion suave tiene sentido y que probablemente va a generalizar bien a nuevos datos
-- Cuando la cantidad de parametros es cercana a la cantidad de puntos en el set de entrenamiento, el modelo se ver forzado a contorcionarse para ajustar perfectamente estos datos, volviendolo erratico
- 
- 
+## La maldición de la dimensionalidad
 
-## Double descent 
-- Esto que acabamos de ver no explica porque un modelo sobre-parametrizado genera funciones más suaves 
-- ¿Qué fomenta esta suavidad? hay dos posibles explicaciones 
-    1. la inicialización puede fomentar la suavidad 
-    2. el algoritmo de optimización puede que prefiera funciones mas suaves 
+La maldición de la dimensionalidad no es una explicación completa de double descent.
 
+Pero sí ayuda a entender por qué la generalización en alta dimensión es difícil.
+
+En ausencia de datos en gran parte del espacio, el modelo necesita algún sesgo inductivo para decidir cómo interpolar o extrapolar.
+
+En redes profundas, ese sesgo puede venir de:
+
+- la arquitectura;
+- la inicialización;
+- el algoritmo de optimización;
+- los datos usados para entrenar.
+
+
+## Double descent
+
+Una intuición posible es que, en el régimen sobreparametrizado, existen muchas soluciones que ajustan los datos.
+
+Entonces la pregunta no es solamente:
+
+$$
+\text{¿existe una solución?}
+$$
+
+sino:
+
+$$
+\text{¿qué tipo de solución encuentra el entrenamiento?}
+$$
 
 
 
 # Hiperparámetros 
 
-## ¿Cómo los escogemos en la práctica? 
+## ¿Cómo los escogemos en la práctica?
 
-- La cantidad de capas, la cantidad de neuronas por capa, el algoritmo de aprendizaje, la tasa de aprendizaje, etc
-- Normalmente los escogemos de manera empírica 
-- Usando el conjunto de validación 
-- Entrenamos modelos con distintos hiperparametros y los evaluamos en el conjunto de validación 
-- Escogemos el que lo haga mejor en el test de validación y vemos como lo hace en el de prueba 
-- Escoger hiperparametros es computacionalmente costoso 
+Algunos hiperparámetros importantes son:
+
+- número de capas;
+- número de neuronas por capa;
+- algoritmo de optimización;
+- tasa de aprendizaje;
+- batch size;
+- número de épocas.
+
+Normalmente se escogen de manera empírica usando el conjunto de validación.
+
+
+
+
+
+## ¿Cómo los escogemos en la práctica?
+
+El proceso típico es:
+
+1. entrenar varios modelos con distintos hiperparámetros;
+2. evaluarlos en el conjunto de validación;
+3. escoger la configuración con mejor desempeño en validación;
+4. evaluar una sola vez el modelo final en el conjunto de prueba.
+
+Escoger hiperparámetros puede ser computacionalmente costoso.
+
+No usamos el conjunto de prueba para tomar decisiones, porque eso contamina la evaluación final.
+
+
+
+
+
  
