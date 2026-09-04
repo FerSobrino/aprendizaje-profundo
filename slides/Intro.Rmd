@@ -180,13 +180,13 @@ ggplot(data, aes(x = x1, y = x2, color = class)) +
 - **Neural Style Transfer (2015)**: mezcla contenido y estilo de imágenes con CNNs.  
 - **Transformers & GPT (2017– )**: revolucionan NLP con atención auto-regresiva.
 - **Vision Transformers (2020)**: llevan la atención a visión por computador.
-- **ChatGPT / RLHF (2022)**: los LLMs se vuelven asistentes de propósito general — DL sale del laboratorio al público.
+- **ChatGPT / RLHF (2022)**: los LLMs se vuelven asistentes de propósito general.
 - **Modelos de razonamiento (2024)**: RL sobre problemas verificables; el modelo "piensa" más en los problemas difíciles.
-- **Agentes (2025– )**: modelos que usan herramientas y completan tareas de varios pasos — los vamos a dirigir y auditar en este curso.
+- **Agentes (2025– )**: modelos que usan herramientas y completan tareas de varios pasos.
 
 
 ## División de ML 
-- Recordemos que podemos dividir ML en tres: supervisado, no supervisado y aprendizaje por refuerzo. 
+- Recordemos que podemos dividir ML en tres: supervisado, no supervisado y aprendizaje por refuerzo.
 - Actualmente todos los métodos de vanguardia para los tres tipos incluyen aprendizaje profundo
 - Esta clase: supervisado y no supervisado
 
@@ -227,7 +227,7 @@ ggplot(data, aes(x = x1, y = x2, color = class)) +
 - Toma inputs x y predice el output y
 - Y queremos una f() tal que $y = f(x)$
 - El modelo encuentra parametros tales que $y = f(x,\phi)$
-- Aprendemos estos parametros utilizando el conjunto de entrenamiento $\{x_i,y_i\}$
+- Aprendemos estos parámetros utilizando el conjunto de entrenamiento $\{x_i,y_i\}$
 - Recordemos la diferencia entre la predicción y el valor real lo cuantificamos utilizando una función de perdida, escalar que nos dice que tan bien esta ajustando el modelo a los datos de entrenamiento
 - ¿Cómo entrenamos el modelo?
 
@@ -302,11 +302,11 @@ $$\hat{\phi} = arg\min_{\phi}  \quad \quad L(\phi)$$
 
 ##  Ventajas y retos del “feature learning”
 - Ventajas:  
-  - Adaptabilidad: el modelo descubre por sí mismo qué características son relevantes para la tarea.  
+  - Adaptabilidad: el modelo descubre por sí mismo qué características son relevantes para la tarea.
   - Transferibilidad: vectores aprendidos pueden reutilizarse para tareas nuevas (transfer learning).  
 - Retos: 
   - **Datos:** gran dependencia de volumen y calidad de datos etiquetados.  
-  - **Opacidad:** “features” internos no siempre tienen interpretación clara para expertos en política.  
+  - **Opacidad:** “features” internos no siempre tienen interpretación clara para expertos en política pública.  
   - **Sobreajuste y sesgo:** sin regularización ni auditoría, el sistema puede aprender patrones no deseados.
 
 
@@ -316,7 +316,7 @@ $$\hat{\phi} = arg\min_{\phi}  \quad \quad L(\phi)$$
     - La enorme escalabilidad y complejidad pueden amplificar sesgos y errores
 1. Datos Sesgados $\implies$ resultados injustos (si solo tengo imágenes de una parte de la ciudad o si tienen mejor calidad)
 2. Interpretabilidad $\implies$ baja confianza institucional (decisiones ocultas en capas profundas no comprensibles para responsables de política)
-3. Dependencia de cajas negras (LLMs) (asumir que el modelo “piensa” y delegar toda la responsabilidad en su output)
+3. Dependencia de cajas negras (LLMs/agentes) (asumir que el modelo “piensa” y delegar toda la responsabilidad en su output)
 4. Costo ambiental: entrenamientos y despliegues masivos consumen grandes recursos energéticos. 
     
     

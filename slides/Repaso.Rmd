@@ -24,46 +24,67 @@ knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.
 
 ## Aprendizaje supervisado 
 
-Recordemos:
+Recordemos: 
 
-- Mapea los inputs a los outputs 
-- ¿Cómo? con un modelo 
-- Un modelo va a ser una familia de ecuaciones 
-- El modelo depende de parámetros
-- Cuando entrenamos el modelo encontramos los parámetros que predicen bien usando los inputs del conjunto de entrenamiento los outputs 
+- Tenemos inputs $x$ y outputs $y$
+- Queremos aprender una función que mapee inputs a outputs
+- Esta función depende de un conjunto de parámetros
+- Entrenar el modelo significa encontrar parámetros que produzcan buenas predicciones sobre los datos
 
-## Notación: 
-- Input: $x$ independientemente de la dimensión
-- Output: $y$
-- Parámetros: $\phi$
-- Modelo: $y = f(x,\phi)$
+$$
+\hat y = f(x,\phi)
+$$
+
+## Notación
+
+* Input: $x$, independientemente de su dimensión
+* Output: $y$
+* Parámetros: $\phi$
+* Modelo:
+
+$$
+\hat y = f(x,\phi)
+$$
+
 
 ## ¿Cómo entrenamos esto?
 
-Necesitamos: 
+## ¿Cómo entrenamos esto?
 
-- set de entrenamiento $\{x_i, y_i\}_{i=1}^I$
-- función de costos o de pérdida: $L(\phi)$
-    
-$$L\big[\phi,f(x,\phi), \{x_i,y_i\}_{i=1}^I\big]$$
+Necesitamos:
+
+* un conjunto de entrenamiento:  $\mathcal D_{train} = \{(x_i,y_i)\}_{i=1}^n$
+
+* una función de pérdida por observación: $ \ell(f(x_i,\phi),y_i) $
+
+* una función de pérdida sobre el conjunto de entrenamiento:
+
+$$ L(\phi) = \frac{1}{n} \sum_{i=1}^n \ell(f(x_i,\phi),y_i) $$
 
 ## ¿Cómo entrenamos esto?
-$$\hat{\phi} = arg \min_{\phi} L(\phi)$$
 
-- ¿Cómo evaluamos esto? en el set de prueba 
+Buscamos los parámetros que minimicen la pérdida:
+
+$$ \hat \phi = \arg\min_{\phi} L(\phi) $$
+
+- Entrenamos usando el conjunto de entrenamiento
+- Seleccionamos hiperparámetros usando validación
+- Evaluamos el modelo final sobre datos que no utilizamos durante el entrenamiento
 
 
 
 # Regresión lineal
 
-## Regresión lineal
+## ¿Por qué regresamos a regresión lineal?
 
-¿Por qué regresamos a la regresión lineal?
+- Ya conocemos el algoritmo
+- Podemos implementarlo desde cero
+- Nos permite recordar los componentes básicos de ML
+- Vamos a utilizarlo como puente hacia Deep Learning
 
-- ya todos la entendemos y podemos correrla desde 0 (en teoria)
-- la vamos a usar como base para recordar ML básico
-- la vamos a usar de base para programar DL
+La estructura que veremos aquí se mantiene:
 
+$$ \text{modelo} \rightarrow \text{loss} \rightarrow \text{gradiente} \rightarrow \text{optimización} $$
 
 
 ## Regresión lineal
@@ -125,198 +146,773 @@ ggplot(df, aes(x = x, y = y, color = label)) +
 ```
 
 
+## De regresión lineal a redes neuronales
 
-## Regresión lineal
-- Función de costos: cuadrática 
+En múltiples dimensiones:
 
-$$L(\phi) = \sum_{i=1}^I (\phi_0 + \phi_1 x_i - y_i)^2$$
+$$ f(x) = w^Tx+b $$
+
+Esta operación aparecerá constantemente en redes neuronales:
+
+$$ z = w^Tx+b $$
+
+Una red profunda combinará muchas transformaciones de este tipo con funciones no lineales.
+
+
+## Función de pérdida
+
+Para regresión podemos usar pérdida cuadrática:
+
+$$ L(w,b) = \frac{1}{2n} \sum_{i=1}^n (w^Tx_i+b-y_i)^2 $$
+
+Distintos parámetros producen distintas predicciones y distintas pérdidas.
+
+Nuestro objetivo es:
+
+$$ \min_{w,b} L(w,b) $$
 
 ## Regresión lineal
 
 ```{r}
 library(ggplot2)
 library(cowplot)
+
 dat1 <- data.frame(
   x = seq(0, 2, by = 0.2),
   y = c(0.30,0.75,1.05,1.15,1.25,1.40,1.50,1.65,1.70,1.80,1.95)
 )
-params1 <- list(phi0 = 0.4, phi1 =  0.2, loss =  7.11, line_col = "tomato")
+
+params1 <- list(
+  phi0 = 0.4,
+  phi1 = 0.2,
+  loss = 7.11,
+  line_col = "tomato"
+)
+
 dat2 <- data.frame(
   x = seq(0, 2, by = 0.2),
   y = c(1.00,0.90,1.10,1.30,1.45,1.60,1.75,1.85,1.95,2.00,2.10)
 )
-params2 <- list(phi0 = 1.6, phi1 = -0.8, loss = 10.22, line_col = "gray70")
+
+params2 <- list(
+  phi0 = 1.6,
+  phi1 = -0.8,
+  loss = 10.22,
+  line_col = "gray70"
+)
 
 dat3 <- data.frame(
   x = seq(0, 2, by = 0.2),
   y = c(0.50,0.85,1.00,1.20,1.35,1.55,1.65,1.75,1.90,2.05,2.20)
 )
-params3 <- list(phi0 = 0.84, phi1 =  0.50, loss =  0.19, line_col = "deepskyblue3")
+
+params3 <- list(
+  phi0 = 0.84,
+  phi1 = 0.50,
+  loss = 0.19,
+  line_col = "deepskyblue3"
+)
+
 make_panel <- function(dat, pars) {
   ggplot(dat, aes(x = x, y = y)) +
     geom_point(color = "sienna1", size = 3, stroke = 1) +
-    geom_segment(aes(
-      xend = x,
-      yend = pars$phi0 + pars$phi1 * x
-    ), linetype = "dashed", color = "sienna1") +
+    geom_segment(
+      aes(
+        xend = x,
+        yend = pars$phi0 + pars$phi1 * x
+      ),
+      linetype = "dashed",
+      color = "sienna1"
+    ) +
     geom_abline(
       intercept = pars$phi0,
-      slope     = pars$phi1,
-      color     = pars$line_col,
-      size      = 1.2
+      slope = pars$phi1,
+      color = pars$line_col,
+      size = 1.2
     ) +
     labs(
       title = sprintf("Loss, L = %.2f", pars$loss),
-      x     = "x",
-      y     = "y"
+      x = "x",
+      y = "y"
     ) +
-    # square aspect, no grid
-    coord_fixed(ratio = 1, xlim = c(0,2), ylim = c(0,2)) +
+    coord_fixed(
+      ratio = 1,
+      xlim = c(0,2),
+      ylim = c(0,2)
+    ) +
     theme_minimal(base_size = 14) +
     theme(
-      plot.title       = element_text(
-                            colour = pars$line_col,
-                            size   = 16,
-                            face   = "bold",
-                            hjust  = 0.5,
-                            margin = margin(b = 10)
-                          ),
+      plot.title = element_text(
+        colour = pars$line_col,
+        size = 16,
+        face = "bold",
+        hjust = 0.5,
+        margin = margin(b = 10)
+      ),
       panel.background = element_rect(fill = "black", colour = NA),
-      plot.background  = element_rect(fill = "black", colour = NA),
+      plot.background = element_rect(fill = "black", colour = NA),
       panel.grid.major = element_blank(),
       panel.grid.minor = element_blank(),
-      axis.text        = element_text(colour = "grey80"),
-      axis.title       = element_text(colour = "grey90"),
-      plot.margin      = margin(5,5,5,5)
+      axis.text = element_text(colour = "grey80"),
+      axis.title = element_text(colour = "grey90"),
+      plot.margin = margin(5,5,5,5)
     )
 }
+
 p1 <- make_panel(dat1, params1)
 p2 <- make_panel(dat2, params2)
 p3 <- make_panel(dat3, params3)
+
 combined <- plot_grid(
   p1, p2, p3,
-  ncol  = 3,
+  ncol = 3,
   align = "hv"
 )
-combined <- combined + theme(plot.background = element_rect(fill = "black", colour = NA))
+
 print(combined)
 ```
 
 
-## Regresión lineal
-- Usamos gradient descent para encontrar el óptimo 
 
-![](../images/gradient_descent.png){fig-align="center" width="80%"}
+# Optimización
 
+## Gradient Descent
 
-## Regresión lineal
+- Queremos encontrar parámetros que minimicen: $ L(\phi) $
+- El gradiente: $\nabla_\phi L(\phi)$ nos indica cómo cambia localmente la pérdida cuando modificamos los parámetros.
 
-- Sabemos que hacer GD con todos los datos o hacer SGD con 1 solo dato a la vez no es muy eficiente o conveniente
-- En la práctica no vamos a usar GD, usaremos algo parecido a minibatch SGD
-- El tamaño de estos batches depende de factores como la memoria, aceleradores (GPUs), cuantas capas y el tamaño de los datos
-- Normalmente es entre 32 y 256
+Gradient Descent actualiza:
 
+$$ \phi_{t+1} = \phi_t - \eta \nabla_\phi L(\phi_t) $$
 
-## Regresión lineal
-- ¿Qué hace el minibatch SGD?
-1. inicializa los parámetros del modelo normalmente at 'random'
-2. iterativamente samplear minibatches de los datos, actualizando los parámetros en la dirección negativa del gradiente
+donde $\eta$ es la tasa de aprendizaje.
 
-$$(w,b) \leftarrow (w, b) - \frac{\eta}{|B|}\sum_{i \in B_t} \nabla l(w,b)$$
-
-- donde $B_t$ es el minibatch sampleado en t, $\nabla$ el gradiente evaluado en esos puntos y $\eta$ es la tasa de aprendizaje
+![](../images/gradient_descent.png){fig-align="center" width="35%"}
 
 
+## ¿Por qué no usamos siempre todos los datos?
 
-## Regresión lineal
-- ¿Por qué no usamos la solución cerrada de la regresión lineal?
-    - costo computacional de voltear matrices
-    - otros algoritmos más complicados no tienen soluciones cerradas
-- ¿Por qué no hacer una búsqueda exhaustiva probando todas las combinaciones de parámetros?
-    - no tan costoso si tenemos 2 parámetros 
-    - muy costoso si tenemos millones de parámetros (CNNs/RNNs/GANs/LLMs)
+Con Gradient Descent usamos todas las observaciones:
 
+$$ \nabla L(\phi) = \frac{1}{n} \sum_{i=1}^n \nabla_\phi \ell_i(\phi) $$
 
-## Regresión lineal 
-- Recordemos que podemos motivar la regresión lineal con función de pérdida cuadrática asumiendo que las observaciones vienen de observaciones medidas con ruido $N(0,\sigma^2)$
-- La verosimilitud de una y en particular la podemos escribir como: 
-$$P(y|x) = \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{1}{2\sigma^2}(y - w^Tx -b)^2}$$
+antes de cada actualización.
+
+Si $n$ es grande, cada actualización puede ser costosa.
+
+En el otro extremo, SGD utiliza una sola observación:
+
+$$ \nabla_\phi \ell_i(\phi) $$
+
+Esto hace actualizaciones baratas, pero el gradiente puede tener mucha variabilidad y no siempre aprovecha eficientemente el hardware.
 
 
 
+## Mini-batch SGD
 
-## Regresión lineal 
-- Y de acuerdo al principio de máxima verosimilitud los mejores valores w y b son los que maximicen la verosimilitud de los datos observados:
-$$P(y|x) = \prod_{i=1}^n p(y_i|x_i)$$
+En la práctica utilizamos un subconjunto de observaciones:
 
-- Esto es cierto porque $y_i$,$x_i$ se samplearon de manera independiente
+$$
+B_t
+\subset
+\{1,\ldots,n\}
+$$
+
+En cada iteración:
+
+1. sampleamos un mini-batch $B_t$
+2. calculamos las predicciones
+3. calculamos la pérdida
+4. calculamos los gradientes
+5. actualizamos los parámetros
+
+$$
+\phi_{t+1}
+=
+\phi_t
+-
+\frac{\eta}{|B_t|}
+\sum_{i\in B_t}
+\nabla_\phi
+\ell_i(\phi_t)
+$$
+
+## ¿Por qué mini-batches? {.smaller}
+
+Mini-batch SGD busca un compromiso entre:
+
+* costo por actualización
+* variabilidad del gradiente
+* paralelización en GPUs/TPUs
+* uso de memoria
+
+El batch size depende de:
+
+* memoria y hardware disponible
+* arquitectura del modelo
+* tamaño de cada observación
+* propiedades de la optimización
+
+**No existe un batch size universalmente óptimo.**
+
+Valores como 32, 64, 128 o 256 son comunes en algunos problemas.
 
 
-## Regresión lineal 
-- Simplificamos la maximización aplicando logaritmos: 
-$$- log P(y|x) = \sum_{i=1}^n \frac{1}{2} log(2\pi \sigma^2) + \frac{1}{2\sigma^2}(y-w^Tx-b)^2$$
+## Inicialización
 
-- El segundo término de está ecuación es igual a la pérdida cuadrática
-- Minimizar el error cuadrático medio es equivalente a la estimación de máxima verosimilitud de un modelo lineal bajo el supuesto de ruido gaussiano aditivo
+Para regresión lineal podemos empezar, por ejemplo, con:
 
+$$
+w=0
+$$
 
-## Generalización
+$$
+b=0
+$$
 
-¿Cómo vamos a medir si el modelo lo está haciendo bien o mal?
+y Gradient Descent funciona correctamente.
 
-- Error de entrenamiento: 
+En redes neuronales normalmente **no podemos inicializar todos los parámetros en cero**.
 
-$$R_{train}[X,y,f] = \frac{1}{n}\sum_{i=1}^n l(x,y,f(x))$$
+¿Por qué?
 
-## Generalización
-
-¿Cómo vamos a medir si el modelo lo está haciendo bien o mal?
-
-- Error: 
-
-$$R[p,f] = E[l(x,y,f(x))] = \int \int l(x,y,f(x))p(x,y)dx dy$$
-
-- Este nunca lo vamos a poder calcular porque no conocemos la distribución de los datos 
+Lo veremos cuando estudiemos inicialización y simetrías.
 
 
-## Generalización
-- Recordemos que el modelo con el que terminamos depende explícitamente de la selección de los conjuntos de entrenamiento 
-- Por lo que en general nuestro error de entrenamiento va a estar sesgado y no representa el $R$
-- La pregunta central de la generalización es cuando el error de entrenamiento es lo suficientemente cercano al error $R$ (de la población)
+  
+## ¿Por qué métodos iterativos?
 
-## Overfitting vs Underfitting: 
+Para regresión lineal existe una solución analítica.
+
+En ciertas condiciones:
+
+$$
+\hat w
+=
+(X^TX)^{-1}X^Ty
+$$
+
+aunque en la práctica no solemos calcular explícitamente la inversa.
+
+Podemos resolver el sistema utilizando métodos numéricos como:
+
+* QR
+* SVD
+* Cholesky
+
+Pero los modelos que veremos en Deep Learning generalmente **no tienen una solución analítica equivalente**.
+
+
+
+## ¿Por qué no hacer búsqueda exhaustiva?
+
+Supongamos que tenemos:
+
+* $d$ parámetros
+* $k$ posibles valores para cada parámetro
+
+Entonces existen: $ k^d $ combinaciones.
+
+Si tenemos $1000$ parámetros y solo $10$ valores posibles por parámetro: $ 10^{1000}$ combinaciones.
+
+Además, normalmente nuestros parámetros son continuos.
+
+El gradiente nos permite utilizar información sobre la geometría de la función de pérdida para decidir hacia dónde movernos.
+  
+  
+# Interpretación probabilística
+
+## ¿De dónde viene la pérdida cuadrática?
+
+Supongamos: $y_i = w^Tx_i+b+\epsilon_i$
+
+donde: $\epsilon_i \overset{iid}{\sim} N(0,\sigma^2)$
+
+Entonces:
+
+$$
+y_i
+\mid
+x_i,w,b
+\sim
+N(w^Tx_i+b,\sigma^2)
+$$
+
+y:
+
+$$
+p(y_i|x_i,w,b)
+=
+\frac{1}{\sqrt{2\pi\sigma^2}}
+e^{
+-\frac{1}{2\sigma^2}
+(y_i-w^Tx_i-b)^2
+}
+$$  
+
+
+## Máxima verosimilitud y MSE
+
+En lugar de maximizar la likelihood podemos minimizar la negative log-likelihood:
+
+$$
+-\log p(\mathbf y|X,w,b)
+=
+\frac{n}{2}
+\log(2\pi\sigma^2)
++
+\frac{1}{2\sigma^2}
+\sum_{i=1}^n
+(y_i-w^Tx_i-b)^2
+$$
+
+El primer término no depende de $w$ ni de $b$.
+
+Por lo tanto:
+
+$$
+\arg\max_{w,b}
+p(\mathbf y|X,w,b)
+=
+\arg\min_{w,b}
+\sum_{i=1}^n
+(y_i-w^Tx_i-b)^2
+$$
+
+Minimizar la pérdida cuadrática es equivalente a máxima verosimilitud bajo un modelo con ruido gaussiano de varianza constante.  
+
+
+
+
+## Esto aparecerá otra vez
+
+Muchas funciones de pérdida pueden entenderse probabilísticamente.
+
+Por ejemplo:
+
+$$
+\text{Gaussian}
+\Longrightarrow
+\text{MSE}
+$$
+
+$$
+\text{Bernoulli}
+\Longrightarrow
+\text{Binary Cross-Entropy}
+$$
+
+$$
+\text{Categorical}
+\Longrightarrow
+\text{Cross-Entropy}
+$$
+
+
+# Generalización
+
+## ¿Cómo sabemos si el modelo funciona?
+
+Podemos medir su desempeño sobre entrenamiento:
+
+$$
+\hat R_{train}(f)
+=
+\frac{1}{n}
+\sum_{i=1}^n
+\ell(f(x_i),y_i)
+$$
+
+Este es nuestro **riesgo empírico** sobre el training set.
+
+Pero este no es realmente nuestro objetivo.
+
+Queremos que el modelo funcione sobre observaciones nuevas.
+
+
+
+
+## Riesgo de población
+
+Idealmente queremos conocer:
+
+$$
+R(f)
+=
+E_{(X,Y)\sim P}
+[
+\ell(f(X),Y)
+]
+$$
+
+Equivalentemente:
+
+$$
+R(f)
+=
+\int
+\int
+\ell(f(x),y)
+p(x,y)
+dx\,dy
+$$
+
+Este es el riesgo de población.
+
+El problema es que no conocemos exactamente:
+
+$$
+p(x,y)
+$$
+
+por lo que normalmente no podemos calcular $R(f)$ directamente.
+
+
+
+
+## El problema de generalización
+
+Nuestro modelo final depende del conjunto de entrenamiento:
+
+$$
+\hat f
+=
+\mathcal A(\mathcal D_{train})
+$$
+
+Por eso evaluar $\hat f$ sobre los mismos datos utilizados para construirlo puede producir una estimación demasiado optimista.
+
+La pregunta central es:
+
+$$
+\boxed{
+\text{¿Qué tan bien funciona }
+\hat f
+\text{ sobre nuevas observaciones?}
+}
+$$
+
+
+# Overfitting vs Underfitting
+
+## Overfitting vs Underfitting
 
 ![](../images/over_underfitting.png){fig-align="center" width="80%"}
 
-## Overfitting vs Underfitting: 
-- Menos datos normalmente nos llevan a overfitting 
-- Cuando aumentamos los datos de entrenamiento normalmente el error del test se hace más pequeño 
-- Para muchas tareas el aprendizaje profundo lo va a hacer mejor que modelos sencillos de ML 
-- Esto es cierto en parte porque tenemos muchos datos para entrenar estos modelos
 
-## Selección de modelos 
+## Underfitting
 
-- No podemos usar el conjunto de prueba para seleccionar
-- Pero tampoco podemos solo usar el conjunto de entrenamiento porque no va a generalizar bien 
-- La solución dividir nuestros datos en 3: prueba, validación y entrenamiento
-- El de validación para poder entrenar los hiperparámetros 
+El modelo no captura suficientemente bien la estructura útil de los datos.
+
+Normalmente observamos:
+
+$$
+R_{train}
+\text{ alto}
+$$
+
+y:
+
+$$
+R_{test}
+\text{ alto}
+$$
+
+## Overfitting
+
+El modelo obtiene un desempeño muy bueno sobre entrenamiento, pero peor sobre datos nuevos.
+
+Normalmente:
+
+$$
+R_{train}
+\text{ bajo}
+$$
+
+pero:
+
+$$
+R_{test}
+>
+R_{train}
+$$
+
+La diferencia entre ambos se suele llamar:
+
+$$
+\text{generalization gap}
+$$
 
 
-## Regularización: 
-- Recordemos que una manera de combatir el overfitting es la regularización
-- Por ejemplo $l_2$: vuelve algunas de las w's muy pequeñas 
+## Más datos y generalización
 
-$$\frac{1}{n}\sum_{i=1}^n \frac{1}{2}(w^Tx_i + b - y_i)^ 2 + \frac{\lambda}{2}\|w\|$$
+En muchos problemas, aumentar el número de observaciones de entrenamiento mejora el desempeño fuera de muestra.
+
+Intuitivamente: $n\uparrow$ nos da más información sobre la distribución de los datos.
+
+Sin embargo, más datos no garantizan automáticamente un mejor modelo.
+
+También importan:
+
+* calidad de los datos
+* representatividad
+* distribución de entrenamiento y prueba
+* arquitectura
+* optimización
+* regularización
 
 
-## Regularización: 
-- Podemos aplicar regularización o weight decay a nuestro SGD
-- ¿Cómo? 
+## Deep Learning complica un poco esta historia
 
-$$ w \leftarrow (1 - \eta \lambda)w - \frac{\eta}{|B|}\sum_{i \in B} x (w^Tx + b - y)^2$$
+La intuición clásica dice:
 
-- ¿Por qué necesitamos esto? PRÓXIMAMENTE
+> modelos demasiado complejos tienden a overfittear.
 
-- pero va a ser MUY importante para las redes neuronales 
+Pero las redes neuronales modernas frecuentemente tienen: $ \text{número de parámetros} \gg \text{número de observaciones} $
 
- 
+y alcanzan en muchos casos: $ R_{train} \approx 0$
+
+sin necesariamente generalizar mal.
+
+Por lo tanto (en deep learning!):
+
+$$
+\boxed{
+\text{más parámetros}
+\not\Rightarrow
+\text{automáticamente más overfitting}
+}
+$$
+
+Volveremos a esta pregunta durante el curso.
+  
+  
+# Selección de modelos
+
+## Train, Validation y Test
+
+Tenemos tres tareas diferentes:
+
+### Training
+
+Aprender los parámetros del modelo: $ w,b,\ldots$
+
+### Validation
+
+Seleccionar hiperparámetros y modelos:
+
+$$
+\eta,
+\lambda,
+\text{batch size},
+\text{arquitectura},
+\ldots
+$$
+
+### Test
+
+Estimar el desempeño final sobre datos que no participaron en nuestras decisiones.
+  
+  
+  
+
+## Train, Validation y Test
+
+Podemos pensar en el proceso como:
+
+$$
+\mathcal D_{train}
+\longrightarrow
+\text{parámetros}
+$$
+
+$$
+\mathcal D_{validation}
+\longrightarrow
+\text{hiperparámetros / modelo}
+$$
+
+$$
+\mathcal D_{test}
+\longrightarrow
+\text{evaluación final}
+$$
+
+No debemos utilizar repetidamente el conjunto de test para tomar decisiones sobre el modelo.
+
+Si hacemos eso, empezamos indirectamente a sobreajustarnos al test set.
+
+
+# Regularización
+
+## Regularización
+
+Una manera de modificar nuestro problema de entrenamiento es añadir una penalización.
+
+Por ejemplo, regularización $L_2$:
+
+$$
+L_{reg}(w,b)
+=
+\frac{1}{n}
+\sum_{i=1}^n
+\frac{1}{2}
+(w^Tx_i+b-y_i)^2
++
+\frac{\lambda}{2}
+\|w\|_2^2
+$$
+
+donde:
+
+$$
+\lambda \geq 0
+$$
+
+controla la fuerza de la regularización.
+
+  
+
+## ¿Qué hace $L_2$?
+
+$L_2$ penaliza pesos de magnitud grande:
+
+$$
+\frac{\lambda}{2}
+\|w\|_2^2
+=
+\frac{\lambda}{2}
+\sum_j w_j^2
+$$
+
+Esto tiende a producir pesos de menor magnitud.
+
+Normalmente no regularizamos el intercepto $b$.
+  
+  
+  
+## $L_2$ y SGD
+
+Sabemos que:
+
+$$
+\nabla_w
+\frac{\lambda}{2}
+\|w\|_2^2
+=
+\lambda w
+$$
+
+Entonces la actualización usando mini-batch SGD es:
+
+$$
+w
+\leftarrow
+w
+-
+\eta
+\left[
+\frac{1}{|B|}
+\sum_{i\in B}
+x_i
+(w^Tx_i+b-y_i)
++
+\lambda w
+\right]
+$$
+
+
+## Weight Decay
+
+Podemos reescribir:
+
+$$
+w
+\leftarrow
+(1-\eta\lambda)w
+-
+\frac{\eta}{|B|}
+\sum_{i\in B}
+x_i
+(w^Tx_i+b-y_i)
+$$
+
+El término:
+
+$$
+(1-\eta\lambda)w
+$$
+
+reduce ligeramente la magnitud de los pesos en cada actualización.
+
+De aquí viene el nombre:
+
+**weight decay**
+
+## ¿Por qué necesitamos regularización?
+
+PRÓXIMAMENTE.
+
+Pero esta pregunta se vuelve especialmente importante cuando tenemos modelos con:
+
+$$
+10^6,\quad
+10^9,\quad
+10^{12}
+$$
+
+parámetros.
+
+
+
+
+# De Machine Learning a Deep Learning
+
+## ¿Qué permanece igual?
+
+Hasta ahora tenemos:
+
+$$
+x
+\rightarrow
+f_\phi(x)
+\rightarrow
+L(\phi)
+\rightarrow
+\nabla_\phi L
+\rightarrow
+\text{actualización de parámetros}
+$$
+
+Esta estructura **no cambia** en Deep Learning.
+  
+
+## ¿Qué cambia?
+
+En regresión lineal:
+
+$$
+f(x)
+=
+w^Tx+b
+$$
+
+En Deep Learning tendremos composiciones:
+
+$$
+f_\phi(x)
+=
+f^{(L)}
+\left(
+f^{(L-1)}
+\left(
+\cdots
+f^{(1)}(x)
+\right)
+\right)
+$$
+
+Ahora nuestros modelos pueden tener millones o miles de millones de parámetros.
+  
+  
+  

@@ -675,7 +675,11 @@ ggplot(df, aes(x = x, y = y, color = which)) +
 
 
 ## Comparación: 
-- ¿Cuántos parámetros y cuántas regiones produce esta red?
+¿Cuántos parámetros y cuántas regiones produce esta red?
+
+- Cada capa oculta tiene 3 neuronas ReLU, así que puede dividir una región lineal en hasta $3+1=4$ regiones.
+- Como la segunda capa puede subdividir cada una de las 4 regiones creadas por la primera, el máximo es: $(3 + 1)(3 + 1) = 16$ regiones lineales.
+
 <!-- 20 parámetros y 9 o más regiones-->
 
 ![](../images/dos_redes.png){fig-align="center" width="80%"}
@@ -771,27 +775,43 @@ h_3
 | Propiedad                     | Superficiales    | Profundas          |
 |-------------------------------|------------------|--------------------|
 | Teorema de Aproximación      | ✅                | ✅                 |
-| Regiones lineales            | \(D+1\)         | \((D+1)K\)        |
-| Procesamiento local → global | ❌               | ✅                 |
+| Regiones lineales            | \(D+1\)         |  max \((D+1)^K\)        |
 | Facilidad de entrenamiento   | Difícil           | “Fácil”           |
-| Generalización               | Peor             | Mejor              |
+| Generalización               | Depende             | Depende              |
+
+- Una red superficial puede aproximar funciones muy complejas si es suficientemente ancha.
+- La ventaja de la profundidad no es simplemente "puede representar más funciones", sino que **puede representar ciertas funciones mucho más eficientemente** mediante composición.
 
 
+## Redes superficiales vs profundas: Teorema de aproximación universal
 
-## Redes superficiales vs profundas: Teorema de aproximación universal 
-- Las redes neuronales superficiales con suficiente capacidad (neuronas) pueden modelar cualquier función continua
-- Una red neuronal profunda con dos capas intermedias puede interpretarse como la composición de dos redes superficiales
-- Si la segunda red es la función identidad $\implies$ la red profunda replica a la superficial
-- Y entonces puede aproximar cualquier función continua con suficiente capacidad (neuronas y capas intermedias)
+- Una red neuronal con **una sola capa oculta**, suficiente anchura y una activación adecuada puede aproximar arbitrariamente bien cualquier función continua en un dominio compacto.
+- Por lo tanto, **la profundidad no es necesaria para aproximación universal**.
+- Las redes profundas también son aproximadores universales.
+- La ventaja de la profundidad no es simplemente poder representar funciones que una red superficial no puede, sino poder representar **ciertas funciones de forma mucho más eficiente**.
 
-
+$$
+\text{aproximación universal}
+\neq
+\text{eficiencia representacional}
+$$
 
 ## Redes superficiales vs profundas: número de regiones lineales
 
-- Una red superficial de 1 input, 1 output y D unidades ocultas crea $D+1$ regiones lineales y está definida por $3D + 1$ parámetros
-- Una red profunda con 1 input, 1 output, K capas de $D>2$ neuronas crea hasta $(D + 1)K$ regiones usando $3D + 1 + (K − 1)D(D + 1)$ parámetros
-- Las redes profundas crean funciones más complejas con una cantidad de parámetros fijos 
-- Si aumentamos las dimensiones del input $D_i$ aumentan tanto el número de parámetros como de regiones 
+Para redes ReLU con **1 input y 1 output**:
+
+- Una red superficial con $D$ neuronas ocultas puede crear hasta: $D+1$ regiones lineales.
+- Una red profunda con $K$ capas ocultas de $D>2$ neuronas cada una puede crear hasta: $(D+1)^K$ regiones lineales.
+- El número de parámetros es: $3D+1+(K-1)D(D+1)$
+- La profundidad puede hacer crecer el número de regiones **exponencialmente con $K$**, mientras que el número de parámetros crece aproximadamente de forma lineal con $K$.
+
+$$
+\boxed{
+\text{profundidad}
+\Rightarrow
+\text{mayor eficiencia representacional}
+}
+$$
 
 
 
@@ -801,23 +821,40 @@ h_3
 
     
     
-## Redes superficiales vs profundas: procesamiento de local a global
-- Solo hemos visto redes completamente conectadas 
-- Esto en general no es práctico porque genera demasiados parámetros e ignora la estructura de los datos
-- La solución por ejemplo para imágenes es procesar en paralelo distintas partes de una imagen e ir integrando más información de regiones más grandes
-- Este procesamiento de local a global solo se puede hacer con múltiples capas
+## Redes superficiales vs profundas: entrenamiento (próximamente)
 
-## Redes superficiales vs profundas: entrenamiento
-- En general es más fácil entrenar una red profunda pequeña que una red superficial muy larga
-- Empíricamente sabemos lo siguiente: 
-    - es "fácil" entrenar modelos profundos sobreparametrizados 
-    - la posible explicación es que exista una gran familia de soluciones aproximadamente equivalentes que son fáciles de encontrar
-    - pero si seguimos agregando capas se vuelve extremadamente difíciles de entrenar 
+- Aumentar la profundidad hace al modelo más expresivo, pero también puede hacer la optimización más difícil.
+- En redes muy profundas pueden aparecer problemas como gradientes que desaparecen o explotan.
+- Sin embargo, redes suficientemente sobreparametrizadas suelen ser sorprendentemente fáciles de optimizar con métodos basados en gradientes.
+- Técnicas como buena inicialización, ReLU, normalización y conexiones residuales permiten entrenar redes con decenas o cientos de capas.
+
+$$
+\boxed{
+\text{más profundidad}
+\not\Rightarrow
+\text{entrenamiento más fácil}
+}
+$$
+
 
 ## Redes superficiales vs profundas: generalización
-- Las redes profundas generalizan mejor a nuevos datos que las superficiales
-- En la practica los mejores resultados se han obtenido con redes profundas con decenas o cientos de capas intrermedias 
-- No entendemos bien porque pasa esta parte del entrenamiento y la generalización
 
- 
+- Una red más profunda **no necesariamente generaliza mejor** que una red superficial.
+- En muchas tareas, las arquitecturas profundas logran un excelente desempeño porque pueden aprender representaciones jerárquicas y aprovechar grandes cantidades de datos.
+- Redes muy sobreparametrizadas pueden alcanzar un error de entrenamiento cercano a cero e incluso memorizar etiquetas aleatorias.
+- Aun así, en datos reales pueden generalizar sorprendentemente bien.
+
+$$
+\boxed{
+\text{buena optimización}
+\neq
+\text{buena generalización}
+}
+$$
+
+
+## Redes superficiales vs profundas: generalización
+
+- La generalización depende de muchos factores: datos, arquitectura, optimización, regularización e inductive biases.
+- Entender completamente por qué las redes profundas sobreparametrizadas generalizan tan bien sigue siendo un problema activo de investigación.
  
