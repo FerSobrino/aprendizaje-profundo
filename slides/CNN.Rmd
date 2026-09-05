@@ -38,29 +38,42 @@ knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.
 ![](../images/segmentacion_imagen.png){fig-align="center" width="80%"}
 
 
-## Redes para imágenes 
+## Redes para imágenes
 
-- Vamos a tener problemas si usamos redes completamente conectadas 
-- Las imágenes normalmente son RGB's de 224x224 que son 150,528 dimensiones 
-- Por lo general las capas intermedias que usamos son más grandes que el input
-- Una capa oculta tendria 150 mil x 150 mil pesos $\sim$ 22 billones en ingles osea 22 mil millones solo de pesos en 1 capa
-- Esto no aprovecha el hecho que las imágenes tienen características particulares distintas a otros tipos de datos
-    - pixeles cercanos están relacionados estadísticamente 
-    - son estables a transformaciones
+Si usamos una red completamente conectada directamente sobre pixeles, el número de parámetros crece muy rápido.
+
+Una imagen RGB de $224\times224$ tiene $224\times224\times3=150{,}528$ dimensiones.
+
+Una sola capa completamente conectada que mapeara esa representación a otra del mismo tamaño tendría aproximadamente $150{,}528^2 \approx 22.7\times10^9$ pesos.
 
 
+## Redes para imágenes
 
-## Redes convolucionales 
-- Las CNNs son una manera creativa en la que ML va a aprovechar la estructura natural de las imágenes: 
+El problema no es solo el número de parámetros.
 
-1. Van a procesar cada región de la imagen de manera independiente 
-2. Van a compartir parámetros a lo largo de la imagen 
+Una red completamente conectada ignora dos propiedades importantes de las imágenes:
 
-- ¿Por qué esto es bueno?
+- pixeles cercanos suelen estar estadísticamente relacionados;
+- muchos patrones visuales pueden aparecer en distintas posiciones de la imagen.
 
-1. Menos parámetros 
-2. Explota la relación entre pixeles 
-3. No re-aprenden la interpretación de los pixeles mas de una vez
+Por ejemplo, un borde vertical puede aparecer a la izquierda, al centro o a la derecha.
+
+No queremos aprender un detector completamente distinto para cada posición.
+
+
+
+## Redes convolucionales
+
+Las CNNs aprovechan la estructura espacial de las imágenes usando dos ideas:
+
+1. **Localidad:** cada neurona observa una región pequeña de la imagen.
+2. **Compartición de parámetros:** el mismo filtro se aplica en muchas posiciones.
+
+Esto permite:
+
+- reducir drásticamente el número de parámetros;
+- aprender detectores locales reutilizables;
+- construir representaciones espaciales capa por capa.
 
 
 
@@ -70,15 +83,49 @@ knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.
 
 
 ## Inspiración: ¿Dónde está Wally?
-- Si creamos una red que detecte a Wally 
-- No le debería de importar en que parte de la imagen aparece 
-- Podríamos recorrer la imagen pixel por pixel o región por región y asignar a cada pedazo la probabilidad de que ahí este Wally 
-- La mayoría de las redes que manejan imágenes van a funcionar como este ejemplo
 
-## ¿Qué tipo de redes van a cumplir esto?
-1. En las primeras capas la red debe de comportarse de manera similar a las mismas regiones de la imagen, independientemente de en que parte se encuentren
-2. Las primeras capas se enfocan en regiones locales y eventualmente se agregan para predecir sobre toda la imagen 
-3. Las capas mas profundas deberian de capturar características de mayor alcance de la imagen, parecido a la visión a nivel superior en la naturaleza.
+Si queremos detectar a Wally, no debería importar demasiado si aparece:
+
+- arriba;
+- abajo;
+- a la izquierda;
+- a la derecha.
+
+Una estrategia natural sería recorrer la imagen por regiones y preguntar:
+
+$$
+\text{¿esta región contiene a Wally?}
+$$
+
+Las CNNs hacen algo parecido: aplican detectores locales en muchas partes de la imagen usando los mismos pesos.
+
+
+
+## ¿Qué tipo de redes cumplen esto?
+
+Para imágenes queremos modelos que:
+
+1. procesen regiones locales en las primeras capas;
+2. usen los mismos filtros en distintas posiciones;
+3. combinen información local para construir representaciones más globales;
+4. permitan que capas profundas tengan campos receptivos más grandes.
+
+La intuición es:
+
+$$
+\text{pixeles}
+\rightarrow
+\text{bordes/texturas}
+\rightarrow
+\text{partes}
+\rightarrow
+\text{objetos}
+$$
+
+Esta jerarquía es una intuición útil, no una descripción perfecta de lo que cada canal aprende.
+
+
+
 
 
 
@@ -86,246 +133,522 @@ knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.
 
 # Invariancia y Equivariancia
 
-## Invariancia
-- Una función $f(x)$ es invariante a una transformación $t[]$ si:
-$$f(t[x]) = f(x)$$
-
-- El resultado de la función es el mismo después de aplicar la transformación 
-
-
-
-## ¿Por qué queremos que esto se cumpla? 
-- Una foto de un perro sigue siendo un perro si la volteamos
-- Si estamos reconociendo personas nos debería de dar igual si esta en la parte de arriba o en la parte de abajo de nuestra imagen 
-
-
 
 ## Invariancia
-- Si queremos clasificar esto como una montaña nevada, mover la imagen unos cuantos pixeles a la derecha o izquierda no cambia nada 
+
+Una función $f(x)$ es invariante a una transformación $t[\cdot]$ si:
+
+$$
+f(t[x])=f(x)
+$$
+
+Es decir, el output no cambia después de aplicar la transformación.
+
+Ejemplo:
+
+$$
+\text{imagen de perro}
+\rightarrow
+\text{clase perro}
+$$
+
+Si movemos ligeramente el perro dentro de la imagen, normalmente queremos seguir clasificándolo como perro.
+
+
+
+## ¿Por qué queremos invariancia?
+
+En clasificación, muchas transformaciones pequeñas no deberían cambiar la etiqueta.
+
+Por ejemplo:
+
+- pequeñas traslaciones;
+- cambios moderados de iluminación;
+- pequeñas rotaciones;
+- cambios de escala razonables.
+
+Pero cuidado: no todas las transformaciones preservan la etiqueta.
+
+Una imagen médica, un número escrito a mano o una señal de tránsito pueden cambiar de significado si se transforman.
+
+
+
+
+
+
+
+## Invariancia
+
+Si queremos clasificar esto como una montaña nevada, mover la imagen unos cuantos pixeles a la derecha o izquierda no debería cambiar la clase.
 
 ![](../images/invarianza.png){fig-align="center" width="80%"}
 
 
 ## Equivariancia
-- Una función $f(x)$ es equivariante a una transformación $t[]$ si:
-$$f(t[x]) = t[f(x)]$$
 
-- El resultado se transforma de la misma manera que el input 
+Una función $f(x)$ es equivariante a una transformación $t[\cdot]$ si:
+
+$$
+f(t[x])=t[f(x)]
+$$
+
+Es decir, el output cambia de la misma manera que el input.
+
 
 
 ## Equivariancia
-- Trasladamos la imagen original y queremos que la segmentación también se traslade 
+
+:::: {.columns}
+::: {.column width="45%"}
+En segmentación, si movemos la imagen, queremos que la máscara también se mueva.
+
+La clase global puede quedarse igual, pero la ubicación de cada pixel segmentado debe trasladarse.
+:::
+::: {.column width="55%"}
+![](../images/equivarianza.png){width="100%"}
+:::
+::::
 
 
-![](../images/equivarianza.png){fig-align="center" width="80%"}
+## Invariancia vs equivariancia
+
+La diferencia depende de la tarea.
+
+Para clasificación, mover perro $\rightarrow$ sigue siendo perro: queremos cierta invariancia.
+
+Para segmentación, mover perro $\rightarrow$ se mueve la máscara del perro: queremos equivariancia.
+
+Las CNNs son naturalmente **equivariantes a traslaciones** de forma aproximada; la invariancia suele aparecer después mediante pooling, downsampling o agregación global.
+
 
 
 
 # Convoluciones 
 
 
-## Representación de la red 
-- Inputs imágenes de dos dimensiones X
-- Representación de la capa intermedia que sigue H
-- Con X y H con las mismas dimensiones 
-- Podemos referirnos al pixel en $(i,j)$ como $X_{i,j}$ y $H_{i,j}$
-- Y con un tensor de 4 dimensiones $W$ como pesos entonces:  
+## Representación completamente conectada
 
-$$H_{i,j,d} = U_{i,j} +\sum_k\sum_l W_{i,j,k,l}X_{k,l}$$
+Supongamos una imagen de entrada $X$ y una capa intermedia $H$.
 
-## Representación de la red 
-- Podemos reescribir esta representación de la siguiente manera 
-$$H_{i,j} = U_{i,j} + \sum_a\sum_b V_{i,j,a,b}X_{i+a,j+b}$$
+Si cada posición de $H$ puede depender de todos los pixeles de $X$, podríamos escribir:
 
-- ¿Cómo hicimos esto? reindexando de la siguiente manera
--  $k = i + a$ y $l = j + b$
-- a y b van a tener valores positivos y negativos de manera que vamos a recorrer toda la imagen 
+$$
+H_{i,j}=U_{i,j}+\sum_k\sum_l W_{i,j,k,l}X_{k,l}
+$$
 
+Aquí cada ubicación $(i,j)$ tiene sus propios pesos hacia todos los pixeles $(k,l)$.
 
-## Representación de la red 
-- Para cada ubicación $(i,j)$ en la capa itermedia $H$ su valor va a ser una suma ponderada (usando V) de todos los pixeles de X centrados en $(i,j)$
-- Si tenemos imágenes de milxmil (1 megapixel) entonces H es de las mismas dimensiones y vamos a necesitar $10^{12}$ parametros!!
+Esto es muy flexible, pero usa demasiados parámetros y no aprovecha la estructura espacial.
 
 
 
-## Invarianza a la translación
-- Ya sabemos que es esto, lo vamos a escribir en términos de la red 
-- Un movimiento en X debería de implicar un movimiento en H
-- Solo va a pasar esto si $V$ y $U$ no dependen de la ubicación del pixel, osea de $(i,j)$
+## Reindexando alrededor de cada pixel
 
-$$H_{i,j} = u + \sum_a\sum_b V_{a,b}X_{i+a,j+b}$$
+Podemos reescribir la relación anterior centrando los pixeles alrededor de $(i,j)$:
 
-- Esto es una convolución! 
-- Solo nos importan los pixeles en la vecindad $(i+a,b+j)$
+$$
+H_{i,j}=U_{i,j}+\sum_a\sum_b V_{i,j,a,b}X_{i+a,j+b}
+$$
 
+Aquí:
 
+$$
+k=i+a,
+\qquad
+l=j+b.
+$$
 
+La interpretación es:
 
-## Localidad 
-- Dadas las propiedades de las imágenes no deberíamos de ver los pixeles tan lejos de $(i,j)$
+> el valor en la posición $(i,j)$ se calcula mirando pixeles alrededor de esa posición.
 
-$$H_{i,j} = u + \sum_{a = -\Delta}^{\Delta}\sum_{b = \Delta}^{\Delta} V_{a,b}X_{i+a,j+b}$$
-
-- Normalmente $\Delta < 10$
-- V es el kernel convolucional o el filtro 
-- Ahora solo necesitamos $4\Delta^2$
-
-
-
-## ¿Por qué se llama Convolución?
-- En matemáticas una convolución entre dos funciones es 
-
-$$(f*g)(x) = \int f(z)g(x-z)dz$$
-
-- Esto mide que tanto se traslapan la función f y g, cuando una de las funciones esta volteada 
-- Discretamente seria: $(f*g)(x) = \sum_a f(a)g(i-a)$
-
-
-## ¿Por qué se llama Convolución?
-- Para tensores de dos dimensiones:
-
-$$(f*g)(i,j) = \sum_{a}\sum_bf(a,b)g(i-a,j-b)$$
-
-- En muchos frameworks de DL la operación implementada es cross-correlation (no se invierte el kernel). 
-- La diferencia es solo formal, pero la denominación “convolución” se mantiene por tradición.
-
-
-## Canales 
-- En general las imagen consisten de tres canales: rojo, verde y azul 
-- Las imágenes no son bidimensionales sino tensores de 3 dimensiones con forma $1024×1024×3$
-- El ultimo eje de esto le asigna una representación multidimensional a cada pixel
-- Entonces $X_{i,j,k}$ y $V_{a,b,c}$
-- En vez de tener una sola representación en la capa intermedia para cada ubicación espacial, vamos a tener un vector de representaciones dependiendo del número de canales
+Pero todavía tenemos pesos distintos para cada ubicación.
 
 
 
-## Canales 
-$$H_{i,j} = \sum_{a = -\Delta}^{\Delta}\sum_{b= -\Delta}^{\Delta} \sum_c V_{a,b,c,d}X_{i+a,j+b,c}$$
+## Compartición de parámetros
 
-- Donde d es el indice de los canales del output
+Para tener equivariancia aproximada a traslaciones, usamos los mismos pesos en todas las posiciones:
+
+$$
+H_{i,j}=u+\sum_a\sum_b V_{a,b}X_{i+a,j+b}
+$$
+
+Ahora $V$ ya no depende de $(i,j)$.
+
+El mismo filtro se aplica en toda la imagen.
+
+Eso es la idea central de una convolución en CNNs.
+
+
+## Localidad
+
+Además de compartir pesos, normalmente restringimos la suma a una vecindad local.
+
+Por ejemplo, con radio $\Delta$:
+
+$$
+H_{i,j}
+=
+u+
+\sum_{a=-\Delta}^{\Delta}
+\sum_{b=-\Delta}^{\Delta}
+V_{a,b}X_{i+a,j+b}
+$$
+
+El filtro tiene tamaño $(2\Delta+1)\times(2\Delta+1)$.
+
+En la práctica se usan filtros como $3\times3$, $5\times5$ o $7\times7$.
 
 
 
-## Operación de correlación cruzada 
-- Vamos a ignorar los canales por ahora 
-- Si tenemos un ventana de kernel (ventana de convolución) de $2x2$
-- La operación de correlación cruzada hace lo siguiente
-- Lo que hacemos en DL es correlación cruzada pero lo llamamos convolución
+## ¿Qué ganamos?
+
+Una capa completamente conectada sobre una imagen grande puede necesitar miles de millones de pesos.
+
+Una convolución $3\times3$ con un solo canal necesita solo:
+
+$$
+3\times3=9
+$$
+
+pesos por filtro.
+
+Con canales, el número de parámetros aumenta, pero sigue siendo mucho menor que conectar cada pixel con todos los demás.
+
+
+## ¿Por qué se llama convolución?
+
+En matemáticas, la convolución entre dos funciones puede escribirse como:
+
+$$
+(f*g)(x)=\int f(z)g(x-z)dz
+$$
+
+En versión discreta:
+
+$$
+(f*g)(i)=\sum_a f(a)g(i-a)
+$$
+
+La idea es medir cómo se combinan dos funciones mientras una se desplaza sobre la otra.
+
+
+## Convolución en dos dimensiones
+
+Para dos dimensiones:
+
+$$
+(f*g)(i,j)
+=
+\sum_a\sum_b f(a,b)g(i-a,j-b)
+$$
+
+En muchos frameworks de deep learning, la operación implementada es técnicamente **correlación cruzada**, porque no se invierte el kernel:
+
+$$
+H_{i,j}=\sum_a\sum_b V_{a,b}X_{i+a,j+b}
+$$
+
+La diferencia es formal. Como los pesos se aprenden, seguimos llamándola convolución por tradición.
+
+
+# Canales
+
+## Canales
+
+Una imagen RGB no es una matriz bidimensional, sino un tensor: alto $\times$ ancho $\times$ canales.
+
+Por ejemplo:
+
+$$
+1024\times1024\times3.
+$$
+
+El último eje contiene los canales rojo, verde y azul.
+
+Entonces escribimos $X_{i,j,c}$ para referirnos al canal $c$ en la posición $(i,j)$.
+
+
+
+## Canales de entrada y salida
+
+Si el input tiene $c_i$ canales y queremos producir $c_o$ canales de salida, necesitamos un filtro para cada canal de salida.
+
+El tensor de pesos tiene forma:
+
+$$
+(c_o,c_i,k_h,k_w)
+$$
+
+Cada canal de salida combina información de todos los canales de entrada.
+
+
+
+## Convolución con canales
+
+Una forma de escribirlo es:
+
+$$
+H_{i,j,d}
+=
+\nu_d+
+\sum_{a}\sum_b\sum_c
+V_{d,c,a,b}X_{i+a,j+b,c}
+$$
+
+Donde:
+
+- $c$ indexa canales de entrada;
+- $d$ indexa canales de salida;
+- $a,b$ indexan posiciones dentro del kernel.
+
+
+## Parámetros de una capa convolucional
+
+Para una capa con:
+
+- $c_i$ canales de entrada;
+- $c_o$ canales de salida;
+- kernel $k_h\times k_w$;
+
+el número de pesos es $c_o\times c_i\times k_h\times k_w$.
+
+Si usamos bias, agregamos $c_o$ parámetros adicionales.
+
+Por tanto:
+
+$$
+\boxed{
+\#\text{parámetros}
+=
+c_o c_i k_h k_w+c_o
+}
+$$
+
+
+
+
+
+## Operación de correlación cruzada
+
+Ignorando canales por un momento, si tenemos una ventana $2\times2$, la correlación cruzada calcula una suma ponderada local.
 
 ![](../images/kernel1.png){fig-align="center" width="60%"}
 
-
-## Operación de correlación cruzada 
-- Observemos que el tamaño del output depende del kernel y va a ser
-
-$$(n_h - k_h + 1)x(n_w - k_w + 1)$$
-
-- Por definición el output va a ser más pequeño que el input 
+En deep learning usualmente hacemos esta operación, aunque la llamemos convolución.
 
 
 
-## Padding 
-- El problema con las capas convoluciones es que vamos a perder los pixeles de los bordes 
+
+
+
+
+# Tamaño del output
+
+## Tamaño del output sin padding
+
+Si el input tiene tamaño:
+
+$$
+n_h\times n_w
+$$
+
+el kernel tiene tamaño:
+
+$$
+k_h\times k_w
+$$
+
+y usamos stride 1 sin padding, el output tiene tamaño:
+
+$$
+(n_h-k_h+1)\times(n_w-k_w+1).
+$$
+
+Por eso, sin padding, el output suele ser más pequeño que el input.
+
+
+## Padding
+
+El problema de no usar padding es que perdemos información en los bordes.
+
+Los pixeles de las esquinas participan en menos ventanas que los pixeles del centro.
 
 ![](../images/padding1.png){fig-align="center" width="60%"}
 
 
-## Padding 
-- Una manera sencilla de resolver esto es agregar pixeles extras en los border, para preservar el tamaño del input 
+
+
+
+## Padding
+
+Una solución es agregar valores extra alrededor de la imagen, usualmente ceros.
 
 ![](../images/padding2.png){fig-align="center" width="60%"}
 
+Esto permite controlar el tamaño del output y conservar más información de los bordes.
 
 
-## Padding 
-- Si agregamos $p_h$ filas (la mitad arriba y la mitad abajo) y $p_w$ columnas (la mitad de un lado y la mitad del otro)
-- Ahora tendremos un output con las siguientes dimensiones
+## Padding
 
-$$(n_h - k_h + p_h + 1)x(n_w - k_w + p_w + 1)$$
+Si agregamos padding $p_h$ arriba y abajo, y $p_w$ a izquierda y derecha, entonces con stride 1 el output tiene tamaño:
 
-- En muchos casos vamos a usar $p_h = k_h -1$ y $p_w = k_w -1$ asi el input y el output van a tener las mismas dimensiones 
+$$
+(n_h+2p_h-k_h+1)\times(n_w+2p_w-k_w+1).
+$$
+
+Para mantener el mismo tamaño espacial con kernels impares, usamos:
+
+$$
+p_h=\frac{k_h-1}{2},
+\qquad
+p_w=\frac{k_w-1}{2}.
+$$
+
+Por ejemplo, para un kernel $3\times3$:
+
+$$
+p_h=p_w=1.
+$$
 
 
-## Stride 
-- Cuando calculamos la convolución comenzamos en el pixel en la esquina superior derecha y luego movemos el kernel sobre toda la imagen 
-- Hasta ahora hemos pensado en este paso como tamaño 1, me paro en cada pixel y uso la ventana para calcular la convolución
-- Pero a veces vamos a querer mover la ventana mas de un elemento a la vez 
-- Saltandonos algunos pixeles intermedios 
+
+## Stride
+
+Cuando calculamos una convolución, movemos el kernel sobre la imagen.
+
+Hasta ahora asumimos stride 1:
+
+$$
+\text{nos movemos una posición a la vez.}
+$$
+
+Pero podemos usar strides mayores:
+
+$$
+s_h,
+\qquad
+s_w.
+$$
+
+Esto reduce el tamaño espacial del output.
 
 
-## Stride 
-- El número de filas o columnas recorridas por la ventana se llama stride o paso 
-- Esta imagen muestra un paso de 2 horizontal y de 3 vertical
 
+
+
+
+## Stride
+
+El stride indica cuántas filas o columnas avanza la ventana en cada paso.
 
 ![](../images/stride1.png){fig-align="center" width="60%"}
 
-
-## Stride 
-- Si definimos los strides como $s_h$ y $s_w$
-- Entonces el tamaño del output va a ser
-$$\lfloor{(n_h - k_h +p_h + s_h)/s_h}\rfloor x \lfloor{(n_w - k_w +p_w + s_w)/s_w}\rfloor$$
-
-- Si definimos $p_h = k_h - 1$ y $p_w = k_w - 1$, entonces $\lfloor{(n_h +  s_h - 1)/s_h}\rfloor \times \lfloor{(n_w + s_w - 1)/s_w}\rfloor$
-
-
-
-# Receptive Fields 
-
-
-## Feature Maps y Receptive Fields 
-- A veces nos vamos a referir al resultado de una capa convolucional como feature map 
-- ¿Por qué? porque es una representación aprendida en las dimensiones espaciales de la capa anterior 
-- Receptive Field: para un elemento x de alguna capa, el campo receptor va a ser todos los elementos de las capas anteriores que afectan el valor de x durante la propagación hacia adelante
-
-
-
-## Receptive Field
-- Input de 11 dimensiones que va a una capa intermedia con 3 canales y un kernel convolucional de tamaño 3 
-- Acá el receptive field van a ser los puntos/pixeles en X que afectan la creación de estas tres neuronas 
-
-![](../images/receptive1.png){fig-align="center" width="50%"}
+Un stride mayor reduce resolución, pero aumenta eficiencia computacional.
 
 
 
 
-## Receptive Field
-- La pre-activación de las 4 neuronas en H2 viene de una suma ponderada de los 3 canales de la capa H1
-- Cada neurona en la capa H1 viene de una suma ponderada de las tres posiciones más cercanas
-- Así que el receptive field son los 5 pixeles en X que afectan estas cuatro neuronas en H2
+## Tamaño del output con padding y stride
 
+Con padding por lado $p_h,p_w$ y stride $s_h,s_w$, el tamaño del output es:
+
+$$
+\left\lfloor
+\frac{n_h+2p_h-k_h}{s_h}
+\right\rfloor+1
+$$
+
+por:
+
+$$
+\left\lfloor
+\frac{n_w+2p_w-k_w}{s_w}
+\right\rfloor+1.
+$$
+
+El floor aparece porque a veces el kernel no cae exactamente en la última posición.
+
+
+
+
+# Feature maps y receptive fields
+
+## Feature maps y receptive fields
+
+Al output de una capa convolucional lo llamamos frecuentemente **feature map**.
+
+Es una representación espacial aprendida de la capa anterior.
+
+Un **receptive field** de una neurona es el conjunto de posiciones del input original que pueden afectar su valor.
+
+
+
+## Receptive field
+
+:::: {.columns}
+::: {.column width="55%"}
+Input de 11 posiciones que va a una capa intermedia con 3 canales y un kernel de tamaño 3.
+
+El receptive field de una neurona en la primera capa son las posiciones del input que afectan su valor.
+:::
+::: {.column width="45%"}
+![](../images/receptive1.png){width="100%"}
+:::
+::::
+
+
+
+
+
+## Receptive field
+
+En capas más profundas, una neurona depende de neuronas anteriores.
+
+Cada una de esas neuronas anteriores ya dependía de una región del input.
+
+Por eso, al apilar capas convolucionales, el receptive field crece.
 
 ![](../images/receptive2.png){fig-align="center" width="50%"}
 
 
-## Receptive Field
-- Ahora el receptive field es de 7 
-- La última capa oculta tiene un kernel de tamaño 3 y de paso 2 
 
+
+## Receptive field
+
+Si agregamos más capas o usamos stride, el receptive field puede crecer más rápido.
 
 ![](../images/receptive3.png){fig-align="center" width="50%"}
 
 
-## Receptive Field
-- Cuando agregamos una cuarta capa el receptive field es de todo el input 
+
+
+## Receptive field
+
+Eventualmente, una neurona profunda puede depender de todo el input.
 
 ![](../images/receptive4.png){fig-align="center" width="50%"}
 
+Esta es una forma en la que las CNNs combinan información local para tomar decisiones globales.
 
 
 
 
-# Canales Múltiples 
+# Canales múltiples
 
-## Canales múltiples: input 
-- Si los datos de entrada contienen múltiples canales
-- Necesitamos construir un kernel convolucional con el mismo número de canales que los datos de entrada 
-- El número de canales de los inputs es $c_i$ 
-- Si $c_i > 1$ necesitamos un kernel que contenga un tensor de tamaño $k_h x k_w$ para cada canal!
-- Concatenando estos $c_i$ juntos nos lleva a un kernel convolucional de $c_i x k_h x k_w$
-- Podemos sumar todos los canales juntos para terminar con un tensor 
-- Si la entrada tiene $c_i$ canales y queremos $c_o$ canales de salida, el kernel va a tener la forma $(c_o, c_i, k_h, k_w)$
-- Los parámetros totales para esa capa son $c_o*c_i*k_h*k_w$ más biases 
+## Canales múltiples: input
+
+Si los datos de entrada contienen múltiples canales, el kernel debe tener profundidad igual al número de canales de entrada.
+
+Si $X\in\mathbb R^{n_h\times n_w\times c_i}$ y queremos $c_o$ canales de salida, entonces los pesos tienen forma $(c_o,c_i,k_h,k_w)$.
+
+Los parámetros totales son:
+
+$$
+c_o c_i k_h k_w+c_o.
+$$
+
 
 
 
@@ -334,75 +657,165 @@ $$\lfloor{(n_h - k_h +p_h + s_h)/s_h}\rfloor x \lfloor{(n_w - k_w +p_w + s_w)/s_
 ![](../images/multiplescanales.png){fig-align="center" width="50%"}
 
 
-## Canales múltiples: output 
-- Normalmente vamos a querer que las capas intermedias y el output tengan mas de un canal 
-- Intuitivamente podemos pensar en los canales como respondiendo a diferentes features 
-- Pero los canales no van a aprender por separado sino que van a ser optimizados para ser útiles juntos 
-- El número de canales del input es $c_i$ y el número de canales del output es $c_o$
-- Para crear un output con muchos canales necesitamos un kernel de tamaño $c_i x k_h x k_w$ para cada canal en el output 
-- Los concatenamos sobre la dimensión del canal de manera que la dimensión del kernel convolucional es $c_o x c_i x k_h x k_w$
-- El resultado de cada canal de salida se calcula del kernel convolucional correspondiente a ese canal de salida y toma como entrada el input de todos los canales 
+## Canales múltiples: output
+
+Normalmente queremos que las capas intermedias tengan muchos canales.
+
+Intuitivamente, distintos canales pueden responder a distintos patrones, como:
+
+- bordes;
+- texturas;
+- colores;
+- partes de objetos.
+
+Pero no debemos interpretar cada canal como una feature humana limpia y separada.
+
+Los canales se optimizan juntos para reducir la pérdida.
 
 
-## Capas convolucionales de 1x1
-- Parece que una convolución así no tiene mucho sentido 
-- Pero son populares y están en muchas arquitecturas modernas 
-- Una ventana de $1x1$ va a perder la habilidad de reconocer patrones entre pixeles adyacentes 
-- Cada elemento del output va a ser una combinación lineal de los elementos en la misma posición a través de distintos canales 
-- Podemos pensar en estas convoluciones como una capa completamente conectada aplicada a cada pixel para transformar $c_i$ canales a $c_o$ canales  
-- Necesitamos $c_i x c_o$ pesos 
-- Generalmente incluiremos una no linealidad después de esta capa sino solo seria una combinación lineal del input y esto no nos ayuda mucho!!
+
+## Capas convolucionales de $1\times1$
+
+Una convolución $1\times1$ no mezcla información entre pixeles vecinos.
+
+Pero sí mezcla información entre canales en la misma ubicación espacial.
+
+Para cada pixel, transforma:
+
+$$
+\mathbb R^{c_i}\rightarrow\mathbb R^{c_o}.
+$$
+
+Podemos pensarla como una capa lineal aplicada en cada posición de la imagen, compartiendo pesos en todas las posiciones.
 
 
-## Capas convolucionales de 1x1
+
+
+## Capas convolucionales de $1\times1$
+
+Una convolución $1\times1$ necesita:
+
+$$
+c_i\times c_o
+$$
+
+pesos, más biases opcionales.
+
+Se usa para:
+
+- cambiar el número de canales;
+- combinar información entre canales;
+- reducir costo computacional antes de convoluciones más grandes;
+
+Con una no linealidad después, puede aumentar la expresividad de la red.
+
+
+## Capas convolucionales de $1\times1$
 
 ![](../images/conv1x1.png){fig-align="center" width="50%"}
 
 
-# Pooling 
-
-## Pooling 
-- Por lo general en los problemas de DL relacionados con imágenes queremos contestar algo como: esta imagen tiene un perro?
-- Así que la última capa debería de ser sensible a todo el input 
-- Las capas convolucionales consiguen esto 
-- Entre más avanzamos en la red, más grande es el receptive field
-- Las capas de pooling van a mitigar la sensibilidad de las capas convolucionales a la ubicación de los pixeles (localidad) y va a reducir las representaciones 
 
 
-## Pooling 
-- Consisten en una ventana que se mueve a través de la imagen de acuerdo a su stride y calcula una sola cantidad para cada ubicación recorrida 
-- Esta capa no va a contener parámetros, son operaciones determinísticas 
-- Las tipicas son sacar la media o el máximo de todos los elementos dentro de la ventana de pooling 
+# Pooling
 
-## Pooling 
-- Average pooling: parecido a reducir la resolución de una imagen, sacamos la media de un conjunto de pixeles adyacentes para crear una imagen una mejor relación señal-ruido combinando la info de varios pixeles
-- Max-pooling: en vez de la media sacamos el máximo, preservar los pixeles de manera jerárquica ayuda a reconocer objetos 
+## Pooling
+
+En clasificación de imágenes queremos que la decisión final pueda usar información de toda la imagen.
+
+Las convoluciones apiladas aumentan el receptive field.
+
+El pooling ayuda a:
+
+- reducir la resolución espacial;
+- disminuir costo computacional;
+- introducir cierta robustez a cambios pequeños de posición.
+
+Pooling no crea verdadera invariancia total. Solo reduce sensibilidad local.
+
+
+
+## Pooling
+
+Una capa de pooling mueve una ventana sobre la imagen y calcula una cantidad por ventana.
+
+No tiene parámetros aprendidos.
+
+Las operaciones típicas son:
+
+- average pooling;
+- max pooling.
+
+
+## Average pooling y max pooling
+
+**Average pooling:** calcula el promedio dentro de una ventana.
+
+Puede verse como una forma de reducir resolución suavizando información local.
+
+**Max pooling:** conserva el valor máximo dentro de una ventana.
+
+Puede ayudar a detectar si cierta feature aparece en una región, sin importar exactamente en qué pixel de esa región apareció.
+
+
 
 
 ## Pooling 
 
 ![](../images/maxpooling.png){fig-align="center" width="50%"}
 
+
+
 ## Características del pooling
-- Padding: igual que con una capa convolucional podemos agregar ceros
-- Stride: el tamaño del paso para que la ventana de pooling se mueva 
+
+Igual que en convoluciones, pooling puede tener:
+
+- tamaño de ventana;
+- stride;
+- padding.
+
+El pooling normalmente se aplica a cada canal por separado.
+
+Por eso, si el input tiene $c$ canales, el output también suele tener $c$ canales.
 
 
-## Pooling con más de un canal 
-- La capa de pooling va a aplicar la operación de pooling a cada canal por separado 
-- Así que la cantidad de canales va a ser igual a la cantidad de canales en el input 
+
+# Upsampling
+
+## Upsampling
+
+En tareas como segmentación necesitamos producir un output espacial.
+
+Por ejemplo:
+
+$$
+\text{imagen}
+\rightarrow
+\text{máscara por pixel}
+$$
+
+Si la red redujo la resolución usando pooling o stride, necesitamos recuperar resolución.
+
+A esto le llamamos **upsampling**.
 
 
-## Upsampling 
-- ¿Qué hacemos si queremos escalar hacia arriba nuestra red? 
-- La manera más sencilla de aumentar la resolución es duplicar todos los canales en todas las ubicaciones 
+
+
+## Upsampling simple
+
+La forma más simple es repetir valores para aumentar el tamaño espacial.
 
 ![](../images/upsampling1.png){fig-align="center" width="50%"}
 
+Es barato, pero puede producir outputs poco suaves.
 
-## Upsampling 
-- Max-unpooling: lo usamos cuando ya hemos usado anteriormente max-pooling distribuimos los valores de donde se originaron 
 
+
+## Max-unpooling
+
+Si antes usamos max-pooling, podemos guardar las posiciones donde ocurrió el máximo.
+
+Luego, max-unpooling coloca los valores de regreso en esas posiciones.
 
 ![](../images/upsampling2.png){fig-align="center" width="50%"}
 
@@ -410,65 +823,119 @@ $$\lfloor{(n_h - k_h +p_h + s_h)/s_h}\rfloor x \lfloor{(n_w - k_w +p_w + s_w)/s_
 
 
 
-## Upsampling 
-- Interpolacion bilineal entre los inputs que si tenemos 
+
+
+
+## Interpolación bilineal
+
+Otra opción es usar interpolación bilineal entre los valores disponibles.
 
 ![](../images/upsampling3.png){fig-align="center" width="50%"}
 
-
-## Transposed Convolutions
-- Vamos a tener el doble de outputs que de inputs 
-- Y cada input va a contribuir a 3 outputs 
-
-![](../images/transposeconvolution.png){fig-align="center" width="50%"}
+No aprende parámetros, pero produce una reconstrucción espacial más suave que repetir valores.
 
 
 
 
 
-## Parámetros y costo computacional 
+## Transposed convolutions
 
-- ¿Cómo calculamos el número de parámetros en una convolución? $c_o x c_i x k_h x k_w +c_o$
-- Más el bias opcional 
+:::: {.columns}
+::: {.column width="48%"}
+Las transposed convolutions son capas aprendibles para aumentar resolución.
 
+Cada valor del input contribuye a varias posiciones del output, según un kernel aprendido.
 
-
-
-
-
-# Aplicaciones 
-
-# Clasificación de imágenes 
-
-## Clasificación de imágenes: ImageNet database
-- imágenes de $244 x 244$
-- 1,281,167 imágenes de entrenamiento, 50,000 de validación y 100,000 de prueba 
-- mil clases 
+No siempre duplican la resolución: el tamaño final depende de kernel, stride, padding y output padding.
+:::
+::: {.column width="52%"}
+![](../images/transposeconvolution.png){width="100%"}
+:::
+::::
 
 
-![](../images/ImageNet.png){fig-align="center" width="80%"}
+
+## Parámetros y costo computacional
+
+Para una convolución estándar:
+
+$$
+\#\text{parámetros}=c_o c_i k_h k_w+c_o.
+$$
+
+El costo computacional también depende del tamaño espacial del output:
+
+$$
+\text{alto}_{out}\times\text{ancho}_{out}\times c_o.
+$$
+
+Por eso, capas con muchos canales y alta resolución pueden ser costosas aunque el kernel sea pequeño.
+
+
+
+
+# Aplicaciones
+
+# Clasificación de imágenes
+
+## Clasificación de imágenes: ImageNet
+
+ImageNet/ILSVRC fue clave para medir progreso en clasificación de imágenes.
+
+En la tarea clásica:
+
+- se usaban imágenes redimensionadas y recortadas típicamente alrededor de $224\times224$;
+- había alrededor de 1.2 millones de imágenes de entrenamiento;
+- 50,000 imágenes de validación;
+- 1000 clases.
+
+![](../images/ImageNet.png){fig-align="center" width="55%"}
+
+
+
 
 ## AlexNet (2012)
-- Primera red de computer vision que aprende las features de la red
-- Antes de AlexNet todo computer vision dependia de generar buenas features de la imagen y luego aplicar ML simple como SVM
-- CNN de 8 capas: 5 convoluciones, dos capas completamente conectadas y una capa de salida completamente conectada, utiliza ReLU como función de activación 
-- Primera CNN en demostrar que las features aprendidas por la red son mejores a las que podemos construir 
+
+AlexNet fue uno de los puntos de quiebre del deep learning moderno en visión.
+
+No fue la primera CNN, pero sí mostró que una CNN grande entrenada con GPUs podía superar fuertemente a métodos basados en features diseñadas a mano en ImageNet.
+
+Características importantes:
+
+- 5 capas convolucionales;
+- capas completamente conectadas al final;
+- ReLU;
+- entrenamiento en GPU;
+- data augmentation;
+- dropout en capas completamente conectadas.
 
 
 
 ## AlexNet (2012)
-- Ojo la mayoría de los parámetros de esta CNN vienen de las capas completamente conectadas 
 
-![](../images/AlexNet.png){fig-align="center" width="80%"}
+La mayor parte de los parámetros venía de las capas completamente conectadas, no de las convoluciones.
+
+![](../images/AlexNet.png){fig-align="center" width="50%"}
+
+Esta fue una de las razones por las que arquitecturas posteriores redujeron o eliminaron capas completamente conectadas grandes.
 
 
-## Data Augmentation
-- AlexNet aumento los datos de entrenamiento usando: 
-1. Transformaciones espaciales
-2. Modificaciones de intensidad de los inputs 
 
-- Al momento del entrenamiento se usaron 5 versiones distintas de la misma imagen
-- La predicción final fue la media de estas 5 imágenes 
+## Data augmentation en AlexNet
+
+AlexNet usó aumentación de datos para reducir sobreajuste.
+
+La idea general:
+
+- generar crops de la imagen;
+- usar flips horizontales;
+- modificar intensidades/color.
+
+En inferencia también se pueden promediar predicciones sobre varias versiones de la imagen.
+
+Esto no cambia el concepto central: la red ve muchas variantes plausibles de los mismos ejemplos.
+
+
 
 
 
@@ -477,93 +944,423 @@ $$\lfloor{(n_h - k_h +p_h + s_h)/s_h}\rfloor x \lfloor{(n_w - k_w +p_w + s_w)/s_
 ![](../images/dataaugmentation.png){fig-align="center" width="80%"}
 
 
-## Optimización y regularización 
-- Se usa SGD con momentum de $0.9$, batch size de $128$
-- Se aplico dropout a las capas completamente conectadas 
-- Se aplico regularización L2 
-- Esta red tiene $16.4\%$ de error en el top 5 
-- Y $38.1\%$ en el top 1 
+## Optimización y regularización en AlexNet
+
+AlexNet combinó varias decisiones prácticas:
+
+- SGD con momentum;
+- batch size relativamente grande para la época;
+- dropout;
+- regularización $L_2$;
+- data augmentation.
+
+En ILSVRC 2012 alcanzó un error top-5 cercano a 15--16%, muy por debajo de los métodos previos.
+
+No fue solo “una arquitectura”: fue arquitectura, datos, cómputo, optimización y regularización trabajando juntos.
+
+
 
 
 ## ResNet (2015): conexiones residuales
 
-- Problema: apilar más capas *empeoraba* el entrenamiento — no por sobreajuste, sino porque el gradiente se degrada al atravesar tantas capas
-- Solución de He et al. (2015): el **bloque residual** — la capa aprende una *corrección* sobre la identidad
+Problema: al apilar muchas capas, el entrenamiento podía empeorar.
 
-$$h_{k+1} = h_k + f(h_k)$$
+No necesariamente por overfitting, sino porque la optimización se volvía más difícil.
 
-- El término $h_k$ crea una "autopista" directa para el gradiente hacia las capas tempranas
-- Con esto se entrenan redes de 100+ capas; ResNet ganó ImageNet 2015
-- El mismo truco reaparece en el bloque del Transformer (las conexiones residuales que ya vimos) — es de los trucos más reutilizados de todo el DL
+La idea de ResNet es que un bloque aprenda una corrección sobre la identidad:
 
-## Métricas para computer vision
-- Clasificación: top-1/top-5 accuracy
-- Detección: Intersección sobre la Unión, Average Precision (AP) y mean AP (mAP)
-$$IoU = \frac{|A \cap B|}{|A \cup B|}$$
+$$
+h_{k+1}=h_k+F(h_k).
+$$
 
-- Segmentación: pixel accuracy e IoU por clase
+Si no hace falta transformar mucho la representación, el bloque puede aprender:
+
+$$
+F(h_k)\approx0.
+$$
+
+## ResNet (2015): conexiones residuales
+
+:::: {.columns}
+::: {.column width="42%"}
+Las conexiones residuales crean caminos más directos para la información y los gradientes.
+
+Esto permitió entrenar redes mucho más profundas, como ResNet-152.
+
+El mismo principio reaparece en muchas arquitecturas modernas, incluyendo Transformers.
+:::
+::: {.column width="58%"}
+![](../images/ImageNethistory.png){width="100%"}
+:::
+::::
+
+
+
+
+
+## Después de ResNet: CNNs modernas
+
+Las CNNs no se quedaron congeladas en 2015. 
+
+Algunas ideas modernas importantes:
+
+- bloques residuales;
+- normalización;
+- convoluciones separables en profundidad;
+- bloques bottleneck;
+- escalamiento cuidadoso de profundidad, anchura y resolución;
+- entrenamiento con mucha aumentación y mejores schedules.
+
+Ejemplos: ResNet, MobileNet, EfficientNet, ConvNeXt.
+
 
 ## Historia de clasificación de ImageNet
 
 ![](../images/ImageNethistory.png){fig-align="center" width="80%"}
 
 
-# Detección de Objetos 
+
+
+## CNNs hoy
+
+Hoy muchas tareas de visión usan Transformers o modelos fundacionales visuales.
+
+Pero las CNNs siguen siendo importantes porque:
+
+- son eficientes;
+- tienen buenos sesgos inductivos para imágenes;
+- funcionan bien con menos datos que modelos sin tanta estructura;
+- aparecen como componentes dentro de modelos híbridos;
+- siguen siendo fuertes en dispositivos con recursos limitados.
+
+La lección no es “CNNs fueron reemplazadas”. La lección es:
+
+$$
+\boxed{
+\text{localidad + compartición de pesos siguen siendo ideas centrales}
+}
+$$
+
+# Métricas para computer vision
+
+## Métricas para computer vision
+
+Distintas tareas requieren métricas distintas.
+
+- **Clasificación:** top-1 accuracy; top-5 accuracy.
+- **Detección:** Intersection over Union; Average Precision; mean Average Precision.
+- **Segmentación:** pixel accuracy; IoU por clase; mean IoU.
+
+
+
+
+## Intersection over Union
+
+Para comparar una caja o máscara predicha con la verdadera usamos:
+
+$$
+IoU=
+\frac{|A\cap B|}{|A\cup B|}
+$$
+
+Si las dos regiones coinciden perfectamente:
+
+$$
+IoU=1.
+$$
+
+Si no se traslapan:
+
+$$
+IoU=0.
+$$
+
+
+
+
+# Detección de objetos
 
 ## Detección de objetos
-- El objetivo es identificar y localizar varios objetos en la misma imagen 
-- YOLO (you only look once) uno de los primero métodos en usar una CNN para este propósito 
-- Input imágenes RGB de $448 x 448$
-- Cuadrícula de $7x7$ de ubicaciones
-- Predecir la clase en cada ubicación 
-- Predecir dos cajas de fronteras para cada ubicación 
-    - 5 parámetros $(x, y)$, ancho, altura y confianza
-- Se uso momentum, weight decay (L2), dropout y data augmentation 
-- Heuristica al final para decidir el threshold de las cajas finales 
+
+El objetivo es identificar y localizar varios objetos en una imagen.
+
+La salida no es solo una clase.
+
+También necesitamos:
+
+- cajas delimitadoras;
+- clase de cada objeto;
+- confianza de cada predicción.
+
+![](../images/deteccion_imagen.png){fig-align="center" width="45%"}
 
 
-## Detección de objetos
 
-![](../images/yolo.png){fig-align="center" width="80%"}
+## YOLO: You Only Look Once
+
+YOLO formuló detección como un problema de predicción directa desde una sola red.
+
+La imagen se divide en una cuadrícula:
+
+$$
+S\times S
+$$
+
+Cada celda predice:
+
+- probabilidades de clases;
+- cajas delimitadoras;
+- confianza de las cajas.
+
+La versión original usaba una cuadrícula $7\times7$ y dos cajas por celda.
 
 
-## Detección de objetos
-1. dividimos la imagen en una cuadricula de $7x7$
-2. El sistema predice la clase más probable en cada cuadro 
-3. También predice dos cajas de frontera y la confianza (que tan ancha es la linea)
-4. Al final nos quedamos con las cajas con más probabilidad (acá usamos la heurística que quita cajas con poca probabilidad)
+## Detección de objetos con YOLO
+
+:::: {.columns}
+::: {.column width="55%"}
+La intuición:
+
+1. Dividimos la imagen en una cuadrícula.
+2. Cada celda se responsabiliza por objetos cuyo centro cae dentro de ella.
+3. La red predice cajas y clases.
+4. Se eliminan predicciones redundantes o de baja confianza.
+
+La heurística clásica para eliminar cajas redundantes se llama **Non-Maximum Suppression**.
+:::
+::: {.column width="45%"}
+![](../images/yolo.png){width="100%"}
+:::
+::::
 
 
-## ¿Cómo se entreno esto?
-- Usando transfer learning
-- La red original era para clasificar imágenes
-- Se hizo fine tuning para que pudiera detectar objetos
+
+## ¿Cómo se entrenó YOLO originalmente?
+
+La red original se entrenó primero para clasificación.
+
+Después se adaptó para detección.
+
+Esto conecta con transfer learning:
+
+$$
+\text{features visuales aprendidas en clasificación}
+\rightarrow
+\text{detección de objetos}
+$$
+
+Hoy hay muchas variantes modernas de detectores, incluyendo modelos de una etapa, dos etapas y modelos basados en Transformers.
+
+No necesitamos todos los detalles todavía. Respiremos, que todavía faltan RNNs, Transformers y el circo completo.
+
+
+# Segmentación
+
+## Segmentación de imágenes
+
+En segmentación queremos una predicción por pixel.
+
+Por ejemplo:
+
+$$
+\text{pixel }(i,j)
+\rightarrow
+\text{clase del pixel}
+$$
+
+La red debe conservar o recuperar información espacial.
+
+Por eso aparecen:
+
+- convoluciones;
+- downsampling;
+- upsampling;
+- skip connections.
+
+
+
+## Arquitecturas encoder-decoder
+
+Muchas redes de segmentación tienen forma de encoder-decoder.
+
+El encoder reduce resolución y aumenta abstracción:
+
+$$
+\text{imagen}
+\rightarrow
+\text{features globales}
+$$
+
+El decoder recupera resolución:
+
+$$
+\text{features}
+\rightarrow
+\text{máscara por pixel}
+$$
+
+U-Net es un ejemplo clásico de esta idea.
+
+
+## Skip connections en segmentación
+
+Para recuperar detalles finos, muchas arquitecturas conectan capas tempranas con capas tardías.
+
+Las capas tempranas conservan detalles espaciales.
+
+Las capas profundas contienen información más semántica.
+
+La segmentación necesita ambas.
+
+$$
+\boxed{
+\text{detalle espacial}+
+\text{contexto semántico}
+}
+$$
+
 
 
 # CNNs y políticas públicas
 
-
 ## Medir pobreza desde el cielo
-- Problema: medir pobreza requiere encuestas de hogares — caras, lentas, y en muchos países hay *décadas* sin datos
-- Idea: las imágenes satelitales son baratas, globales y frecuentes; ¿puede una CNN "leer" el bienestar económico en ellas?
-- Jean et al. (2016, *Science*): predicen consumo y riqueza en 5 países africanos con imágenes satelitales diurnas
-- El truco no es la arquitectura — es **cómo entrenaron con casi ninguna etiqueta**
+
+Problema: medir pobreza requiere encuestas de hogares.
+
+Estas encuestas pueden ser:
+
+- caras;
+- lentas;
+- poco frecuentes;
+- geográficamente incompletas.
+
+Idea:
+
+> usar imágenes satelitales como fuente auxiliar para estimar bienestar económico.
+
+Pero ojo: esto no reemplaza automáticamente a las encuestas. Es una herramienta complementaria y necesita validación cuidadosa.
 
 
-## Jean et al. (2016): transfer learning en dos saltos
-1. CNN preentrenada en ImageNet (gatos, coches... nada de pobreza)
-2. Fine-tuning para predecir **luminosidad nocturna** desde imágenes diurnas — las luces de noche son un proxy de actividad económica y hay millones de "etiquetas" gratis
-3. Las features aprendidas (techos, caminos, vialidades) se usan para predecir las encuestas de hogares disponibles
-- Exactamente los conceptos de este deck: features jerárquicas, transfer learning, pocas etiquetas
-- Explica hasta ~75% de la variación en consumo a nivel de aldea
+
+
+
+## Jean et al. (2016): transfer learning en dos pasos
+
+La idea central:
+
+1. Usar una CNN preentrenada en ImageNet.
+2. Adaptarla para predecir luminosidad nocturna a partir de imágenes diurnas.
+3. Usar las features aprendidas para predecir riqueza o consumo usando encuestas disponibles.
+
+¿Por qué funciona la luminosidad nocturna como tarea intermedia?
+
+Porque está correlacionada con actividad económica y existe a gran escala.
+
+No es perfecta. Es un proxy, y los proxies también mienten con bastante confianza.
+
+
+
+## ¿Qué aprende la red?
+
+La red no observa “pobreza” directamente.
+
+Aprende patrones visuales asociados con condiciones económicas, por ejemplo:
+
+- caminos;
+- techos;
+- densidad urbana;
+- agricultura;
+- infraestructura;
+- iluminación nocturna.
+
+La predicción final depende de que estas correlaciones sean estables entre regiones y en el tiempo.
+
+Ese supuesto debe evaluarse, no darse por hecho.
+
+
 
 
 ## Después de Jean et al.
-- Yeh et al. (2020, *Nature Communications*): escala el enfoque a ~20,000 aldeas en África; precisión comparable a encuestas para asignar programas sociales
-- Huang, Hsiang & Gonzalez-Navarro (2021, NBER): usan CNNs + satélite para **evaluar el impacto** de un programa anti-pobreza (los outcomes se miden desde el cielo)
-- Rolf et al. (2021, *Nature Communications*, MOSAIKS): features satelitales genéricas y baratas que cualquier equipo de política pública puede usar sin entrenar una CNN
-- La frontera 2026: **modelos de fundación satelitales** — p. ej. Tempov (2026), preentrenado auto-supervisado sobre millones de pares de imágenes Landsat; mapea riqueza con solo 10% de las etiquetas de encuesta y hace *nowcasting* sin etiquetas nuevas
-- Pregunta de examen natural: ¿qué puede salir mal? (sesgo de las luces nocturnas como proxy, validez externa entre países, drift temporal) 
 
+Trabajos posteriores escalaron y modificaron esta idea.
+
+Ejemplos:
+
+- modelos entrenados con imágenes satelitales públicas para muchas aldeas;
+- representaciones satelitales reutilizables para muchas tareas;
+- modelos fundacionales geoespaciales entrenados con auto-supervisión.
+
+La frontera actual se mueve hacia:
+
+$$
+\text{pretraining geoespacial}
++
+\text{few labels}
++
+\text{validación temporal y espacial}
+$$
+
+
+## ¿Qué puede salir mal?
+
+En aplicaciones de política pública, el desempeño predictivo no es suficiente.
+
+Preguntas importantes:
+
+- ¿el modelo generaliza entre países o regiones?
+- ¿funciona en zonas rurales y urbanas por igual?
+- ¿el proxy de luminosidad nocturna introduce sesgos?
+- ¿qué pasa cuando cambian las condiciones económicas o climáticas?
+- ¿quién queda invisible en los datos satelitales?
+- ¿cómo se auditan errores antes de asignar recursos?
+
+
+
+# Resumen
+
+## ¿Qué debemos recordar de CNNs?
+
+Las CNNs se basan en tres ideas centrales:
+
+1. **localidad:** mirar regiones pequeñas;
+2. **compartición de pesos:** usar el mismo filtro en muchas posiciones;
+3. **composición:** construir features más complejas capa por capa.
+
+Estas ideas reducen parámetros y explotan la estructura espacial de las imágenes.
+
+
+## ¿Qué debemos recordar de CNNs?
+
+- convolución/correlación cruzada;
+- canales;
+- padding;
+- stride;
+- pooling;
+- receptive field;
+- upsampling;
+- detección y segmentación.
+
+
+
+# Referencias
+
+## Referencias
+
+- LeCun et al. (1998). *Gradient-Based Learning Applied to Document Recognition*.
+- Krizhevsky, Sutskever & Hinton (2012). *ImageNet Classification with Deep Convolutional Neural Networks*.
+- Simonyan & Zisserman (2014). *Very Deep Convolutional Networks for Large-Scale Image Recognition*.
+- He et al. (2015). *Deep Residual Learning for Image Recognition*.
+- Redmon et al. (2016). *You Only Look Once: Unified, Real-Time Object Detection*.
+- Ronneberger et al. (2015). *U-Net: Convolutional Networks for Biomedical Image Segmentation*.
+
+
+
+## Referencias sugeridas
+
+- Tan & Le (2019). *EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks*.
+- Liu et al. (2022). *A ConvNet for the 2020s*.
+- Jean et al. (2016). *Combining satellite imagery and machine learning to predict poverty*.
+- Yeh et al. (2020). *Using publicly available satellite imagery and deep learning to understand economic well-being in Africa*.
+- Rolf et al. (2021). *A generalizable and accessible approach to machine learning with global satellite imagery*.
 
 
