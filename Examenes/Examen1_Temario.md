@@ -1,24 +1,12 @@
 # Examen 1 — Fundamentos de Aprendizaje Profundo
 
-**Cuándo:** en clase, semana 6.
+**Cuándo:** en clase aprox semana 6.
 **Formato:** individual, lápiz y papel, **40 minutos**. Sin computadora, sin celular, sin código.
 **Peso:** 25% de la calificación final.
-**Material permitido:** una hoja de fórmulas (tamaño carta, por ambos lados) escrita **a mano por ti**. No se permiten fotocopias ni impresiones.
+**Material permitido:** ninguno propio. El examen incluye al final un **formulario de distribuciones de probabilidad** (soporte, parámetros, fórmula y media de las distribuciones más comunes). Todo lo demás, pérdidas, optimizadores, backprop, inicialización y regularización, debes saberlo.
 **Cobertura:** slides *Repaso*, *NN*, *Entrenamiento*, *Entrenamiento 2* y *Regularización*, más las Tareas de práctica 1–5. **No** incluye CNNs ni nada posterior.
 
 El examen no pide escribir código ni recordar sintaxis de PyTorch. Pide entender **cómo funcionan las cosas y por qué**: derivar, trazar a mano, predecir qué va a pasar, diagnosticar qué salió mal y justificar. Es exactamente lo que necesitas para dirigir y verificar a un agente de IA que sí escribe el código.
-
----
-
-## Estructura del examen
-
-| Parte | Qué es | Puntos | Tiempo sugerido |
-|---|---|---|---|
-| **A. Conceptos rápidos** | 8 afirmaciones: verdadero/falso **con justificación** de 1–2 líneas. Sin justificación no hay puntos. | 24 | ~14 min |
-| **B. Desarrollo** | 3 preguntas cortas: una traza a mano de una red pequeña, una derivación de función de pérdida, un cálculo de backprop. | 48 | ~18 min |
-| **C. Diagnóstico** | Un escenario de política pública con resultados de entrenamiento (tabla o curvas). Diagnosticar, proponer intervenciones, detectar resultados sospechosos. | 28 | ~8 min |
-
-Las respuestas se califican por el **razonamiento**, no solo por el número final. Una respuesta breve y correcta vale más que una larga y vaga.
 
 ---
 
@@ -92,27 +80,12 @@ Dado un resumen de entrenamiento (pérdida train/val por época, accuracy, norma
 
 ---
 
-## Ejemplos del tipo de pregunta
-
-Estas **no** son las preguntas del examen, pero son del mismo estilo y dificultad.
-
-| Tipo | Ejemplo |
-|---|---|
-| Verdadero/falso | "Con inverted dropout hay que multiplicar las activaciones por $(1-p)$ en inferencia." Justifica. |
-| Traza a mano | "Con estos 10 parámetros, evalúa la red 1-3-1 en $x=0,2,4$, ubica las articulaciones y da la pendiente de cada región." |
-| Derivación | "Una dependencia quiere predecir cuántos días tarda un trámite. Elige distribución, escribe la NLL y simplifícala." |
-| Backprop | "Para $\ell=(\beta_1+\omega_1\,\text{ReLU}(\beta_0+\omega_0 x)-y)^2$ con estos valores, calcula las cuatro parciales." |
-| Predicción | "¿Qué esperas que pase si inicializas todo en cero? ¿Y si $\sigma_\Omega^2\ll 2/D_h$ en una red de 50 capas?" |
-| Diagnóstico | "Train loss 0.02, val loss 2.9 y subiendo desde la época 8. ¿Qué pasa y qué harías?" |
-| Crítica | "Un agente propone hacer la red más grande para bajar el error de validación de un modelo que subajusta. ¿Tiene sentido?" |
-
----
-
 ## Cómo estudiar
 
 1. **Resuelve las Tareas 1–5** completas. Los enunciados y las soluciones de la parte práctica están en el repo. Las preguntas del examen siguen ese estilo.
 2. Para cada notebook de clase (Optimizadores, Diagnósticos, Regularización): antes de correr una celda, **predice** qué va a salir y por qué. Después compara. Eso es lo que evalúa la Parte C.
 3. Reproduce **sin ver las slides** las derivaciones de *Entrenamiento* (MSE, BCE, cross-entropy) y de *Entrenamiento 2* (backward pass escalar, varianza de He).
 4. Practica trazar a mano redes 1-3-1 con parámetros inventados hasta que las articulaciones y pendientes te salgan sin pensar.
-5. Arma tu hoja de fórmulas **escribiéndola tú**: el acto de resumir es el estudio. Incluye las actualizaciones de los optimizadores, las tres pérdidas, la recurrencia de backprop y He/Xavier.
-6. Puedes usar un LLM para estudiar: pídele que te ponga preguntas de este temario y **que no te dé la respuesta hasta que tú des la tuya**. El examen es a mano y sin él.
+5. No hay hoja de fórmulas propia. Lo que sí debes tener en la cabeza: las actualizaciones de los optimizadores, las tres pérdidas y de dónde salen, la recurrencia de backprop y He/Xavier. Las fórmulas de las distribuciones vienen en el examen; lo que se evalúa es saber **cuál elegir y qué hacer con ella**.
+
+
