@@ -19,6 +19,7 @@ knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.
 ```
 
 
+
 # Arquitectura encoder-decoder
 
 ## Motivación 
@@ -29,32 +30,38 @@ knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.
 - Necesitamos algo como un encoder-decoder
 
 
+
 ## Encoder-decoder
 - Encoder: 
      - una RNN que procesa el input paso a paso
      - cada token en la secuencia de entrada $x_t$ se actualiza en el hidden state $h_t$
-     - después el último input token el hidden state $h_T$ es considerado un *context vector*
-     - *context vector*: representación comprimida de toda la secuencia 
+     - después el último input token el hidden state $h_T$ es considerado un context vector
+     - context vector: representación comprimida de toda la secuencia 
 
 
 ## Encoder-decoder
 - Decoder: 
     - RNN que genera la secuencia de salida paso a paso 
-    - Empieza con el *context vector* que le pasó el encoder + un token para empezar la secuencia de salida
+    - Empieza con el context vector que le pasó el encoder + un token para empezar la secuencia de salida
     - En cada paso predice que token $y_t$ sigue condicionado al hidden state del paso anterior y al token generado antes 
     - Continua hasta que genera un token de fin de secuecia 
 
 
+
 ## Intuitivamente
-- Encoder: lee la secuencia y comprime toda su información en un vector de tamaño fijo, el *context vector*
-- Decoder: escribe la secuencia de salida basada en el *context vector* 
+- Encoder: lee la secuencia y comprime toda su información en un vector de tamaño fijo, el context vector
+- Decoder: escribe la secuencia de salida basada en el context vector 
 - Esto va a funcionar más o menos bien pero tiene el problema de que vamos a aplastar toda la secuencia en un solo vector de tamaño fijo
 - Si las secuencias son muy largas vamos a perder información 
-- Tratamos el *context vector* como un estadistico suficiente de la señal de todo el input 
+- Tratamos el context vector como un estadistico suficiente de la señal de todo el input 
+
+
+
 
 ## Encoder-Decoder 
 
 ![](../images/encoder-decorder.png){fig-align="center" width="75%"}
+
 
 
 # Atención 
@@ -65,8 +72,10 @@ knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.
 - Con secuencias muy largas vamos a perder información :(
 
 
+
+
 ## Atención 
-- El *context vector* del encoder-decoder de RNN va a perder información 
+- El context vector del encoder-decoder de RNN va a perder información 
 - Queremos que el decoder pueda mirar todos los estados ocultos del encoder
 - Para que en cada paso pueda enfocarse en la parte relevante de la secuencia de entrada 
 - Para lograrlo necesitamos un mecanismo que compare lo que el decoder “quiere” generar con la información almacenada en el encoder
@@ -89,11 +98,14 @@ knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.
 - El sistema busca qué Keys se parecen más a la query y devuelve los values más relevantes
 
 
+
+
 ## ¿Qué beneficios tiene pensar en términos de q,k y v?
 - Podemos designar queries $q$ que operen en pares $(k,v)$ de tal manera que sean válidas independientemente del tamaño de los datos
 - La misma query puede recibir diferentes respuestas, según el contenido de la base de datos.
 - El código detrás para buscar en un espacio muy grande puede ser bastante simple
 - No es necesario comprimir ni simplificar la base de datos para que las operaciones sean efectivas
+
 
 
 ## Atención 
@@ -104,14 +116,14 @@ knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.
 $$Attention(q,D) = \sum_{i=1}^m \alpha(q,k_i)v_i$$
 
 - Donde $\alpha(q,k_i)$ son los pesos de atención 
-- Y esta operación se conoce como *attention pooling*
+- Y esta operación se conoce como attention pooling
+
 
 ## ¿Qué nos dice esta función de atención?
 - Si los pesos $\alpha(q,k_i) > 0$ el resultado vive en un cono convexo de los valores de $v_i$
 - Los pesos van a formar una combinación convexa si $\sum_{i} \alpha(q,k_i) = 1$ y $\alpha(q,k_i) \geq 0$, normalmente vamos a asumir esto
 - Si solo un $\alpha(q,k_i) = 1$ y los demás son cero solo prestamos atención a un valor
 - Si $\alpha(q,k_i) = \frac{1}{m}$ vamos a tener average pooling, le prestamos la misma atención a todos los tokens 
-
 
 
 ## ¿Qué nos dice esta función de atención?
@@ -125,10 +137,10 @@ $$\alpha(q,k_i) = \frac{e^{a(q,k_i)}}{\sum_j e^{a(q,k_j)}}$$
     - el gradiente nunca desaparece 
 - El mecanismo de atención es una operación relativamente sencilla a pesar de las dimensiones de las matrices     
     
-    
 ## ¿Qué nos dice esta función de atención? 
 
 ![](../images/queries.png){fig-align="center" width="75%"}
+
 
 
 # Distintas funciones de atención 
@@ -136,6 +148,8 @@ $$\alpha(q,k_i) = \frac{e^{a(q,k_i)}}{\sum_j e^{a(q,k_j)}}$$
 ## Ejemplo de attention pooling
 
 ![](../images/attentionpooling.png){fig-align="center" width="75%"}
+
+
 
 
 ## Atención producto punto 
@@ -146,15 +160,11 @@ $$ a(q,k_i) = \frac{q^{T}k_i}{\sqrt{d}}$$
 
 $$\alpha(q,k_i) = softmax(a) = \frac{e^{q^{T}k_{i}/\sqrt{d}}}{\sum_j e^{q^{T}k_j/\sqrt{d}}}$$
 
-
-
-
 ## Atención producto punto 
 - Requiere que tanto $q$ como $k_i$ sean de la misma dimensión $d$
 - Si tenemos queries y keys en distintos espacios podriamos solucionar el problema con una matriz $M$
 - Esta matriz $M$ es una transformación lineal que proyecta uno de los espacios para que sean compatibles en dimensiones 
 - En la practica no vamos a hacer esto 
-
 
 ## Atención aditiva 
 - Esta va a funcionar sin importar si $q$ y $k_i$ tienen la misma dimensión
@@ -166,12 +176,14 @@ $$ a(q,k) = w_v^{T}tanh(W_qq + W_kk)$$
 - Esto lo metemos en una softmax
 
 
+
 ## Ventajas de la atención aditiva
 - Flexibilidad dimensional: no requiere que queries y keys estén en el mismo espacio de dimensión
 - Mayor expresividad: la combinación no lineal con $\tanh$ permite capturar relaciones más complejas entre $q$ y $k$
 - Estabilidad numérica: menos sensible a valores muy grandes que pueden ocurrir en el producto punto
 - Buen desempeño en práctica: funciona bien cuando las dimensiones de $q$ y $k$ son muy distintas o pequeñas
 - Forma original de atención propuesta en Bahdanau et al. (2014) para traducción automática
+
 
 
 # Mecanismo de atención 
@@ -183,10 +195,11 @@ $$ a(q,k) = w_v^{T}tanh(W_qq + W_kk)$$
     - El modelo aprende a poner más peso (atención) en las partes relevantes de la secuencia de entrada para la predicción actual
     - Este mecanismo actualiza dinámicamente la representación usada por el decoder antes de generar el siguiente token
 - Aunque la idea es sencilla, revolucionó el deep learning → es la base de los modelos modernos de NLP y LLMs
-    
-    
+   
+   
+   
 ## Modelo
-- La idea clave es que la *context variable* $c$ no está fija como en el encoder-decoder clásico, sino que se actualiza dinámicamente en cada paso
+- La idea clave es que la context variable $c$ no está fija como en el encoder-decoder clásico, sino que se actualiza dinámicamente en cada paso
 - En el paso $t'$ del decoder:
 
 $$c_{t'} = \sum_{t=1}^T \alpha(s_{t'-1},h_t)h_t$$
@@ -196,17 +209,16 @@ $$c_{t'} = \sum_{t=1}^T \alpha(s_{t'-1},h_t)h_t$$
     - $h_t$ = estado oculto del encoder en el tiempo $t$ (key y value)
     - $\alpha(s_{t'-1}, h_t)$ = peso de atención que indica la relevancia de $h_t$ para la predicción en $t'$
     
-    
+
+
 ## Intuición
-- En lugar de un solo *context vector* fijo, ahora tenemos un contexto adaptado a cada paso de generación
+- En lugar de un solo context vector fijo, ahora tenemos un contexto adaptado a cada paso de generación
 - Esto permite que el decoder consulte directamente las partes relevantes del input en cada momento
 - Ejemplo: al traducir “The cat sat on the mat”, al predecir “gato” el modelo pondrá más atención en el hidden state correspondiente a “cat”
-
 
 ## ¿Cómo se ve?
 
 ![](../images/Bahdanau.png){fig-align="center" width="75%"}
-
 
 
 ## Pasos del mecanismo de atención 
@@ -218,6 +230,7 @@ $$c_{t'} = \sum_{t=1}^T \alpha(s_{t'-1},h_t)h_t$$
 6. Combinación ponderada: el contexto $c$ se obtiene como la suma de los values, cada uno multiplicado por su peso de atención.
 
 
+
 # Multi-Head Attention
 
 ## Motivación 
@@ -227,12 +240,17 @@ $$c_{t'} = \sum_{t=1}^T \alpha(s_{t'-1},h_t)h_t$$
     - Relaciones locales
     - Diferentes tipos de dependencias semánticas o sintácticas
     
+    
+
 
 ## Idea clave
 - En vez de calcular una única atención, calculamos varias en paralelo.
 - Cada atención es una cabeza (head).
 - Cada cabeza tiene sus propias matrices de proyección $W^Q, W^K, W^V$.
 - El resultado final concatena todas las cabezas y se proyecta de vuelta al espacio original.
+
+
+
 
 ## Definición: 
 - Si tenemos $h$ cabezas de atención 
@@ -256,6 +274,7 @@ $$[h_1,....,h_h]W_o$$
     - Permite capturar múltiples relaciones en paralelo
     - Mejora la capacidad del modelo para aprender estructuras complejas del lenguaje.
     - Hace al modelo más expresivo sin incrementar demasiado la complejidad.
+    
     
 
 ## ¿Cómo se ve esto? 
@@ -287,6 +306,7 @@ $$[h_1,....,h_h]W_o$$
     - Encoder-decoder attention: conecta entre secuencias distintas (input → output).
     - Self-attention: conecta dentro de la misma secuencia (input → input).
     
+
 ## Limitación de Self-Attention
 - La operación de self-attention es invariante al orden de los tokens.
 - Ejemplo: “el gato come pescado” vs “pescado come el gato” → self-attention sin más no distingue el orden.
@@ -307,6 +327,7 @@ $$[h_1,....,h_h]W_o$$
     - $PE_{(pos,2i)} = \sin\left(\frac{pos}{10000^{2i/d}}\right)$
     - $PE_{(pos,2i+1)} = \cos\left(\frac{pos}{10000^{2i/d}}\right)$
 - Permite que el modelo capture orden y distancia relativa entre tokens
+
 
 ## Intuición de Positional Encoding
 - Cada posición se representa como un patrón de ondas senoidales.
@@ -334,6 +355,7 @@ $$[h_1,....,h_h]W_o$$
 
 \normalsize
 
+
 # Transformers
 
 
@@ -359,13 +381,15 @@ $$[h_1,....,h_h]W_o$$
         - Masked self-attention (para no mirar tokens futuros).
         - Atención encoder-decoder (usa salidas del encoder).
         
-
+        
 ## Encoder: detalles
 - Cada capa del encoder contiene:
 1. Multi-head self-attention: cada token atiende a todos los demás tokens de entrada.
 2. Feed-forward network: dos capas lineales con activación intermedia (ReLU o GELU).
 3. Residual + LayerNorm: ayuda al entrenamiento estable.
 - Replicado $N$ veces (por ejemplo, $N=6$ en el Transformer original).
+
+
 
 ## Decoder: detalles
 - Cada capa del decoder contiene:
@@ -374,6 +398,7 @@ $$[h_1,....,h_h]W_o$$
 3. Feed-forward network.
 4. Residual + LayerNorm.
 - También replicado $N$ veces
+
 
 ## Normalización y Residuales
 - Residual connections: $x + \text{Sublayer}(x)$.
@@ -403,13 +428,13 @@ $$[h_1,....,h_h]W_o$$
 4. Capa final: predicción del siguiente token.
 
 
-
 # Transformers para NLP
 
 ## Pipeline general 
 - Texto → tokenización → IDs → embeddings (token + posición [+ segmento]) → Transformer → cabeza de tarea → pérdida/decodificación.
 - Un estructura básica simple sirve para muchas tareas cambiando solo la cabeza o el esquema de decodificación.
 - Dos fases típicas: preentrenamiento (auto-supervisado en corpora grandes) → fine-tuning (tarea específica).
+
 
 
 ## Tokenización
@@ -436,7 +461,6 @@ $$[h_1,....,h_h]W_o$$
 - Si seguimos haciendo esto terminamos con palabras completas
 
 
-
 ## ¿Qué es OOV?
 - Out-Of-Vocabulary
 - En NLP tradicional, los modelos trabajan con un vocabulario fijo de palabras o subpalabras.
@@ -453,10 +477,59 @@ $$[h_1,....,h_h]W_o$$
 - Input final = suma (o concat) de estos componentes → pasa a la primera capa del Transformer.
 
 
-## Máscaras de atención (Attention Masks)
-- Padding mask: evita que `[PAD]` afecte la atención.
-- Causal mask (autoregresivo): cada posición solo atiende a $≤$ su índice (no mira el futuro).
-- Mask de segmentos (opcional): restringe atención entre partes (p. ej., en tareas de pares).
+## Máscaras de atención: ¿qué estamos enmascarando?
+
+Recordemos que self-attention calcula primero un score entre cada par de tokens, $S = QK^T/\sqrt{d_k}$. Cada elemento $S_{ij}$ responde: *¿cuánta atención debería poner el token $i$ sobre el token $j$?*
+
+Antes de aplicar softmax podemos agregar una máscara $M$, $A = \text{softmax}(S + M)$, donde:
+
+$$
+M_{ij} =
+\begin{cases}
+0 & \text{si } i \text{ puede atender a } j \\
+-\infty & \text{si } i \text{ NO puede atender a } j
+\end{cases}
+$$
+
+Después del softmax, $M_{ij}=-\infty \Rightarrow A_{ij}=0$.
+
+**La máscara no cambia los parámetros del modelo: controla qué información puede circular entre tokens.**
+
+
+
+# Tipos de máscaras de atención
+
+## Padding mask
+
+Las secuencias de un batch pueden tener diferentes longitudes y agregamos tokens `[PAD]` para igualarlas.
+
+Ejemplo:
+
+`el gato duerme [PAD] [PAD]`
+
+No queremos que los demás tokens presten atención a `[PAD]`.
+
+$$
+\text{attention hacia [PAD]} = 0
+$$
+
+## Causal mask
+
+En un modelo autoregresivo queremos predecir $P(x_t|x_1,\ldots,x_{t-1})$. Por lo tanto, durante entrenamiento el token en posición $t$ **no puede mirar tokens futuros**. Para una secuencia de cuatro tokens:
+
+$$
+\begin{array}{c|cccc}
+ & x_1 & x_2 & x_3 & x_4\\
+\hline
+x_1 & \checkmark & \times & \times & \times\\
+x_2 & \checkmark & \checkmark & \times & \times\\
+x_3 & \checkmark & \checkmark & \checkmark & \times\\
+x_4 & \checkmark & \checkmark & \checkmark & \checkmark
+\end{array}
+$$
+
+Esto evita que durante entrenamiento el modelo "haga trampa" viendo la respuesta futura.
+
 
 
 ## Objetivos de preentrenamiento (pretraining)
@@ -484,6 +557,8 @@ $$[h_1,....,h_h]W_o$$
 ![](../images/T5.png){fig-align="center" width="75%"}
 
 
+    
+       
 ## Patrones de arquitectura según tarea
 - Encoder-only (BERT, RoBERTa, etc.)
     - Clasificación (sentiment, topic): usar `[CLS]` → capa lineal.
@@ -494,9 +569,7 @@ $$[h_1,....,h_h]W_o$$
 - Encoder–Decoder (T5, BART)
     - Seq2Seq: traducción, summarization, paraphrase, style transfer.
     
-    
-    
-  
+      
 ## Fine-tuning: cabezas y adaptaciones
 - Heads: clasificación (softmax), regresión (MSE), marcaje por token, span prediction, LM.
 - Estrategias: congelar parte de la arquitectura básica, layer-wise learning rates, early stopping.
@@ -518,12 +591,15 @@ $$[h_1,....,h_h]W_o$$
 
 ![](../images/T5image.png){fig-align="center" width="75%"}   
 
+    
 
 ## Métricas típicas en NLP
 - Clasificación/NER: Accuracy, Precision/Recall/F1 (micro/macro), span-F1.
 - QA extractivo: Exact Match (EM), F1 de tokens.
 - Traducción/Resumen: BLEU, ROUGE (n-gramas; limita semántica perfecta).
 - LM: Perplexity (perplejidad) como proxy de calidad del modelo.
+
+
 
 
 # Large Language Models (LLMs)
@@ -535,6 +611,7 @@ $$[h_1,....,h_h]W_o$$
 - Entrenados en enormes cantidades de texto (cientos de miles de millones de tokens)
 - Ejemplos: GPT-3, GPT-4, PaLM, LLaMA, etc.
 
+
 ## GPT-3 (Brown et al., 2020)
 - 175B parámetros
 - 96 capas Transformer
@@ -543,6 +620,7 @@ $$[h_1,....,h_h]W_o$$
 - Secuencias de hasta 2048 tokens
 - Entrenado con cómputo distribuido masivo
 - **Ojo (2026):** estos números ya son históricos — los modelos actuales manejan contextos de cientos de miles o millones de tokens y corpora de decenas de billones; la escala de GPT-3 hoy es la de un modelo "pequeño"
+
 
 
 ## Tamaño de los LLMs (la era 2018-2022)
@@ -554,44 +632,39 @@ $$[h_1,....,h_h]W_o$$
 
 ## ¿Dónde se gasta el cómputo? (2026)
 
-- La pregunta ya no es "¿qué tan grande el modelo?" sino **cómo repartir el presupuesto de cómputo en tres lugares**:
-    1. **Preentrenamiento**: los retornos de solo escalar datos+parámetros se aplanaron
-    2. **Post-entrenamiento con RL**: SFT, RLHF/DPO y RL con recompensas verificables
-    3. **Cómputo en inferencia**: dejar al modelo "pensar" más tokens en los problemas difíciles
-- Chinchilla (Hoffmann et al., 2022) resolvió el punto 1; los puntos 2 y 3 son la frontera actual y aún no tienen una ley limpia
-- Implicación práctica: el mismo modelo puede ser rápido-y-barato o lento-y-caro según cuánto "piensa" — por eso los proveedores venden *modos* y no solo modelos
+El desempeño de un LLM depende del cómputo utilizado en distintas etapas:
+
+1. **Preentrenamiento:** aprender los parámetros usando grandes cantidades de datos y cómputo.
+2. **Post-entrenamiento:** SFT, preferencias y RL para modificar el comportamiento del modelo.
+3. **Inferencia o test-time compute:** gastar más cómputo después del entrenamiento para resolver una pregunta particular.
+
+
+## ¿Dónde se gasta el cómputo? (2026)
+
+Durante inferencia podemos aumentar el cómputo mediante más pasos/tokens de razonamiento, múltiples soluciones candidatas, verificación o búsqueda, y uso iterativo de herramientas.
+
+Más test-time compute $\Rightarrow$ potencialmente mejor respuesta, pero también $\Rightarrow$ más latencia y costo.
+
+Por eso un mismo modelo puede operar con distintos **reasoning budgets**:
+rápido y barato para tareas sencillas, o con más cómputo para tareas difíciles.
 
 
 ## Mixture-of-Experts (MoE): la arquitectura dominante
 
-- En 2026 casi todos los modelos de frontera son **MoE**: la capa MLP del bloque se reemplaza por muchos "expertos" y un *router*
+- En 2026 casi todos los modelos de frontera son **MoE**: la capa MLP del bloque se reemplaza por muchos "expertos" y un router
 - Por cada token se activan solo los top-$k$ expertos (por ejemplo 2 de 64)
-- Consecuencia clave: el **número total de parámetros se desacopla del costo por token**
+- Consecuencia clave: el número total de parámetros se desacopla del costo por token
     - un modelo de cientos de miles de millones de parámetros puede costar como uno de decenas
-- Por eso las comparaciones de proveedores por "tamaño del modelo" ya no significan lo que significaban: pregunten por parámetros *activos* y costo por token, no por parámetros totales
-
-
-## ¿Alternativas a la atención?
-
-- El costo cuadrático de la atención en la longitud de secuencia motivó alternativas: los **modelos de espacio de estados** (Mamba y sucesores), con costo lineal
-- Veredicto a 2026: **no desplazaron a los Transformers** — la atención sigue ganando en tareas de recuerdo preciso; los SSMs sobreviven en arquitecturas híbridas para contextos muy largos
-- Lección de criterio: no toda alternativa prometedora reemplaza al estándar; la carga de la prueba está en el reto
+- Por eso las comparaciones de proveedores por "tamaño del modelo" ya no significan lo que significaban: pregunten por parámetros activos y costo por token, no por parámetros totales
 
 
 ## Más allá del texto: modelos multimodales
 
 - **ViT** (Vision Transformer): la imagen se corta en parches y se trata como una secuencia de tokens — el mismo Transformer de este deck, aplicado a visión
 - **CLIP**: alinea imágenes y texto en un espacio común entrenando con pares (imagen, descripción) — la base de "buscar imágenes con palabras"
-- Los modelos de frontera de 2026 son **nativamente multimodales**: un solo modelo lee texto, imágenes y documentos
-- Para política pública esto une los dos mundos del curso: imagen satelital + texto (encuestas, registros) ya no son dos pipelines separados, son una sola entrada  
+- Los modelos de frontera de 2026 son nativamente multimodales: un solo modelo lee texto, imágenes y documentos
 
 
-
-## ¿Qué aprenden?
-- Sintaxis: reglas del lenguaje
-- Semántica: asociaciones de significado
-- Conocimiento general: hechos del mundo
-- Habilidad de completar, traducir, resumir, razonar en texto
 
 ## Few-shot, Zero-shot y Prompting
 - Prompting
@@ -605,44 +678,44 @@ $$[h_1,....,h_h]W_o$$
 
 
 ## El problema del modelo base
-- Un LM base solo hace una cosa: predecir el siguiente token
+- Un LLM base solo hace una cosa: predecir el siguiente token
 - Completar texto $\neq$ ser útil: puede continuar tu pregunta con más preguntas
 - Tampoco tiene noción de "no sé" o "eso no lo debería contestar"
-- Los asistentes que usamos (ChatGPT, Claude, Gemini) son LLMs base + **etapas adicionales de entrenamiento**
+- Los asistentes que usamos (ChatGPT, Claude, Gemini) son LLMs base + etapas adicionales de entrenamiento
 
 
 ## Instruction tuning (SFT)
 - *Supervised fine-tuning*: seguir entrenando el modelo base con pares (instrucción, respuesta deseada) escritos/curados por humanos
 - Mismo objetivo de siempre (predecir el siguiente token), datos distintos
-- El modelo aprende el **formato** de ser asistente: responder, no continuar
+- El modelo aprende el formato de ser asistente: responder, no continuar
 - Pocos datos comparado con el preentrenamiento (miles vs. billones de tokens)
 
 
 ## RLHF: aprendizaje por refuerzo con retroalimentación humana
 - Problema: es fácil juzgar cuál de dos respuestas es mejor; es difícil escribir la respuesta perfecta
 - Receta (InstructGPT, Ouyang et al. 2022):
-    1. Humanos **comparan** pares de respuestas del modelo
-    2. Con esas comparaciones se entrena un **modelo de recompensa** que predice la preferencia humana
+    1. Humanos comparan pares de respuestas del modelo
+    2. Con esas comparaciones se entrena un modelo de recompensa que predice la preferencia humana
     3. El LLM se optimiza (RL) para maximizar esa recompensa
-- Variante más simple y muy usada hoy: **DPO** (Rafailov et al. 2023) — optimiza directamente sobre las comparaciones, sin modelo de recompensa
-- Conexión con la semana 11: esto es *alineación como técnica*; los problemas normativos (¿preferencias de quién?) siguen abiertos
-
+- Variante más simple y muy usada hoy: **DPO** (Direct Preference Optimization) (Rafailov et al. 2023) — optimiza directamente sobre las comparaciones, sin modelo de recompensa
+- Ojo acá: esto es *alineación como técnica*; los problemas normativos (¿preferencias de quién?) siguen abiertos
 
 ## RLVR: RL con recompensas verificables
 
-- El paso siguiente a RLHF/DPO: en dominios donde el éxito **se puede verificar mecánicamente**, no necesitas modelo de recompensa ni preferencias humanas
+- El paso siguiente a RLHF/DPO: en dominios donde el éxito se puede verificar mecánicamente, no necesitas modelo de recompensa ni preferencias humanas
     - matemáticas: ¿la respuesta final es correcta?
     - código: ¿pasan los tests?
 - Se entrena con RL directamente contra esa señal verificable (la receta de DeepSeek-R1, 2025)
-- El modelo aprende solo a *pensar más* — cadenas largas de razonamiento — porque pensar más gana más recompensa
-- Por eso el progreso 2024-2026 fue más rápido en matemáticas y código que en juicio abierto: **avanza más rápido donde hay verificador**
+- El modelo aprende solo a pensar más — cadenas largas de razonamiento — porque pensar más gana más recompensa
+- Por eso el progreso 2024-2026 fue más rápido en matemáticas y código que en juicio abierto: avanza más rápido donde hay verificador. 
 
 
 ## Modelos de razonamiento (2024–)
-- Idea: gastar más cómputo **en inferencia** — el modelo genera cadenas largas de razonamiento antes de responder
+- Idea: gastar más cómputo en inferencia — el modelo genera cadenas largas de razonamiento antes de responder
 - Entrenados con RL sobre problemas verificables (matemáticas, código)
 - Mejoras grandes en tareas de razonamiento; costo y latencia mayores
 - Moraleja del escalamiento: ya no solo "más parámetros y más datos", también "más pensamiento por pregunta"
+
 
 
 # ¿Prompt, RAG o fine-tuning?
@@ -656,19 +729,18 @@ $$[h_1,....,h_h]W_o$$
 
 
 ## RAG: generación aumentada con recuperación
-- Problema: el conocimiento del LLM está congelado en sus pesos (fecha de corte, sin documentos internos, alucina fuentes)
-- **RAG** (Lewis et al. 2020): antes de generar, se **buscan** los documentos relevantes (embeddings + búsqueda semántica) y se pegan al prompt
-- El modelo responde *citando* el corpus: verificable y actualizable sin reentrenar
+- Problema: el conocimiento del LLM está congelado en sus pesos (fecha de corte, sin documentos internos, alucina)
+- **RAG** (Lewis et al. 2020): antes de generar, se buscan los documentos relevantes (embeddings + búsqueda semántica) y se pegan al prompt
+- El modelo responde citando el corpus: verificable y actualizable sin reentrenar
 - Para gobierno es el patrón dominante: leyes, expedientes, normas — corpus que cambian y donde la trazabilidad de la fuente es obligatoria
 
 
+
 ## Agentes y uso de herramientas
-- Un LLM que además puede **actuar**: llamar funciones, buscar, ejecutar código, leer archivos — en un ciclo de razonar → actuar → observar (ReAct, Yao et al. 2022)
-- Ojo: ReAct es el patrón *de prompting* original (2022) — la línea base conceptual; los agentes de frontera de 2026 además **entrenan la política de uso de herramientas con RL** sobre tareas completas
-- El modelo decide *qué* herramienta usar y *cuándo*; el sistema alrededor decide *qué le está permitido*
-- Dirigir, supervisar y auditar agentes tiene su propio deck en este curso
-- Cambia la habilidad que importa: de escribir el código a **especificar y verificar** el trabajo del agente
-- (Exactamente lo que practican en el proyecto final de este curso)
+- Un LLM que además puede actuar: llamar funciones, buscar, ejecutar código, leer archivos — en un ciclo de razonar → actuar → observar (ReAct, Yao et al. 2022)
+- Ojo: ReAct es el patrón de prompting original (2022) — la línea base conceptual; los agentes de frontera de 2026 además entrenan la política de uso de herramientas con RL sobre tareas completas
+- El modelo decide qué herramienta usar y cuándo; el sistema alrededor decide qué le está permitido
+- Cambia la habilidad que importa: de escribir el código a especificar y verificar el trabajo del agente
 
 
 ## ¿Qué opción elegir?
@@ -689,23 +761,49 @@ $$[h_1,....,h_h]W_o$$
 # Evaluación de LLMs
 
 
-## ¿Por qué no bastan las métricas clásicas?
-- BLEU/ROUGE comparan contra *una* referencia; en generación abierta hay infinitas respuestas correctas
-- Perplejidad mide ajuste al corpus, no utilidad ni veracidad
-- Un modelo puede tener excelente perplejidad y aún así inventar cifras con total seguridad
+## ¿Cómo evaluamos texto generado?
 
+- **BLEU**: mide cuánto se parecen los n-grams de la respuesta generada a los de una respuesta de referencia.
+    - Se usó mucho en traducción automática.
+    - Más coincidencias de palabras o frases cortas $\Rightarrow$ mayor BLEU.
+
+- **ROUGE**: también compara n-grams con una referencia, pero enfatiza cuánto contenido de la referencia fue recuperado.
+    - Se usa mucho en resumen automático.
+
+- **Perplejidad**: mide qué tan bien un modelo de lenguaje predice los tokens observados.
+    - Menor perplejidad $\Rightarrow$ el modelo asigna mayor probabilidad al texto observado.
+
+
+
+## ¿Por qué no bastan estas métricas para evaluar LLMs?
+
+**BLEU y ROUGE** comparan la respuesta contra una o varias respuestas de referencia. Problema: en generación abierta puede haber muchas respuestas correctas escritas de formas muy distintas. Por ejemplo, *"París es la capital de Francia"* y *"La capital francesa es París"* dicen prácticamente lo mismo, pero tienen pocas coincidencias exactas de n-grams.
+
+
+
+**Perplejidad** mide qué tan bien el modelo predice texto, pero no mide directamente si la respuesta es verdadera, si sigue correctamente una instrucción, si resuelve el problema, o si es segura o útil. Un modelo puede asignar alta probabilidad a texto muy fluido y aun así producir información falsa.
+
+$$
+\boxed{
+\text{fluidez}
+\neq
+\text{veracidad}
+\neq
+\text{utilidad}
+}
+$$
 
 ## Benchmarks y sus trampas
 - Baterías estándar (conocimiento, razonamiento, código) permiten comparar modelos...
-- ...pero: **contaminación** (el test estaba en los datos de entrenamiento), saturación, y *teaching to the test*
+- ...pero: contaminación (el test estaba en los datos de entrenamiento), saturación, y teaching to the test
 - Regla práctica: un benchmark público mide lo que el benchmark mide, no tu caso de uso
-- Respuesta del campo (2026): benchmarks que solo puntúan problemas **fechados después del corte de entrenamiento** del modelo, y evals privados donde solo se publica el agregado
-- Para decisiones de despliegue: construir un conjunto de evaluación **propio**, con datos reales del problema y que el proveedor nunca haya visto
+- Respuesta del campo (2026): benchmarks que solo puntúan problemas fechados después del corte de entrenamiento del modelo, y evals privados donde solo se publica el agregado
+- Para decisiones de despliegue: construir un conjunto de evaluación propio, con datos reales del problema y que el proveedor nunca haya visto
 
 
 ## LLM-as-judge y evaluación humana
 - Evaluación humana: el estándar de oro, cara y lenta
-- **LLM-as-judge**: usar otro LLM para calificar respuestas contra una rúbrica
+- LLM-as-judge: usar otro LLM para calificar respuestas contra una rúbrica
     - Escalable y barato; útil como primer filtro
     - Sesgos conocidos: prefiere respuestas largas, prefiere su propio estilo, sensible al orden
 - Buena práctica: validar al juez contra una muestra calificada por humanos antes de confiar en él
@@ -717,14 +815,16 @@ $$[h_1,....,h_h]W_o$$
 - **Red-teaming**: buscar activamente cómo hacer fallar al modelo (jailbreaks, sesgos, fugas de datos) *antes* que los usuarios lo hagan
 
 
+
 ## Evaluación para despliegue público
 - Si una agencia va a desplegar un LLM, el mínimo exigible:
     1. Conjunto de evaluación propio y fuera del alcance del proveedor
-    2. Métricas **por subgrupo** (¿funciona igual para todos los ciudadanos?)
+    2. Métricas por subgrupo (¿funciona igual para todos los ciudadanos?)
     3. Tasa de alucinación / citas verificables si informa decisiones
     4. Monitoreo continuo post-despliegue (los modelos y los datos cambian)
     5. Ruta de escalamiento a un humano y responsabilidad clara
 - "Salió bien en el benchmark" no es una evaluación de despliegue
+
 
 
 # Transformers y políticas públicas
@@ -741,13 +841,16 @@ $$[h_1,....,h_h]W_o$$
 - Gilardi, Alizadeh & Kubli (2023, *PNAS*): ChatGPT supera a anotadores de crowdsourcing en tareas de clasificación de texto político — cambia la economía de etiquetar datos
 - Ziems et al. (2024, *Computational Linguistics*): ¿pueden los LLMs transformar la ciencia social computacional? — panorama de usos y límites
 - Dell (2025, *Journal of Economic Literature*): *Deep Learning for Economists* — guía de estas herramientas para investigación económica aplicada
-- Patrón común: el LLM como **instrumento de medición** — y entonces su sesgo es sesgo de medición: hay que validarlo como cualquier instrumento
+- Patrón común: el LLM como instrumento de medición — y entonces su sesgo es sesgo de medición: hay que validarlo como cualquier instrumento
 
 
-## Cierre del curso técnico
-- De regresión lineal a LLMs, el esqueleto no cambió: modelo flexible + pérdida derivada de un supuesto probabilístico + SGD sobre minibatches
-- Lo que sí cambió: la escala, y con ella *emergen* capacidades que nadie programó
-- Ustedes no van a implementar un Transformer en el trabajo; van a **decidir** si se usa, **especificar** qué debe hacer y **verificar** que lo haga
-- Ese criterio — saber qué pedir y saber qué puede salir mal — es lo que este curso intentó construir
-- Semana 11: por qué funciona (nadie sabe del todo) y qué implica para la sociedad
+
+
+
+
+
+
+
+
+
 
