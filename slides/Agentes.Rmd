@@ -126,14 +126,23 @@ Podemos separar los riesgos en dos grupos.
 
 **1. Fallas amplificadas de LLMs.** Problemas que ya existían en chatbots, pero se vuelven más peligrosos:
 
-- prompt injection, alucinaciones, fuga de información;
-- sycophancy, mala calibración.
+- prompt injection;
+- alucinaciones;
+- fuga de información;
+- sycophancy;
+- mala calibración.
+
+
+## Dos familias de fallas
 
 **2. Fallas propias de agentes.** Problemas que aparecen porque el sistema puede actuar:
 
-- uso indebido de herramientas, escalamiento de permisos;
-- manipulación del flujo de trabajo, contaminación del contexto;
-- bypass del humano en el loop, fallas por coordinación entre agentes.
+- uso indebido de herramientas;
+- escalamiento de permisos;
+- manipulación del flujo de trabajo;
+- contaminación del contexto;
+- bypass del humano en el loop;
+- fallas por coordinación entre agentes.
 
 
 
@@ -385,9 +394,25 @@ Por eso el inventario de herramientas es parte de la evaluación de riesgo.
 
 Distintos benchmarks miden cosas distintas.
 
-- **SWE-bench:** issues reales de GitHub; el agente debe modificar código; el éxito se mide con tests.
-- **GAIA:** preguntas que requieren razonamiento, búsqueda, herramientas y a veces multimodalidad; busca medir asistentes generales.
-- **$\tau$-bench:** simula conversaciones entre usuario y agente; el agente usa APIs y debe respetar políticas; se evalúa si completa la tarea y si sigue reglas.
+**SWE-bench**
+
+- issues reales de GitHub;
+- el agente debe modificar código;
+- el éxito se mide con tests.
+
+**GAIA**
+
+- preguntas que requieren razonamiento, búsqueda, herramientas y a veces multimodalidad;
+- busca medir asistentes generales.
+
+
+## Benchmarks agénticos: tres diseños
+
+**$\tau$-bench**
+
+- simula conversaciones entre usuario y agente;
+- el agente usa APIs y debe respetar políticas;
+- se evalúa si completa la tarea y si sigue reglas.
 
 Lo importante no es memorizar nombres. Lo importante es preguntar:
 
