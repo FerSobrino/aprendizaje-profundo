@@ -40,6 +40,21 @@ Elige **una** de las siguientes opciones y dirígela de principio a fin usando u
 
    Recomendación de despliegue: qué modelo, con qué costo por época y qué contexto, para un caso concreto donde importa la latencia (por ejemplo, autocompletado en un sistema de atención ciudadana).
 
+   *Dónde conseguir el corpus* (puntos de partida; revisa los términos de uso y documenta cómo lo descargaste y limpiaste):
+   - **Diario Oficial de la Federación**: [dof.gob.mx](https://www.dof.gob.mx) — decretos, acuerdos y normas; texto legal formal.
+   - **Gaceta Parlamentaria** de la Cámara de Diputados: [gaceta.diputados.gob.mx](http://gaceta.diputados.gob.mx) — iniciativas, dictámenes y puntos de acuerdo.
+   - **Diario de los Debates** (Cámara de Diputados y Senado): [cronica.diputados.gob.mx](http://cronica.diputados.gob.mx), [senado.gob.mx](https://www.senado.gob.mx) — transcripciones de sesiones; lenguaje oral y político.
+   - **Sistema de Información Legislativa** (SEGOB): [sil.gobernacion.gob.mx](http://sil.gobernacion.gob.mx) — iniciativas y su estatus, útil si quieres etiquetas.
+   - **Buscador Jurídico de la SCJN**: [bj.scjn.gob.mx](https://bj.scjn.gob.mx) — sentencias y tesis.
+   - **Versiones estenográficas y comunicados** del gobierno federal: [gob.mx](https://www.gob.mx) (sección de prensa de cada dependencia) y [presidente.gob.mx](https://www.presidente.gob.mx).
+   - **datos.gob.mx**: [datos.gob.mx](https://datos.gob.mx) — portal de datos abiertos; varios conjuntos incluyen campos de texto libre (quejas, solicitudes, descripciones).
+   - **Plataforma Nacional de Transparencia**: [plataformadetransparencia.org.mx](https://www.plataformadetransparencia.org.mx) — solicitudes de información y respuestas.
+   - **Hugging Face Datasets**: [huggingface.co/datasets](https://huggingface.co/datasets) — busca corpus en español ya limpios (por ejemplo, Wikipedia en español, noticias, EUR-Lex en español para legislación de la UE como en Chalkidis et al.).
+   - **Wikipedia en español** (dumps): [dumps.wikimedia.org](https://dumps.wikimedia.org) — si quieres un corpus grande y neutro como control.
+   - **Project Gutenberg**: [gutenberg.org](https://www.gutenberg.org) — literatura en español; es de donde salió el Quijote de la tarea, sirve como línea base pero no cuenta como corpus nuevo.
+
+   Un corpus de 50,000–300,000 palabras es suficiente para este proyecto; más grande no es mejor si no cabe en tu cómputo.
+
 4. **Opción aplicada (recomendada, un poco más ambiciosa).** Un problema de política pública con datos reales y abiertos: clasificación de texto legislativo/gubernamental, predicción de demanda de un servicio público, clasificación de imágenes satelitales con transfer learning, etc. Acuérdalo conmigo antes del Hito 1. Debe incluir un protocolo de validación  y métricas por subgrupo cuando aplique.
 
 En las opciones 1–3, cada inciso lleva su **predicción escrita** en la especificación del Hito 1, antes de correrlo; el reporte de interpretación contrasta cada predicción con lo que salió. Si algún inciso resulta imposible con tus recursos, lo documentas y lo sustituyes por otro acordado conmigo; no lo omites en silencio.
