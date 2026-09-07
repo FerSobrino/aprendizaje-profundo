@@ -38,20 +38,17 @@ si está bien?"*
 
 | Componente | Peso | Detalle |
 |---|---|---|
-| Exámenes en clase (2) | 50% | Escritos, sin computadora (25% c/u) |
-| Presentación de paper (parejas) | 35% | IA permitida para entender, con transcripción |
-| Proyecto de colaboración con IA | 15% | Dirigir a un agente; se califica especificación, verificación e interpretación |
+| Exámenes en clase (2) | 60% | Escritos, sin computadora, 40 minutos (30% c/u) |
+| Proyecto de colaboración con IA | 40% | Dirigir a un agente; se califica especificación, verificación e interpretación |
 
 - **Exámenes**: en clase, individuales, lápiz y papel. No piden
   escribir código: piden derivar, predecir, diagnosticar y justificar.
   Temarios en [Examenes/](Examenes/). Examen 1 (~semana 6):
-  fundamentos. Examen 2 (~semana 11): arquitecturas, LLMs y agentes.
-- **Presentación**: papers asignados aleatoriamente, en parejas.
-  Formato y rúbrica en
-  [Evaluacion/GuiaPresentaciones.Rmd](Evaluacion/GuiaPresentaciones.Rmd).
+  fundamentos. Examen 2 (~semana 11): CNNs, RNNs, Transformers y LLMs.
 - **Proyecto**: diriges a un agente de IA para ejecutar un experimento
   de deep learning. Se califica tu especificación, tu verificación del
-  trabajo del agente y tu interpretación — no el código. Guía en
+  trabajo del agente y tu interpretación — no el código. Es el
+  entregable principal del curso (40%). Guía en
   [Evaluacion/ProyectoColaboracionIA.md](Evaluacion/ProyectoColaboracionIA.md).
 - **Tareas de práctica (no calificadas)**: las 8 tareas en
   [tareas/](tareas/) son la preparación directa para los exámenes, con
@@ -72,16 +69,15 @@ si está bien?"*
 | 9 | Atención y Transformers | [Transformers](slides/Transformers.pdf) | [Mini-GPT](notebooks/Transformers.ipynb) | T8 | |
 | 10 | LLMs: post-entrenamiento, RAG · Agentes | [Transformers](slides/Transformers.pdf) · [Agentes](slides/Agentes.pdf) | | | |
 | 11 | ¿Por qué funciona DL? · Ética y gobernanza | [Ética](slides/EticayPreguntas.pdf) | | | **Examen 2** |
-| 12 | Presentaciones · entrega del proyecto | | | | |
+| 12 | Entrega del proyecto de colaboración con IA | | | | |
 
 ## Política de IA (resumen)
 
 La política completa está en [PoliticaIA.md](PoliticaIA.md). En corto:
 
 - En **tareas de práctica y proyecto**: cualquier LLM o agente está
-  permitido. En el proyecto (y en la preparación de la presentación)
-  entregas la transcripción completa; sin transcripción, no se
-  califica.
+  permitido. En el proyecto entregas la transcripción completa; sin
+  transcripción, no se califica.
 - En **exámenes**: sin IA — a lápiz y papel.
 - Eres responsable de todo lo que entregas: "lo escribió el agente" no
   es defensa de un resultado incorrecto.
@@ -98,7 +94,7 @@ vez — guía paso a paso (Colab o instalación local) en
 - `tareas/` — las 8 tareas de práctica (no calificadas)
 - `soluciones/` — soluciones de la parte práctica de las tareas
 - `Examenes/` — temarios de los dos exámenes
-- `Evaluacion/` — guía de presentaciones y del proyecto de colaboración con IA
+- `Evaluacion/` — guía del proyecto de colaboración con IA
 - `images/` — figuras usadas por las slides
 
 ## Bibliografía
@@ -109,7 +105,9 @@ vez — guía paso a paso (Colab o instalación local) en
 - Zhang et al. — *Dive into Deep Learning (d2l)*
 - Chollet — *Deep Learning with Python*
 
-## Papers a presentar
+## Papers clásicos (lectura opcional)
+
+Ya no hay presentaciones de papers; esta lista queda como lectura recomendada para quien quiera ir a la fuente de lo que vemos en clase.
 
 1. AlexNet — Krizhevsky, Sutskever & Hinton (2012)
 2. ResNet — He et al. (2015)
@@ -120,7 +118,7 @@ vez — guía paso a paso (Colab o instalación local) en
 7. GANs — Goodfellow et al. (2014)
 8. Double Descent — Belkin et al. (2019) / Nakkiran et al. (2019)
 
-**Adicionales (era LLM, para grupos grandes o como alternativa):**
+**Era LLM:**
 
 9. Scaling Laws / Chinchilla — Hoffmann et al. (2022)
 10. InstructGPT (RLHF) — Ouyang et al. (2022)

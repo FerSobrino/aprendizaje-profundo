@@ -19,14 +19,6 @@ ellas. El mejor uso: escribe qué esperas observar antes de correr
 cada experimento y explica el porqué después de verlo — eso es
 exactamente lo que van a evaluar los exámenes.
 
-## En la presentación de paper: IA para entender, con transcripción
-
-Puedes usar LLMs para entender el paper o preparar ideas, pero es
-obligatorio entregar la transcripción completa y sin editar de tus
-conversaciones junto con los entregables. Las preguntas de defensa en
-vivo están diseñadas para distinguir comprensión propia de resumen
-generado.
-
 ## En el proyecto final: dirigir a la IA es lo que se evalúa
 
 El proyecto de colaboración con IA invierte la lógica: usar un agente
@@ -53,8 +45,8 @@ diagnosticar y justificar — exactamente lo que necesitas para dirigir
 
 ## Colaboración entre personas
 
-Puedes discutir las tareas de práctica y preparar la presentación con
-tu pareja, pero el proyecto final es individual: tu conversación con
+Puedes discutir las tareas de práctica con quien quieras, pero el
+proyecto final es individual: tu conversación con
 el agente y tus entregables son tuyos. Anota los nombres de las
 personas con las que trabajaste.
 

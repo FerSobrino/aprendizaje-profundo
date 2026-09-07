@@ -2,7 +2,7 @@
 
 **Cuándo:** en clase aprox semana 6.
 **Formato:** individual, lápiz y papel, **40 minutos**. Sin computadora, sin celular, sin código.
-**Peso:** 25% de la calificación final.
+**Peso:** 30% de la calificación final.
 **Material permitido:** ninguno propio. El examen incluye al final un **formulario de distribuciones de probabilidad** (soporte, parámetros, fórmula y media de las distribuciones más comunes). Todo lo demás, pérdidas, optimizadores, backprop, inicialización y regularización, debes saberlo.
 **Cobertura:** slides *Repaso*, *NN*, *Entrenamiento*, *Entrenamiento 2* y *Regularización*, más las Tareas de práctica 1–5. **No** incluye CNNs ni nada posterior.
 

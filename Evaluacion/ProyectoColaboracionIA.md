@@ -1,8 +1,11 @@
 # Proyecto de colaboración con IA — Dirigir a un agente para hacer deep learning
 
-**Peso:** 15% de la calificación final.
+**Peso:** 40% de la calificación final. Es el entregable principal del curso.
 **Formato:** individual. Puedes discutir con compañeros, pero la conversación con el agente y los entregables son tuyos.
-**Entrega:** semana 12, junto con las presentaciones.
+**Entregas:** dos momentos.
+
+- **Hito 1 — especificación congelada (semana 8).** Entregas la especificación previa (entregable 1) antes de abrir el chat con el agente. Recibes retroalimentación breve; la especificación queda congelada y se califica junto con el resto.
+- **Entrega final (semana 12).** Los cinco entregables completos.
 
 ## Por qué este proyecto
 
@@ -15,7 +18,9 @@ Elige **una** de las siguientes opciones y dirígela de principio a fin usando u
 1. **Regularización (base: Tarea 5).** El grid de optimizadores × weight decay en MNIST, más el régimen de pocos datos (N=2000) con aumento de datos. Reporta curvas, tabla final con val_acc, $\|\theta\|_2$ y ECE.
 2. **CNN (base: Tarea 6).** El grid 3×3 de dropout × weight decay en small_data, más la comparación de aumentos de datos con la cuadrícula visual que verifica que las transformaciones preservan la etiqueta.
 3. **Secuencias (base: Tarea 7).** RNN vs. LSTM vs. GRU × 2 optimizadores sobre un corpus, con curvas de perplejidad y tiempos por época, cerrando con una recomendación de despliegue.
-4. **Opción aplicada (recomendada, un poco más ambiciosa).** Un problema de política pública con datos reales y abiertos: clasificación de texto legislativo/gubernamental, predicción de demanda de un servicio público, clasificación de imágenes satelitales con transfer learning, etc. Acuérdalo conmigo antes de empezar. Debe incluir un protocolo de validación serio y métricas por subgrupo cuando aplique.
+4. **Opción aplicada (recomendada, un poco más ambiciosa).** Un problema de política pública con datos reales y abiertos: clasificación de texto legislativo/gubernamental, predicción de demanda de un servicio público, clasificación de imágenes satelitales con transfer learning, etc. Acuérdalo conmigo antes del Hito 1. Debe incluir un protocolo de validación serio y métricas por subgrupo cuando aplique.
+
+Con el peso actual del proyecto, en cualquiera de las opciones 1–3 se espera **una extensión propia**: una ablación o comparación adicional que no está en la tarea base (por ejemplo, un tercer factor, un régimen de datos distinto, o una métrica por subgrupo), especificada desde el Hito 1.
 
 En cualquier opción el estándar experimental es el del curso: semilla fija, mismo split entre configuraciones, un factor variado a la vez, curvas + tabla resumen + interpretación escrita.
 
@@ -31,7 +36,7 @@ En cualquier opción el estándar experimental es el del curso: semilla fija, mi
 
 | Componente | Pts | Qué se evalúa |
 |---|---|---|
-| Especificación | 30 | Completa y teóricamente fundamentada *antes* de empezar: splits, semillas, control de factores, métricas correctas para el problema. Una especificación a la que el agente no le pueda meter un gol. |
+| Especificación | 30 | Completa y teóricamente fundamentada *antes* de empezar: splits, semillas, control de factores, métricas correctas para el problema. Una especificación a la que el agente no le pueda meter un gol. Entregada en el Hito 1 (10 de los 30 pts dependen de entregarla a tiempo y congelada). |
 | Verificación | 30 | Escepticismo con evidencia: revisiones concretas al código y al protocolo, errores del agente detectados y documentados, contraste resultado-vs-predicción. |
 | Interpretación | 25 | Conexión con la teoría del curso, honestidad sobre limitaciones, recomendación defendible. |
 | Reflexión y forma | 15 | Reflexión genuina; entrega completa (los 5 entregables), a tiempo, con la transcripción íntegra. |
