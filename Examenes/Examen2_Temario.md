@@ -94,6 +94,7 @@ Estas **no** son las preguntas del examen, pero son del mismo estilo y dificulta
 
 ## Cómo estudiar
 
+0. Resuelve la **guía de estudio** ([Examen2_GuiaEstudio.pdf](Examen2_GuiaEstudio.pdf)): mismo formato que el examen, preguntas del mismo estilo y respuestas orientativas. Hazla a mano, con reloj, antes de ver las respuestas.
 1. **Resuelve las Tareas 6–8** completas. Los enunciados y las soluciones de la parte práctica están en el repo. Las preguntas del examen siguen ese estilo.
 2. Para los notebooks de CNN, RNN y Transformers: antes de correr cada celda, **predice** qué va a salir y por qué. En el de Transformers, las ablaciones (quitar la máscara causal, quitar la codificación posicional) son material de examen directo.
 3. Practica la aritmética de convoluciones y de atención con números inventados hasta que salga sin pensar. Son cinco minutos del examen y separan a quien entiende de quien memorizó.

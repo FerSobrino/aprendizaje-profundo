@@ -82,6 +82,7 @@ Dado un resumen de entrenamiento (pérdida train/val por época, accuracy, norma
 
 ## Cómo estudiar
 
+0. Resuelve la **guía de estudio** ([Examen1_GuiaEstudio.pdf](Examen1_GuiaEstudio.pdf)): tiene el mismo formato que el examen, preguntas del mismo estilo y respuestas orientativas. Hazla a mano, con reloj, antes de ver las respuestas.
 1. **Resuelve las Tareas 1–5** completas. Los enunciados y las soluciones de la parte práctica están en el repo. Las preguntas del examen siguen ese estilo.
 2. Para cada notebook de clase (Optimizadores, Diagnósticos, Regularización): antes de correr una celda, **predice** qué va a salir y por qué. Después compara. Eso es lo que evalúa la Parte C.
 3. Reproduce **sin ver las slides** las derivaciones de *Entrenamiento* (MSE, BCE, cross-entropy) y de *Entrenamiento 2* (backward pass escalar, varianza de He).

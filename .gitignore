@@ -12,6 +12,8 @@ ltximg/
 *.pdf
 !PoliticaIA.pdf
 !tech-help/*.pdf
+!Examenes/*.pdf
+!Evaluacion/*.pdf
 # (los PDFs de slides/ se permiten en slides/.gitignore)
 
 # ===== Python =====

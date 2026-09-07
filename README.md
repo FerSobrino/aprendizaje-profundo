@@ -43,14 +43,20 @@ si está bien?"*
 
 - **Exámenes**: en clase, individuales, lápiz y papel. No piden
   escribir código: piden derivar, predecir, diagnosticar y justificar.
-  Temarios en [Examenes/](Examenes/). Examen 1 (~semana 6):
-  fundamentos. Examen 2 (~semana 11): CNNs, RNNs, Transformers y LLMs.
+  Temarios y **guías de estudio con preguntas de práctica y respuestas**
+  en [Examenes/](Examenes/). Examen 1 (~semana 6): fundamentos
+  ([temario](Examenes/Examen1_Temario.md) ·
+  [guía de estudio](Examenes/Examen1_GuiaEstudio.pdf)). Examen 2
+  (~semana 11): CNNs, RNNs, Transformers y LLMs
+  ([temario](Examenes/Examen2_Temario.md) ·
+  [guía de estudio](Examenes/Examen2_GuiaEstudio.pdf)).
 - **Proyecto**: diriges a un agente de IA para ejecutar un experimento
   de deep learning. Se califica tu especificación, tu verificación del
   trabajo del agente y tu interpretación — no el código. Es el
   entregable principal del curso (40%): la especificación se entrega
   en la semana 7 (Hito 1) y el proyecto completo en la semana 12. Guía en
-  [Evaluacion/ProyectoColaboracionIA.md](Evaluacion/ProyectoColaboracionIA.md).
+  [Evaluacion/ProyectoColaboracionIA.md](Evaluacion/ProyectoColaboracionIA.md)
+  ([PDF](Evaluacion/ProyectoColaboracionIA.pdf)).
 - **Tareas de práctica (no calificadas)**: las 8 tareas en
   [tareas/](tareas/) son la preparación directa para los exámenes, con
   soluciones de la parte práctica en [soluciones/](soluciones/).
@@ -94,7 +100,7 @@ vez — guía paso a paso (Colab o instalación local) en
 - `notebooks/` — notebooks de clase (PyTorch) para seguir en vivo
 - `tareas/` — las 8 tareas de práctica (no calificadas)
 - `soluciones/` — soluciones de la parte práctica de las tareas
-- `Examenes/` — temarios de los dos exámenes
+- `Examenes/` — temarios y guías de estudio (con respuestas) de los dos exámenes
 - `Evaluacion/` — guía del proyecto de colaboración con IA
 - `images/` — figuras usadas por las slides
 

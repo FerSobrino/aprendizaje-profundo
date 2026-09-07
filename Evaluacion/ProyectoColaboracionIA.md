@@ -13,7 +13,7 @@ En la práctica ya casi nadie escribe un loop de entrenamiento desde cero: se lo
 
 ## Qué vas a hacer
 
-Elige **una** de las siguientes opciones y dirígela de principio a fin usando un agente de IA (Claude, ChatGPT, Gemini, Claude Code, etc. — el que quieras). Las opciones 1–3 parten de una tarea de práctica, pero **no consisten en repetirla**: la tarea es la calibración (debe salirte lo que ya conoces) y el proyecto es lo que construyes encima. Las cuatro opciones tienen una carga comparable.
+Elige **una** de las siguientes opciones y dirígela de principio a fin usando un agente de IA (Claude, ChatGPT, Gemini, Claude Code, etc. — el que quieras). Las opciones 1–3 parten de una tarea de práctica, pero no consisten en repetirla: la tarea es la calibración (debe salirte lo que ya conoces) y el proyecto es lo que construyes encima. Las cuatro opciones tienen una carga comparable.
 
 1. **Regularización y generalización (base: Tarea 5).** Punto de partida: el grid optimizador × weight decay en MNIST de la tarea, reproducido como calibración. Encima:
    - (a) un dataset que no vimos en clase (Fashion-MNIST, KMNIST, o un dataset tabular de política pública acordado conmigo): ¿se mantienen las conclusiones del grid?;
@@ -63,9 +63,9 @@ En cualquier opción el estándar experimental es el del curso: semilla fija, mi
 
 ## Entregables (5)
 
-1. **Especificación previa** (1 página, escrita **antes** de abrir el chat). Qué vas a pedir y por qué: dataset y splits, arquitectura, configuraciones a comparar, hiperparámetros fijos, métricas y qué esperas observar teóricamente. Esta especificación se congela: entregas la versión original, con correcciones posteriores marcadas como tales.
+1. **Especificación previa** (1 página, escrita antes de abrir el chat). Qué vas a pedir y por qué: dataset y splits, arquitectura, configuraciones a comparar, hiperparámetros fijos, métricas y qué esperas observar teóricamente. Esta especificación se congela: entregas la versión original, con correcciones posteriores marcadas como tales.
 2. **Transcripción completa** de la(s) conversación(es) con el agente, sin editar. Exporta el chat o copia todo; si usaste varias sesiones, inclúyelas todas.
-3. **Reporte de verificación** (1–2 páginas). La parte más importante: ¿qué revisaste del trabajo del agente y cómo? Como mínimo: (a) verifica que el protocolo pedido se cumplió (semillas, splits, factor único); (b) revisa el código en los puntos críticos (¿la pérdida es la correcta? ¿`model.eval()` y `no_grad` en evaluación? ¿se normalizó con estadísticas solo de train?); (c) contrasta al menos un resultado contra tu predicción teórica. **Documenta al menos dos errores, decisiones cuestionables o cosas que tuviste que corregir del agente** — en nuestra experiencia siempre las hay; si de verdad no encontraste ninguna, explica qué revisaste para descartarlas.
+3. **Reporte de verificación** (1–2 páginas). La parte más importante: ¿qué revisaste del trabajo del agente y cómo? Como mínimo: (a) verifica que el protocolo pedido se cumplió (semillas, splits, factor único); (b) revisa el código en los puntos críticos (¿la pérdida es la correcta? ¿`model.eval()` y `no_grad` en evaluación? ¿se normalizó con estadísticas solo de train?); (c) contrasta al menos un resultado contra tu predicción teórica. Documenta al menos dos errores, decisiones cuestionables o cosas que tuviste que corregir del agente — en nuestra experiencia siempre las hay; si de verdad no encontraste ninguna, explica qué revisaste para descartarlas.
 4. **Interpretación de resultados** (1–2 páginas). Las preguntas de "explica por qué" de siempre: qué configuración ganó y por qué tiene sentido (o no) a la luz de la teoría del curso, limitaciones, y qué recomendarías a alguien que fuera a usar esto.
 5. **Reflexión breve** (media página). ¿Qué tuviste que saber tú para que esto saliera bien? ¿Dónde el agente fue mejor que tú y dónde tú fuiste indispensable?
 
@@ -86,5 +86,5 @@ En cualquier opción el estándar experimental es el del curso: semilla fija, mi
 
 - Pídele al agente el plan antes que el código y critícalo contra tu especificación.
 - Pide instrumentación desde el inicio (curvas train/val, normas de gradiente, tablas) — es más barato que reconstruirla después.
-- Cuando algo se vea demasiado bien (val acc > train acc, pérdida en cero), sospecha primero de fuga de datos o de un bug de evaluación, no de tu suerte.
+- Cuando algo se vea demasiado bien (val acc > train acc, pérdida en cero), sospecha primero de fuga de datos o de un bug de evaluación.
 - Los notebooks del curso (`notebooks/`) son tu referencia de qué debería aparecer en el código; úsalos para auditar lo que el agente produzca.
