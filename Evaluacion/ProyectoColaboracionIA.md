@@ -1,6 +1,6 @@
 # Proyecto de colaboración con IA — Dirigir a un agente para hacer deep learning
 
-**Peso:** 40% de la calificación final. Es el entregable principal del curso.
+**Peso:** 40% de la calificación final.
 **Formato:** individual. Puedes discutir con compañeros, pero la conversación con el agente y los entregables son tuyos.
 **Entregas:** dos momentos.
 
@@ -9,18 +9,40 @@
 
 ## Por qué este proyecto
 
-En la práctica ya casi nadie escribe un loop de entrenamiento desde cero: se lo pides a un agente de IA. Pero el agente hace *exactamente lo que le pides* — si no sabes pedir una división train/val/test, pesos por clase o métricas por subgrupo, no las vas a obtener; y si no sabes leer una curva de pérdida, no vas a notar cuando el resultado esté mal. Este proyecto evalúa la habilidad que sí importa ahora: **especificar bien, verificar con escepticismo e interpretar con criterio**. El agente pone el código; tú pones el entendimiento.
+En la práctica ya casi nadie escribe un loop de entrenamiento desde cero: se lo pides a un agente de IA. Pero el agente hace *exactamente lo que le pides* — si no sabes pedir una división train/val/test, pesos por clase o métricas por subgrupo, no las vas a obtener; y si no sabes leer una curva de pérdida, no vas a notar cuando el resultado esté mal. Este proyecto evalúa la siguiente habilidad: **especificar bien, verificar con escepticismo e interpretar con criterio**. El agente pone el código; tú pones el entendimiento.
 
 ## Qué vas a hacer
 
-Elige **una** de las siguientes opciones y dirígela de principio a fin usando un agente de IA (Claude, ChatGPT, Gemini, Claude Code, etc. — el que quieras):
+Elige **una** de las siguientes opciones y dirígela de principio a fin usando un agente de IA (Claude, ChatGPT, Gemini, Claude Code, etc. — el que quieras). Las opciones 1–3 parten de una tarea de práctica, pero **no consisten en repetirla**: la tarea es la calibración (debe salirte lo que ya conoces) y el proyecto es lo que construyes encima. Las cuatro opciones tienen una carga comparable.
 
-1. **Regularización (base: Tarea 5).** El grid de optimizadores × weight decay en MNIST, más el régimen de pocos datos (N=2000) con aumento de datos. Reporta curvas, tabla final con val_acc, $\|\theta\|_2$ y ECE.
-2. **CNN (base: Tarea 6).** El grid 3×3 de dropout × weight decay en small_data, más la comparación de aumentos de datos con la cuadrícula visual que verifica que las transformaciones preservan la etiqueta.
-3. **Secuencias (base: Tarea 7).** RNN vs. LSTM vs. GRU × 2 optimizadores sobre un corpus, con curvas de perplejidad y tiempos por época, cerrando con una recomendación de despliegue.
-4. **Opción aplicada (recomendada, un poco más ambiciosa).** Un problema de política pública con datos reales y abiertos: clasificación de texto legislativo/gubernamental, predicción de demanda de un servicio público, clasificación de imágenes satelitales con transfer learning, etc. Acuérdalo conmigo antes del Hito 1. Debe incluir un protocolo de validación serio y métricas por subgrupo cuando aplique.
+1. **Regularización y generalización (base: Tarea 5).** Punto de partida: el grid optimizador × weight decay en MNIST de la tarea, reproducido como calibración. Encima:
+   - (a) un dataset que no vimos en clase (Fashion-MNIST, KMNIST, o un dataset tabular de política pública acordado conmigo): ¿se mantienen las conclusiones del grid?;
+   - (b) régimen de pocos datos: $N\in\{500,\,2000,\,10000\}$ ejemplos, con y sin aumento de datos, y la curva de accuracy de validación contra $N$;
+   - (c) una intervención adicional a tu elección (early stopping, dropout, label smoothing o ensamble de semillas), con su predicción escrita antes de correrla;
+   - (d) calibración: ECE y diagrama de confiabilidad de las dos mejores configuraciones.
 
-Con el peso actual del proyecto, en cualquiera de las opciones 1–3 se espera **una extensión propia**: una ablación o comparación adicional que no está en la tarea base (por ejemplo, un tercer factor, un régimen de datos distinto, o una métrica por subgrupo), especificada desde el Hito 1.
+   Entregas curvas train/val, una tabla con val_acc, $\|\theta\|_2$ y ECE por configuración, y una recomendación: qué receta usarías con 2,000 ejemplos etiquetados y por qué.
+
+2. **CNNs y transferencia (base: Tarea 6).** Punto de partida: el grid 3×3 de dropout × weight decay en small_data. Encima:
+   - (a) transfer learning con una CNN preentrenada (ResNet-18 o similar) bajo tres estrategias, features congeladas + capa lineal, fine-tuning parcial y fine-tuning completo, en el mismo régimen de pocos datos y contra tu CNN entrenada desde cero;
+   - (b) aumento de datos: la cuadrícula visual que verifica que las transformaciones preservan la etiqueta, más una transformación que la **rompe** a propósito (por ejemplo, flips verticales en dígitos) y su efecto medido;
+   - (c) análisis de errores por clase y, si el dataset lo permite, por alguna característica de la imagen (brillo, resolución, fuente);
+   - (d) visualización de los filtros o mapas de activación de la primera capa y qué aprendieron.
+
+   Recomendación final: con 2,000 imágenes etiquetadas y una GPU modesta, ¿desde cero o transfer learning, y con qué estrategia? ¿Con qué evidencia lo defiendes?
+
+3. **Secuencias y modelos de lenguaje (base: Tarea 7).** Punto de partida: RNN vs. LSTM vs. GRU sobre el corpus del Quijote. Encima:
+   - (a) un corpus nuevo de texto público (Diario Oficial, iniciativas de ley, transcripciones de sesiones, comunicados de una dependencia), con limpieza y tokenización documentadas;
+   - (b) dos tokenizaciones (palabras vs. subpalabras/BPE) y la comparación honesta: por qué la perplejidad no es comparable entre ellas y con qué unidad común las comparas (bits por carácter o log-verosimilitud total del mismo texto);
+   - (c) split contiguo o temporal vs. split aleatorio de ventanas: mide cuánto infla la fuga la métrica de validación;
+   - (d) longitud de contexto $\tau\in\{5,\,20,\,50\}$ con BPTT truncado: costo por época contra perplejidad;
+   - (e) generación con temperatura y top-$k$, evaluada cualitativamente con una rúbrica que tú escribes.
+
+   Recomendación de despliegue: qué modelo, con qué costo por época y qué contexto, para un caso concreto donde importa la latencia (por ejemplo, autocompletado en un sistema de atención ciudadana).
+
+4. **Opción aplicada (recomendada, un poco más ambiciosa).** Un problema de política pública con datos reales y abiertos: clasificación de texto legislativo/gubernamental, predicción de demanda de un servicio público, clasificación de imágenes satelitales con transfer learning, etc. Acuérdalo conmigo antes del Hito 1. Debe incluir un protocolo de validación  y métricas por subgrupo cuando aplique.
+
+En las opciones 1–3, cada inciso lleva su **predicción escrita** en la especificación del Hito 1, antes de correrlo; el reporte de interpretación contrasta cada predicción con lo que salió. Si algún inciso resulta imposible con tus recursos, lo documentas y lo sustituyes por otro acordado conmigo; no lo omites en silencio.
 
 En cualquier opción el estándar experimental es el del curso: semilla fija, mismo split entre configuraciones, un factor variado a la vez, curvas + tabla resumen + interpretación escrita.
 
