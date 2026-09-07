@@ -4,7 +4,7 @@
 **Formato:** individual. Puedes discutir con compañeros, pero la conversación con el agente y los entregables son tuyos.
 **Entregas:** dos momentos.
 
-- **Hito 1 — especificación congelada (semana 8).** Entregas la especificación previa (entregable 1) antes de abrir el chat con el agente. Recibes retroalimentación breve; la especificación queda congelada y se califica junto con el resto.
+- **Hito 1 — especificación congelada (semana 7, la semana siguiente al Examen 1).** Entregas la especificación previa (entregable 1) antes de abrir el chat con el agente. Recibes retroalimentación breve; la especificación queda congelada y se califica junto con el resto.
 - **Entrega final (semana 12).** Los cinco entregables completos.
 
 ## Por qué este proyecto

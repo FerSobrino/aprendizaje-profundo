@@ -48,7 +48,8 @@ si está bien?"*
 - **Proyecto**: diriges a un agente de IA para ejecutar un experimento
   de deep learning. Se califica tu especificación, tu verificación del
   trabajo del agente y tu interpretación — no el código. Es el
-  entregable principal del curso (40%). Guía en
+  entregable principal del curso (40%): la especificación se entrega
+  en la semana 7 (Hito 1) y el proyecto completo en la semana 12. Guía en
   [Evaluacion/ProyectoColaboracionIA.md](Evaluacion/ProyectoColaboracionIA.md).
 - **Tareas de práctica (no calificadas)**: las 8 tareas en
   [tareas/](tareas/) son la preparación directa para los exámenes, con
@@ -64,12 +65,12 @@ si está bien?"*
 | 4 | Entrenamiento II: backprop, inicialización, performance | [Entrenamiento 2](slides/Entrenamiento2.pdf) | [Diagnósticos](notebooks/Entrenamiento2.ipynb) | T4 | |
 | 5 | Regularización | [Regularización](slides/Regularizacion.pdf) | [Regularización](notebooks/Regularizacion.ipynb) | T5 | |
 | 6 | CNNs I | [CNN](slides/CNN.pdf) | [CNN](notebooks/NotebookCNN.ipynb) | | **Examen 1** |
-| 7 | CNNs II y aplicaciones (satélite y pobreza) | [CNN](slides/CNN.pdf) | [CNN](notebooks/NotebookCNN.ipynb) | T6 | |
+| 7 | CNNs II y aplicaciones (satélite y pobreza) | [CNN](slides/CNN.pdf) | [CNN](notebooks/NotebookCNN.ipynb) | T6 | **Hito 1 del proyecto** (especificación) |
 | 8 | RNNs y modelos de secuencias | [RNN](slides/RNN.pdf) | [RNN](notebooks/NotebookRNN.ipynb) | T7 | |
 | 9 | Atención y Transformers | [Transformers](slides/Transformers.pdf) | [Mini-GPT](notebooks/Transformers.ipynb) | T8 | |
 | 10 | LLMs: post-entrenamiento, RAG · Agentes | [Transformers](slides/Transformers.pdf) · [Agentes](slides/Agentes.pdf) | | | |
 | 11 | ¿Por qué funciona DL? · Ética y gobernanza | [Ética](slides/EticayPreguntas.pdf) | | | **Examen 2** |
-| 12 | Entrega del proyecto de colaboración con IA | | | | |
+| 12 | Entrega final del proyecto de colaboración con IA | | | | **Proyecto** |
 
 ## Política de IA (resumen)
 

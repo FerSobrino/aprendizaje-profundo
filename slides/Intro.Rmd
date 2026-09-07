@@ -40,10 +40,10 @@ knitr::opts_chunk$set(fig.width = 6.5, fig.height = 3.6, out.width = "70%", fig.
     - Redes neuronales superficiales y profundas 
     - Entrenamiento de redes neuronales 
     - Regularización 
-- Semana 5-7: CNNs y RNNs — *Examen 1 (~semana 6)*
+- Semana 5-7: CNNs y RNNs — *Examen 1 (~semana 6)*; *Hito 1 del proyecto: especificación (semana 7)*
 - Semana 8-10: Transformers, LLMs y agentes
 - Semana 11: ¿Por qué funciona el aprendizaje profundo?/ Fairness/Etica y preguntas abiertas — *Examen 2*
-- Semana 12: Entrega del proyecto de colaboración con IA
+- Semana 12: Entrega final del proyecto de colaboración con IA
 
 
 ## Evaluación
