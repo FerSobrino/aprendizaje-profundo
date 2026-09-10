@@ -8,73 +8,65 @@ Entregas en Canvas
 
 ## Filosofía del curso
 
-Los agentes de IA ya construyen y entrenan redes neuronales mejor y
-más rápido que la mayoría de los humanos. Eso no hace que este curso
-sobre: lo hace más importante. El agente hace *exactamente* lo que le
-pides — si no sabes pedir una división train/val/test, pesos por clase
-o métricas por subgrupo, no las vas a obtener; y si no sabes leer una
-curva de pérdida, no vas a notar cuando el resultado esté mal. Este
-curso enseña las dos cosas que la IA no pone: **entender cómo funciona
-el aprendizaje profundo** y **verificar con escepticismo**.
+Los agentes de IA ya construyen y entrenan redes neuronales mejor y más rápido que la mayoría de los humanos. El agente hace *exactamente* lo que le
+pides: si no sabes pedir una división train/val/test, pesos por clase o métricas por subgrupo, no las vas a obtener; y si no sabes leer una curva de pérdida, no vas a notar cuando el resultado esté mal. Este curso enseña las dos cosas que la IA aún no hace muy bien: entender cómo funciona el aprendizaje profundo y verificar lo que te entrega el agente.
 
 Por eso:
 
 1. **El curso es de teoría, no de código.** Derivamos las pérdidas
    desde máxima verosimilitud, hacemos backprop a mano y entendemos
    cada arquitectura desde sus supuestos. Los exámenes son a lápiz y
-   papel. El código lo escribe el agente; el criterio lo pones tú.
-2. **No prohibimos la IA.** Las tareas de práctica son libres (y no
-   calificadas); en el proyecto final, dirigir a un agente **es** la
-   habilidad evaluada, con transcripción obligatoria.
+   papel.
+2. **Uso de IA.** Las tareas de práctica son libres (y no calificadas):
+   puedes usar LLMs, agentes, Google o lo que quieras. En el proyecto
+   final vas a dirigir a un agente, y esa será la habilidad evaluada,
+   con transcripción obligatoria.
 3. **Cubrimos hasta la frontera.** El curso llega hasta LLMs, RLVR y
-   modelos de razonamiento, MoE, RAG y una sesión completa sobre
-   dirigir, supervisar y auditar agentes — con sus modos de falla
-   documentados.
-
-El estándar del curso: *no "¿qué respondió el agente?", sino "¿cómo sé
-si está bien?"*
+   modelos de razonamiento, MoE, RAG y tendremos una sesión sobre
+   dirigir, supervisar y auditar agentes.
 
 ## Evaluación
 
 | Componente | Peso | Detalle |
 |---|---|---|
-| Exámenes en clase (2) | 60% | Escritos, sin computadora, 40 minutos (30% c/u) |
+| Exámenes en clase (2) | 50% | Escritos, sin computadora, 40 minutos (25% c/u) |
 | Proyecto de colaboración con IA | 40% | Dirigir a un agente; se califica especificación, verificación e interpretación |
+| Participación | 10% | Contestar preguntas en clase, proponer ejemplos, etc. |
 
 - **Exámenes**: en clase, individuales, lápiz y papel. No piden
   escribir código: piden derivar, predecir, diagnosticar y justificar.
-  Temarios y **guías de estudio con preguntas de práctica y respuestas**
+  Temarios y **exámenes de práctica con respuestas**
   en [Examenes/](Examenes/). Examen 1 (~semana 6): fundamentos
   ([temario](Examenes/Examen1_Temario.md) ·
-  [guía de estudio](Examenes/Examen1_GuiaEstudio.pdf)). Examen 2
+  [examen de práctica](Examenes/Examen1_GuiaEstudio.pdf)). Examen 2
   (~semana 11): CNNs, RNNs, Transformers y LLMs
   ([temario](Examenes/Examen2_Temario.md) ·
-  [guía de estudio](Examenes/Examen2_GuiaEstudio.pdf)).
+  [examen de práctica](Examenes/Examen2_GuiaEstudio.pdf)).
 - **Proyecto**: diriges a un agente de IA para ejecutar un experimento
   de deep learning. Se califica tu especificación, tu verificación del
-  trabajo del agente y tu interpretación — no el código. Es el
+  trabajo del agente y tu interpretación — no el código ni el resultado del modelo. Es el
   entregable principal del curso (40%): la especificación se entrega
-  en la semana 7 (Hito 1) y el proyecto completo en la semana 12. Guía en
+  en la semana 7 (Entrega 1) y el proyecto completo en la semana 12. Guía en
   [Evaluacion/ProyectoColaboracionIA.md](Evaluacion/ProyectoColaboracionIA.md)
   ([PDF](Evaluacion/ProyectoColaboracionIA.pdf)).
 - **Tareas de práctica (no calificadas)**: las 8 tareas en
-  [tareas/](tareas/) son la preparación directa para los exámenes, con
-  soluciones de la parte práctica en [soluciones/](soluciones/).
+  [tareas/](tareas/) son la preparación directa para los exámenes y el
+  proyecto final.
 
 ## Temario semanal
 
 | Semana | Temas | Slides | Notebook | Práctica | Exámenes |
 |---|---|---|---|---|---|
-| 1 | Introducción y política de IA · Repaso de ML | [Intro](slides/Intro.pdf) · [Repaso](slides/Repaso.pdf) | [Tensores](notebooks/Intro_Tensores.ipynb) · [PyTorch](notebooks/Intro_Pytorch.ipynb) | T1 | |
-| 2 | Redes neuronales superficiales y profundas | [NN](slides/NN.pdf) | [MNIST](notebooks/Clase_RN_MNIST.ipynb) | T2 | |
-| 3 | Entrenamiento I: pérdidas y optimización | [Entrenamiento](slides/Entrenamiento.pdf) | [Optimizadores](notebooks/Optimizadores.ipynb) | T3 | |
-| 4 | Entrenamiento II: backprop, inicialización, performance | [Entrenamiento 2](slides/Entrenamiento2.pdf) | [Diagnósticos](notebooks/Entrenamiento2.ipynb) | T4 | |
-| 5 | Regularización | [Regularización](slides/Regularizacion.pdf) | [Regularización](notebooks/Regularizacion.ipynb) | T5 | |
-| 6 | CNNs I | [CNN](slides/CNN.pdf) | [CNN](notebooks/NotebookCNN.ipynb) | | **Examen 1** |
-| 7 | CNNs II y aplicaciones (satélite y pobreza) | [CNN](slides/CNN.pdf) | [CNN](notebooks/NotebookCNN.ipynb) | T6 | **Hito 1 del proyecto** (especificación) |
-| 8 | RNNs y modelos de secuencias | [RNN](slides/RNN.pdf) | [RNN](notebooks/NotebookRNN.ipynb) | T7 | |
-| 9 | Atención y Transformers | [Transformers](slides/Transformers.pdf) | [Mini-GPT](notebooks/Transformers.ipynb) | T8 | |
-| 10 | LLMs: post-entrenamiento, RAG · Agentes | [Transformers](slides/Transformers.pdf) · [Agentes](slides/Agentes.pdf) | | | |
+| 1 | Introducción y política de IA · Repaso de ML | [Intro](slides/Intro.pdf) · [Repaso](slides/Repaso.pdf) | [Tensores](notebooks/Intro_Tensores.ipynb) · [PyTorch](notebooks/Intro_Pytorch.ipynb) | | |
+| 2 | Redes neuronales superficiales y profundas | [NN](slides/NN.pdf) | [MNIST](notebooks/Clase_RN_MNIST.ipynb) | T1 | |
+| 3 | Entrenamiento I: pérdidas y optimización | [Entrenamiento](slides/Entrenamiento.pdf) | [Optimizadores](notebooks/Optimizadores.ipynb) | T2 | |
+| 4 | Entrenamiento II: backprop, inicialización, performance | [Entrenamiento 2](slides/Entrenamiento2.pdf) | [Diagnósticos](notebooks/Entrenamiento2.ipynb) | T3 | |
+| 5 | Regularización | [Regularización](slides/Regularizacion.pdf) | [Regularización](notebooks/Regularizacion.ipynb) | T4 | |
+| 6 | CNNs I | [CNN](slides/CNN.pdf) | [CNN](notebooks/NotebookCNN.ipynb) | T5 | **Examen 1** |
+| 7 | CNNs II y aplicaciones (satélite y pobreza) | [CNN](slides/CNN.pdf) | [CNN](notebooks/NotebookCNN.ipynb) | | **Entrega 1 del proyecto** (tema y especificación) |
+| 8 | RNNs y modelos de secuencias | [RNN](slides/RNN.pdf) | [RNN](notebooks/NotebookRNN.ipynb) | T6 | |
+| 9 | Atención y Transformers | [Transformers](slides/Transformers.pdf) | [Mini-GPT](notebooks/Transformers.ipynb) | T7 | |
+| 10 | LLMs: post-entrenamiento, RAG · Agentes | [Transformers](slides/Transformers.pdf) · [Agentes](slides/Agentes.pdf) | | T8 | |
 | 11 | ¿Por qué funciona DL? · Ética y gobernanza | [Ética](slides/EticayPreguntas.pdf) | | | **Examen 2** |
 | 12 | Entrega final del proyecto de colaboración con IA | | | | **Proyecto** |
 
@@ -100,7 +92,7 @@ vez — guía paso a paso (Colab o instalación local) en
 - `notebooks/` — notebooks de clase (PyTorch) para seguir en vivo
 - `tareas/` — las 8 tareas de práctica (no calificadas)
 - `soluciones/` — soluciones de la parte práctica de las tareas
-- `Examenes/` — temarios y guías de estudio (con respuestas) de los dos exámenes
+- `Examenes/` — temarios y exámenes de práctica (con respuestas) de los dos exámenes
 - `Evaluacion/` — guía del proyecto de colaboración con IA
 - `images/` — figuras usadas por las slides
 
@@ -113,8 +105,6 @@ vez — guía paso a paso (Colab o instalación local) en
 - Chollet — *Deep Learning with Python*
 
 ## Papers clásicos (lectura opcional)
-
-Ya no hay presentaciones de papers; esta lista queda como lectura recomendada para quien quiera ir a la fuente de lo que vemos en clase.
 
 1. AlexNet — Krizhevsky, Sutskever & Hinton (2012)
 2. ResNet — He et al. (2015)

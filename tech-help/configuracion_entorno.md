@@ -7,8 +7,7 @@ internet y tener control total, instala Python **localmente**.
 
 ## Dónde están los materiales
 
-- **Canvas**: ahí se publican los avisos y ahí entregas la presentación
-  y el proyecto.
+- **Canvas**: ahí se publica todo y ahí entregas el proyecto.
 - **El repositorio de GitHub del curso**: contiene TODO el material
   (slides, notebooks, tareas y soluciones), es público y no necesitas
   cuenta para verlo o descargarlo:

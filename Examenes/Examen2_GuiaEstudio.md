@@ -1,5 +1,5 @@
 ---
-title: "Guía de estudio — Examen 2: CNNs, RNNs, Transformers y LLMs"
+title: "Examen de práctica 2: CNNs, RNNs, Transformers y LLMs"
 subtitle: "Aprendizaje Profundo y sus usos en Políticas Públicas · 2026"
 lang: es
 geometry: margin=2.3cm
@@ -10,9 +10,7 @@ header-includes:
   - \setlength{\parskip}{4pt}
 ---
 
-Esta guía tiene el **mismo formato que el examen** (Parte A: verdadero/falso con justificación; Parte B: desarrollo con cálculos pequeños; Parte C: diseño aplicado) y preguntas del mismo estilo, un poco más sencillas. Las respuestas orientativas están al final. Resuélvela **a mano y con tiempo** (40 minutos) antes de comparar.
-
-El examen incluye al final un formulario de arquitecturas; aquí también lo incluimos para que practiques usándolo. Tener la fórmula no es la habilidad evaluada: saber qué hace, cuándo aplica y qué pasa si la cambias, sí.
+Este examen de práctica tiene el mismo formato que el examen real: tendrá 3 secciones y, al final, un formulario de arquitecturas, para que no tengas que memorizarlas. Las respuestas están al final del documento. Recuerda que tendrás 40 minutos para el examen real.
 
 ---
 

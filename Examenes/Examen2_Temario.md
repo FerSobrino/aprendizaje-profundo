@@ -2,7 +2,7 @@
 
 **Cuándo:** en clase, aprox. semana 11.
 **Formato:** individual, lápiz y papel, **40 minutos**. Sin computadora, sin celular, sin código.
-**Peso:** 30% de la calificación final.
+**Peso:** 25% de la calificación final.
 **Material permitido:** ninguno propio. El examen incluye al final un **formulario de arquitecturas** con las ecuaciones de referencia (tamaño de salida y parámetros de una convolución, receptive field, actualización de RNN, gates de LSTM y GRU, atención de producto punto escalado, multi-head, codificación posicional, perplejidad). Tener la fórmula no es la habilidad evaluada; saber **qué hace, cuándo aplica y qué pasa si la cambias**, sí.
 **Cobertura:** slides *CNN*, *RNN* y *Transformers* (incluida la parte de LLMs: pre-entrenamiento, SFT/RLHF/RLVR, LoRA, RAG, evaluación), más las Tareas de práctica 6–8. **No** incluye los decks de *Agentes* ni de *Ética*. Los fundamentos del Examen 1 se asumen conocidos y pueden aparecer dentro de una pregunta, no como pregunta principal.
 
@@ -94,7 +94,7 @@ Estas **no** son las preguntas del examen, pero son del mismo estilo y dificulta
 
 ## Cómo estudiar
 
-0. Resuelve la **guía de estudio** ([Examen2_GuiaEstudio.pdf](Examen2_GuiaEstudio.pdf)): mismo formato que el examen, preguntas del mismo estilo y respuestas orientativas. Hazla a mano, con reloj, antes de ver las respuestas.
+0. Resuelve el **examen de práctica** ([Examen2_GuiaEstudio.pdf](Examen2_GuiaEstudio.pdf)): mismo formato que el examen, preguntas del mismo estilo y respuestas orientativas. Hazlo a mano, con reloj, antes de ver las respuestas.
 1. **Resuelve las Tareas 6–8** completas. Los enunciados y las soluciones de la parte práctica están en el repo. Las preguntas del examen siguen ese estilo.
 2. Para los notebooks de CNN, RNN y Transformers: antes de correr cada celda, **predice** qué va a salir y por qué. En el de Transformers, las ablaciones (quitar la máscara causal, quitar la codificación posicional) son material de examen directo.
 3. Practica la aritmética de convoluciones y de atención con números inventados hasta que salga sin pensar. Son cinco minutos del examen y separan a quien entiende de quien memorizó.

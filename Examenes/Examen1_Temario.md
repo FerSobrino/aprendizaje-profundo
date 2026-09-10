@@ -2,7 +2,7 @@
 
 **Cuándo:** en clase aprox semana 6.
 **Formato:** individual, lápiz y papel, **40 minutos**. Sin computadora, sin celular, sin código.
-**Peso:** 30% de la calificación final.
+**Peso:** 25% de la calificación final.
 **Material permitido:** ninguno propio. El examen incluye al final un **formulario de distribuciones de probabilidad** (soporte, parámetros, fórmula y media de las distribuciones más comunes). Todo lo demás, pérdidas, optimizadores, backprop, inicialización y regularización, debes saberlo.
 **Cobertura:** slides *Repaso*, *NN*, *Entrenamiento*, *Entrenamiento 2* y *Regularización*, más las Tareas de práctica 1–5. **No** incluye CNNs ni nada posterior.
 
@@ -82,7 +82,7 @@ Dado un resumen de entrenamiento (pérdida train/val por época, accuracy, norma
 
 ## Cómo estudiar
 
-0. Resuelve la **guía de estudio** ([Examen1_GuiaEstudio.pdf](Examen1_GuiaEstudio.pdf)): tiene el mismo formato que el examen, preguntas del mismo estilo y respuestas orientativas. Hazla a mano, con reloj, antes de ver las respuestas.
+0. Resuelve el **examen de práctica** ([Examen1_GuiaEstudio.pdf](Examen1_GuiaEstudio.pdf)): tiene el mismo formato que el examen, preguntas del mismo estilo y respuestas orientativas. Hazlo a mano, con reloj, antes de ver las respuestas.
 1. **Resuelve las Tareas 1–5** completas. Los enunciados y las soluciones de la parte práctica están en el repo. Las preguntas del examen siguen ese estilo.
 2. Para cada notebook de clase (Optimizadores, Diagnósticos, Regularización): antes de correr una celda, **predice** qué va a salir y por qué. Después compara. Eso es lo que evalúa la Parte C.
 3. Reproduce **sin ver las slides** las derivaciones de *Entrenamiento* (MSE, BCE, cross-entropy) y de *Entrenamiento 2* (backward pass escalar, varianza de He).

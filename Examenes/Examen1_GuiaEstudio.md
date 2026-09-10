@@ -1,5 +1,5 @@
 ---
-title: "Guía de estudio — Examen 1: Fundamentos"
+title: "Examen de práctica 1: Fundamentos"
 subtitle: "Aprendizaje Profundo y sus usos en Políticas Públicas · 2026"
 lang: es
 geometry: margin=2.3cm
@@ -10,9 +10,7 @@ header-includes:
   - \setlength{\parskip}{4pt}
 ---
 
-Esta guía tiene el **mismo formato que el examen** (Parte A: verdadero/falso con justificación; Parte B: desarrollo; Parte C: diagnóstico) y preguntas del mismo estilo, un poco más sencillas. Las respuestas orientativas están al final. Úsala así: resuelve todo **a mano y con tiempo** (40 minutos), y solo después compara. Si una respuesta te sorprende, regresa a la slide correspondiente antes de seguir.
-
-El examen incluye al final un formulario con las distribuciones de probabilidad más comunes; todo lo demás debes saberlo. Aquí también lo incluimos para que practiques usándolo.
+Este examen de práctica tiene el mismo formato que el examen real: tendrá 3 secciones y, al final, un formulario con las distribuciones de probabilidad, para que no tengas que memorizarlas. Las respuestas están al final del documento. Recuerda que tendrás 40 minutos para el examen real.
 
 ---
 
